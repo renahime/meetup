@@ -1,40 +1,34 @@
-"use strict";
-
+'use strict';
+/** @type {import('sequelize-cli').Migration} */
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable("Users", {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('EventImages', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      firstName:{
-        type: Sequelize.STRING(60),
-        allowNull:false,
+      eventId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Events'
+        },
+        onDelete: 'CASCADE',
+        hooks: true
       },
-      lastName: {
-        type: Sequelize.STRING(60),
-        allowNull:false,
-      },
-      username: {
-        type: Sequelize.STRING(30),
+      url: {
         allowNull: false,
-        unique: true
+        type: Sequelize.STRING
       },
-      email: {
-        type: Sequelize.STRING(256),
+      preview: {
         allowNull: false,
-        unique: true
-      },
-      hashedPassword: {
-        type: Sequelize.STRING.BINARY,
-        allowNull: false
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -48,8 +42,8 @@ module.exports = {
       }
     }, options);
   },
-  down: async (queryInterface, Sequelize) => {
-    options.tableName = "Users";
-    return queryInterface.dropTable(options);
+  async down(queryInterface, Sequelize) {
+    options.tableName = 'EventImages'
+    await queryInterface.dropTable(options);
   }
 };

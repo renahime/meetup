@@ -10,12 +10,10 @@ const { handleValidationErrors } = require('../../utils/validation');
 
 const router = express.Router();
 
+//get "/groups"
 router.get('', async (req,res) => {
     const groups = await Group.findAll();
 
     return res.json({Groups:groups});
 })
-
-
-
 module.exports = router;

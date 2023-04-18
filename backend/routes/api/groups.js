@@ -127,4 +127,16 @@ router.put('/:groupId', async (req,res) => {
 
 })
 
+//delete /api/groups/:groupId
+
+router.delete('/:groupId', async (req, res) => {
+  const deleteGroup = await Group.findByPk(req.params.groupId);
+  await deleteGroup.destroy();
+
+  res.json({
+    message: "Successfully deleted"
+  }
+  )
+})
+
 module.exports = router;

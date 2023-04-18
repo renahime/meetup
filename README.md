@@ -69,7 +69,7 @@ Returns the information about the current user that is logged in.
         "lastName": "Smith",
         "email": "john.smith@gmail.com",
         "username": "JohnSmith"
-      } 
+      }
     }
     ```
 
@@ -107,7 +107,7 @@ information.
         "lastName": "Smith",
         "email": "john.smith@gmail.com",
         "username": "JohnSmith"
-      } 
+      }
     }
     ```
 
@@ -245,23 +245,69 @@ Returns all the groups.
 
     ```json
     {
-      "Groups":[
+    "Groups": [
         {
-          "id": 1,
-          "organizerId": 1,
-          "name": "Evening Tennis on the Water",
-          "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
-          "type": "In person",
-          "private": true,
-          "city": "New York",
-          "state": "NY",
-          "createdAt": "2021-11-19 20:39:36",
-          "updatedAt": "2021-11-19 20:39:36",
-          "numMembers": 10,
-          "previewImage": "image url",
+            "id": 1,
+            "organizerId": 1,
+            "name": "insert something here",
+            "about": "insert something here",
+            "type": "In-Person",
+            "private": false,
+            "city": "city",
+            "state": "TX",
+            "createdAt": "2023-04-17T00:24:44.000Z",
+            "updatedAt": "2023-04-17T00:24:44.000Z"
+        },
+        {
+            "id": 2,
+            "organizerId": 2,
+            "name": "insert something here",
+            "about": "insert something here",
+            "type": "In-Person",
+            "private": false,
+            "city": "city",
+            "state": "TX",
+            "createdAt": "2023-04-17T00:24:44.000Z",
+            "updatedAt": "2023-04-17T00:24:44.000Z"
+        },
+        {
+            "id": 3,
+            "organizerId": 3,
+            "name": "insert something here",
+            "about": "insert something here",
+            "type": "In-Person",
+            "private": false,
+            "city": "city",
+            "state": "TX",
+            "createdAt": "2023-04-17T00:24:44.000Z",
+            "updatedAt": "2023-04-17T00:24:44.000Z"
+        },
+        {
+            "id": 4,
+            "organizerId": 4,
+            "name": "insert something here",
+            "about": "insert something here",
+            "type": "In-Person",
+            "private": false,
+            "city": "city",
+            "state": "TX",
+            "createdAt": "2023-04-17T00:24:44.000Z",
+            "updatedAt": "2023-04-17T00:24:44.000Z"
+        },
+        {
+            "id": 5,
+            "organizerId": 5,
+            "name": "insert something here",
+            "about": "insert something here",
+            "type": "Virtual",
+            "private": false,
+            "city": "city",
+            "state": "TX",
+            "createdAt": "2023-04-17T00:24:44.000Z",
+            "updatedAt": "2023-04-17T00:24:44.000Z"
         }
-      ]
-    }
+    ]
+  }
     ```
 
 ### Get all Groups joined or organized by the Current User
@@ -631,7 +677,7 @@ Returns all venues for a group specified by its id
       }
     ]
   }
-  
+
   ```
 
 * Error response: Couldn't find a Group with the specified id

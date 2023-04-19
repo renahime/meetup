@@ -342,4 +342,75 @@ router.get('/:groupId/venues', async (req,res,next) => {
   return res.json({Venues:sentVenues});
 })
 
+//post /:groupId/venues
+router.post('/:groupId/venues', async (req,res,next) => {
+  const {address, city, state, lat, lng} = req.body;
+
+  const foundGroup = await Group.findByPk(req.params.groupId);
+
+  const errors = {};
+
+  if(!foundGroup){
+    return next({message:"Group couldn't be found"});
+  }
+
+  if(!address) {
+    errors.address = 'Street address is required'
+    return next({
+      message: "Bad Request",
+      errors: errors,
+    });
+  }
+
+  if(!city){
+    errors.city = 'City is required'
+    return next({
+      message: "Bad Request",
+      errors: errors,
+    });
+  }
+
+  if(!state){
+    errors.state = 'State is required'
+    return next({
+      message: "Bad Request",
+      errors: errors,
+    });
+
+  }
+
+  if(lat > 90 || lat < -90){
+    errors.lat = 'Latitude is not valid'
+    return next({
+      message: "Bad Request",
+      errors: errors,
+    });
+  }
+
+  if(lng > 180 || lng < -180){
+    errors.lng = 'Longitude is not valid'
+    return next({
+      message: "Bad Request",
+      errors: errors,
+    });
+  }
+
+  let newVenue = await foundGroup.createVenue({
+    groupId:req.params.groupId,
+    address:address,
+    city:city,
+    state:state,
+    lat:lat,
+    lng:lng
+  })
+
+  newVenue = newVenue.toJSON();
+
+  delete newVenue.updatedAt;
+  delete newVenue.createdAt;
+
+  return res.json(newVenue);
+})
+
+
 module.exports = router;

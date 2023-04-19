@@ -12,7 +12,83 @@ const { url } = require('inspector');
 const e = require('express');
 
 
+
 const router = express.Router();
+
+//put /venues/:venueId
+router.put('/:venueId', async (req,res,next) => {
+  let foundVenue = await Venue.findByPk(req.params.venueId);
+  const errors = {};
+
+  if(!foundVenue){
+    return next({message:"Venue couldn't be found"});
+  }
+
+  const {address, city, state, lat, lng} = req.body;
+
+  if(address !== undefined) {
+    if(!address){
+      errors.address = 'Street address is required'
+      return next({
+        message: "Bad Request",
+        errors: errors,
+      });
+    }
+    foundVenue.address = address;
+  }
+
+  if(city !== undefined){
+    if(!city){
+      errors.city = 'City is required'
+      return next({
+        message: "Bad Request",
+        errors: errors,
+      });
+    }
+    foundVenue.city = city;
+  }
+
+  if(state !== undefined){
+    if(!state){
+      errors.state = 'State is required'
+      return next({
+        message: "Bad Request",
+        errors: errors,
+      });
+    }
+    foundVenue.state = state;
+  }
+
+  if(lat !== undefined){
+      if(lat > 90 || lat < -90){
+        errors.lat = 'Latitude is not valid'
+        return next({
+          message: "Bad Request",
+          errors: errors,
+        });
+    }
+    foundVenue.lat = lat;
+  }
+
+  if(lng !== undefined){
+      if(lng > 180 || lng < -180){
+        errors.lng = 'Longitude is not valid'
+        return next({
+          message: "Bad Request",
+          errors: errors,
+        });
+      }
+      foundVenue.lng = lng;
+    }
+    await foundVenue.save();
+
+    foundVenue = foundVenue.toJSON();
+
+    delete foundVenue.createdAt;
+    delete foundVenue.updatedAt;
+
+    return res.json(foundVenue);
+ })
 
 
 

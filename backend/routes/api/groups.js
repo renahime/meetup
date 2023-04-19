@@ -28,14 +28,31 @@ router.get('', async (req,res) => {
     return res.json({Groups:groupsList});
 })
 
+//get /api/groups/current
+router.get('/current', async (req, res) => {
+  const {user} = req;
+  let userId = user.id;
+  let currentGroups = await Group.findAll({where:{
+    organizerId:userId,
+  }})
+
+  let currentGroupsList = [];
+
+  currentGroupsList.forEach(group => {
+    currentGroupsList.push(group.toJSON());
+  })
+
+  return res.json(currentGroups);
+})
+
 //get api/groups/:groupId
 router.get('/:groupId', async(req,res, next) => {
   const groupId = await Group.findByPk(req.params.groupId);
 
   if(!groupId){
-  next({
+  return next({
     message:"Group couldn't be found",
-  })
+  });
   }
 
   const payloadGroupId = groupId.toJSON();
@@ -82,7 +99,7 @@ router.post('', async (req,res, next) =>{
     }
     if(count > 60){
       errors.name = "Name must be 60 characters or less"
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -96,16 +113,16 @@ router.post('', async (req,res, next) =>{
     }
     if(count < 50){
       errors.about = "About must be 50 characters or more"
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
     }
 
     //Type Checker
-    if(type.toLowerCase() !== "virtual" || type.toLowercase() !== "in-person"){
+    if(type.toLowerCase() !== "virtual" && type.toLowerCase() !== "in-person"){
       errors.type = "Type must be 'Virtual' or 'In-Person'"
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -114,7 +131,7 @@ router.post('', async (req,res, next) =>{
     //Private Checker
     if(typeof private !== "boolean"){
       errors.private = "Private must be boolean";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -123,7 +140,7 @@ router.post('', async (req,res, next) =>{
     //City Checker
     if(!city){
       errors.city = "City is required";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -132,7 +149,7 @@ router.post('', async (req,res, next) =>{
     //State Checker
     if(!state){
       errors.state = "State is required";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -156,7 +173,7 @@ router.post('/:groupId/images', async (req,res,next) => {
   const group = await Group.findByPk(req.params.groupId);
 
   if(!group){
-    next({
+    return next({
       message:"Group couldn't be found",
     })
     }
@@ -183,7 +200,7 @@ router.put('/:groupId', async (req,res,next) => {
   let updatedGroup = await Group.findByPk(req.params.groupId);
 
   if(!updatedGroup){
-    next({
+    return next({
       message:"Group couldn't be found",
     })
     }
@@ -218,7 +235,7 @@ router.put('/:groupId', async (req,res,next) => {
      }
      if(count < 50){
        errors.about = "About must be 50 characters or more"
-       next({
+       return next({
          message:"Bad Request",
          errors:errors,
        })
@@ -231,7 +248,7 @@ router.put('/:groupId', async (req,res,next) => {
 
     if(type.toLowerCase() !== "virtual" || type.toLowercase() !== "in-person"){
       errors.type = "Type must be 'Virtual' or 'In-Person'"
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -244,7 +261,7 @@ router.put('/:groupId', async (req,res,next) => {
 
     if(typeof private !== "boolean"){
       errors.private = "Private must be boolean";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -257,7 +274,7 @@ router.put('/:groupId', async (req,res,next) => {
         //City Checker
         if(!city){
           errors.city = "City is required";
-          next({
+          return next({
             message:"Bad Request",
             errors:errors,
           })
@@ -269,7 +286,7 @@ router.put('/:groupId', async (req,res,next) => {
   if(state !== undefined){
     if(!state){
       errors.state = "State is required";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -285,15 +302,44 @@ router.put('/:groupId', async (req,res,next) => {
 })
 
 //delete /api/groups/:groupId
-
-router.delete('/:groupId', async (req, res) => {
+router.delete('/:groupId', async (req, res, next) => {
   const deleteGroup = await Group.findByPk(req.params.groupId);
+
+  if(!deleteGroup){
+    return next({
+      message:"Group couldn't be found",
+    })
+    }
+
   await deleteGroup.destroy();
 
   res.json({
     message: "Successfully deleted"
   }
   )
+})
+
+//get /:groupId/venues
+router.get('/:groupId/venues', async (req,res,next) => {
+  const allVenues = await Venue.findAll({
+    where:{
+      groupId: req.params.groupId,
+    }
+  })
+
+  const sentVenues = [];
+
+  allVenues.forEach(venue => {
+    sentVenues.push(venue.toJSON());
+  })
+
+  if(sentVenues.length === 0){
+    return next({
+      message:"Group couldn't be found",
+    })
+  }
+
+  return res.json({Venues:sentVenues});
 })
 
 module.exports = router;

@@ -227,4 +227,9 @@ router.delete('/:eventId', async (req,res,next) => {
   })
 })
 
+//get /:groupId/members
+router.get('/:groupId/members', async (req,res,next) => {
+
+})
+
 module.exports = router;

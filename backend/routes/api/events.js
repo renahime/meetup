@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
-const { Group, User, GroupImage, Membership, Event, Venue } = require('../../db/models');
+const { Group, User, GroupImage, Membership, Event, Venue, Attendance } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const { group, error } = require('console');
@@ -88,8 +88,6 @@ router.get("/", async (req,res, next) => {
   if(startDate){
 
   }
-
-
 
   const events = await Event.findAll({
     include: [{

@@ -546,17 +546,38 @@ router.post('/:groupId/events', async (req,res,next) => {
 
 //get /:groupId/members
 router.get('/:groupId/members', async (req,res,next) => {
+  const {user} = req;
+
   const foundGroup = await Group.findByPk(req.params.groupId);
+  const members = await foundGroup.getMemberships();
+  const users = await foundGroup.getUsers();
+  const sendingUsers = [];
+
+  let cohostCheck = false;
+
+  members.forEach(member => {
+    if(user.id == member.userId){
+      if(member.status.toLowerCase() == 'co=host'){
+        cohostCheck = true;
+      }
+    }
+  })
+
   if(!foundGroup){
     return next({message:"Group couldn't be found"})
   }
-  const members = await foundGroup.getMemberships();
-  const users = await foundGroup.getUsers();
 
-  const sendingUsers = [];
-  users.forEach(user => {
-  sendingUsers.push(user.toJSON());
-  })
+  if(user.id == foundGroup.organizerId || cohostCheck == true){
+    users.forEach(user => {
+    sendingUsers.push(user.toJSON());
+    })
+  } else {
+    users.forEach(user => {
+      if(user.Membership.status == 'pending'){
+        sendingUsers.push(user.toJSON());
+      }
+    })
+  }
 
   sendingUsers.forEach(user => {
     delete user.username;

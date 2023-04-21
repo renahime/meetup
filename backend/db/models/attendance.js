@@ -47,8 +47,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     status:{
       type:DataTypes.ENUM('Attending','Waitlist','Pending'),
+      allowNull:false,
       validate: {
-        isNull: false,
         isIn: [['Attending','Waitlist','Pending']]
       }
     }

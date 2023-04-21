@@ -17,8 +17,8 @@ module.exports = {
         type: 'In-Person',
         capacity: 50,
         price: 25.69,
-        startDate: '2023-12-12',
-        endDate: '2023-12-12',
+        startDate: Date('2023-12-12'),
+        endDate: Date('2023-12-12'),
       },
       {
         venueId: 2,
@@ -28,8 +28,8 @@ module.exports = {
         type: 'In-Person',
         capacity: 50,
         price: 25.69,
-        startDate: '2023-12-12',
-        endDate: '2023-12-12',
+        startDate: Date('2023-12-12'),
+        endDate: Date('2023-12-12'),
       },
       {
         venueId: 3,
@@ -39,8 +39,8 @@ module.exports = {
         type: 'In-Person',
         capacity: 50,
         price: 25.69,
-        startDate: '2023-12-12',
-        endDate: '2023-12-12',
+        startDate: Date('2023-12-12'),
+        endDate: Date('2023-12-12'),
       },
       {
         venueId: null,
@@ -50,8 +50,8 @@ module.exports = {
         type: 'Virtual',
         capacity: 50,
         price: 25.69,
-        startDate: '2023-12-12',
-        endDate: '2023-12-12',
+        startDate: Date('2023-12-12'),
+        endDate: Date('2023-12-12'),
       },
       {
         venueId: null,
@@ -61,8 +61,8 @@ module.exports = {
         type: 'Virtual',
         capacity: 50,
         price: 25.69,
-        startDate: '2023-12-12',
-        endDate: '2023-12-12',
+        startDate: Date('2023-12-12'),
+        endDate: Date('2023-12-12'),
       }
     ])
   },

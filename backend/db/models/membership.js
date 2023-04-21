@@ -46,9 +46,9 @@ module.exports = (sequelize, DataTypes) => {
       hooks: true
     },
     status: {
-      type:DataTypes.ENUM('Co-Host', 'Pending', 'Member'),
+      type:DataTypes.ENUM('Host','Co-Host', 'Pending', 'Member'),
       validate:{
-        isIn:[['Co-Host', 'Pending', 'Member']]
+        isIn:[['Host','Co-Host', 'Pending', 'Member']]
       }
     }
   }, {

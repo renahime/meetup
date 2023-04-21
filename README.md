@@ -88,7 +88,7 @@ information.
 
     ```json
     {
-      "email": "john.smith@gmail.com",
+      "credential": "john.smith@gmail.com",
       "password": "secret password"
     }
     ```
@@ -244,71 +244,71 @@ Returns all the groups.
   * Body:
 
     ```json
-    {
+  {
     "Groups": [
         {
             "id": 1,
             "organizerId": 1,
-            "name": "insert something here",
-            "about": "insert something here",
+            "name": "Black Energetic Bears",
+            "about": "We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.",
             "type": "In-Person",
             "private": false,
-            "city": "city",
-            "state": "TX",
-            "createdAt": "2023-04-17T00:24:44.000Z",
-            "updatedAt": "2023-04-17T00:24:44.000Z"
+            "city": "Las Vegas",
+            "state": "NV",
+            "createdAt": "2023-04-21T16:19:27.000Z",
+            "updatedAt": "2023-04-21T16:19:27.000Z"
         },
         {
             "id": 2,
             "organizerId": 2,
-            "name": "insert something here",
-            "about": "insert something here",
+            "name": "Purple Witty Pigeons",
+            "about": "We are a group of people who like to go to musicals and watch preformers sing and dance. Anyone is welcome to join as long as they love musicals.",
             "type": "In-Person",
             "private": false,
-            "city": "city",
-            "state": "TX",
-            "createdAt": "2023-04-17T00:24:44.000Z",
-            "updatedAt": "2023-04-17T00:24:44.000Z"
+            "city": "New York City",
+            "state": "NY",
+            "createdAt": "2023-04-21T16:19:27.000Z",
+            "updatedAt": "2023-04-21T16:19:27.000Z"
         },
         {
             "id": 3,
             "organizerId": 3,
-            "name": "insert something here",
-            "about": "insert something here",
+            "name": "Red Hungry Turtles",
+            "about": "We are a group of people who like to host events where we eat all kinds of food regardless of ethics. Anyone that passes the trials are welcome.",
             "type": "In-Person",
             "private": false,
-            "city": "city",
+            "city": "Austin",
             "state": "TX",
-            "createdAt": "2023-04-17T00:24:44.000Z",
-            "updatedAt": "2023-04-17T00:24:44.000Z"
+            "createdAt": "2023-04-21T16:19:27.000Z",
+            "updatedAt": "2023-04-21T16:19:27.000Z"
         },
         {
             "id": 4,
             "organizerId": 4,
-            "name": "insert something here",
-            "about": "insert something here",
-            "type": "In-Person",
+            "name": "Pink Idol Kittens",
+            "about": "We are a group filled with idols and idol lovers alike. We meet to go to virtual concerts and events. Anyone who loves idols can join.",
+            "type": "Virtual",
             "private": false,
-            "city": "city",
-            "state": "TX",
-            "createdAt": "2023-04-17T00:24:44.000Z",
-            "updatedAt": "2023-04-17T00:24:44.000Z"
+            "city": "Online",
+            "state": "Online",
+            "createdAt": "2023-04-21T16:19:27.000Z",
+            "updatedAt": "2023-04-21T16:19:27.000Z"
         },
         {
             "id": 5,
             "organizerId": 5,
-            "name": "insert something here",
-            "about": "insert something here",
+            "name": "Orange Laughing Parrots",
+            "about": "We are a group of people who enjoy laughing and making silly jokes. If you can make us laugh you are welcome to join.",
             "type": "Virtual",
             "private": false,
-            "city": "city",
-            "state": "TX",
-            "createdAt": "2023-04-17T00:24:44.000Z",
-            "updatedAt": "2023-04-17T00:24:44.000Z"
+            "city": "Online",
+            "state": "Online",
+            "createdAt": "2023-04-21T16:19:27.000Z",
+            "updatedAt": "2023-04-21T16:19:27.000Z"
         }
     ]
   }
-    ```
+  ```
 
 ### Get all Groups joined or organized by the Current User
 
@@ -327,25 +327,21 @@ Returns all the groups.
   * Body:
 
     ```json
+  [
     {
-      "Groups":[
-        {
-          "id": 1,
-          "organizerId": 1,
-          "name": "Evening Tennis on the Water",
-          "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
-          "type": "In person",
-          "private": true,
-          "city": "New York",
-          "state": "NY",
-          "createdAt": "2021-11-19 20:39:36",
-          "updatedAt": "2021-11-19 20:39:36",
-          "numMembers": 10,
-          "previewImage": "image url",
-        }
-      ]
+        "id": 1,
+        "organizerId": 1,
+        "name": "Black Energetic Bears",
+        "about": "We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.",
+        "type": "In-Person",
+        "private": false,
+        "city": "Las Vegas",
+        "state": "NV",
+        "createdAt": "2023-04-21T16:19:27.000Z",
+        "updatedAt": "2023-04-21T16:19:27.000Z"
     }
-    ```
+  ]
+   ```
 
 ### Get details of a Group from an id
 

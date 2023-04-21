@@ -14,7 +14,7 @@ const e = require('express');
 
 const router = express.Router();
 //delete /group-images/:imageId
-router.delete('/group-images/:imageId', async (req,res,next) => {
+router.delete('/:imageId', async (req,res,next) => {
   const foundImage = await GroupImage.findByPk(req.params.imageId);
   if(!foundImage){
     return next({message:"Group Image couldn't be found"})

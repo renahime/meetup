@@ -9,20 +9,6 @@ const eventImagesRouter = require('./event-image.js');
 const { restoreUser } = require('../../utils/auth.js');
 //all routers will go to here
 
-// // GET /api/set-token-cookie
-// const { setTokenCookie } = require('../../utils/auth.js');
-// const { User } = require('../../db/models');
-// router.get('/set-token-cookie', async (_req, res) => {
-//   const user = await User.findOne({
-//     where: {
-//       username: 'Demo-lition'
-//     }
-//   });
-//   setTokenCookie(res, user);
-//   return res.json({ user: user });
-// });
-
-// // GET /api/restore-user
 router.use(restoreUser);
 
 router.use('/session', sessionRouter);

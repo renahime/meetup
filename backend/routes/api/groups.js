@@ -573,7 +573,7 @@ router.get('/:groupId/members', async (req,res,next) => {
     })
   } else {
     users.forEach(user => {
-      if(user.Membership.status == 'pending'){
+      if(user.Membership.status !== 'pending'){
         sendingUsers.push(user.toJSON());
       }
     })

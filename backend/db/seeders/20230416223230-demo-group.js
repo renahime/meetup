@@ -11,48 +11,48 @@ module.exports = {
     await queryInterface.bulkInsert(options, [
       {
         organizerId: 1,
-        name: 'insert something here',
-        about: 'insert something here',
+        name: 'Naruto Run',
+        about: 'Come join us as we Naruto run our way into Area 51, if they cannot catch all of us then they will not arrest us',
         type: 'In-Person',
         private: false,
-        city: 'city',
-        state: 'TX'
+        city: 'Las Vegas',
+        state: 'NV'
       },
       {
         organizerId: 2,
-        name: 'insert something here',
-        about: 'insert something here',
+        name: 'Les Miserables Live',
+        about: "Set in early 19th-century France, Les Misérables is the story of Jean Valjean, a French peasant, and his desire for redemption, released in 1815 after serving nineteen years in jail for stealing a loaf of bread for his sister's starving child.",
         type: 'In-Person',
         private: false,
-        city: 'city',
-        state: 'TX'
+        city: 'New York City',
+        state: 'NY'
       },
       {
         organizerId: 3,
-        name: 'insert something here',
-        about: 'insert something here',
+        name: 'BBQ Competition',
+        about: 'Looking to show off your incredible BBQ making skills? Or maybe the opposite. As long as you show up with BBQ of any kind (SOYLENT GREEN BANNED SINCE 2021) we will serve it',
         type: 'In-Person',
         private: false,
-        city: 'city',
+        city: 'Austin',
         state: 'TX'
       },
       {
         organizerId: 4,
-        name: 'insert something here',
-        about: 'insert something here',
-        type: 'In-Person',
+        name: 'MIKUEXPO',
+        about: 'A free online and VR Concert made together, with fans from around the world! Come enjoy the wonder tunes of Hatsune Miku!',
+        type: 'Virtual',
         private: false,
-        city: 'city',
-        state: 'TX'
+        city: 'Online',
+        state: 'Online'
       },
       {
         organizerId: 5,
-        name: 'insert something here',
-        about: 'insert something here',
+        name: 'Comedy In English',
+        about: "LA 's Popular Intl. Com Show now on Zoom! Join us every Sunday at 10am Pacific! Check out the Show 5EveryDay.com named one of the Top 5!",
         type: 'Virtual',
         private: false,
-        city: 'city',
-        state: 'TX'
+        city: 'Los Angeles',
+        state: 'CA'
       }
     ])
   },

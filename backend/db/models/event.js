@@ -41,7 +41,8 @@ module.exports = (sequelize, DataTypes) => {
         model:'Venues'
       },
       onDelete: 'CASCADE',
-      hooks: true
+      hooks: true,
+      allowNull:true,
     },
     groupId:{
       type:DataTypes.INTEGER,

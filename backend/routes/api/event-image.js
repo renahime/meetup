@@ -12,7 +12,7 @@ const { url } = require('inspector');
 const e = require('express');
 
 const router = express.Router();
-router.delete('/event-images/:imageId', async (req,res,next) => {
+router.delete('/:imageId', async (req,res,next) => {
   const foundImage = await EventImage.findByPk(req.params.imageId);
   if(!foundImage){
     return next({message:"Group Image couldn't be found"})

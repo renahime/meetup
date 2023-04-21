@@ -34,7 +34,32 @@ module.exports = {
         eventId: 5,
         url: 'www.website.com',
         preview: true,
-      }
+      },
+      {
+        eventId: 1,
+        url: 'www.website2.com',
+        preview: false,
+      },
+      {
+        eventId: 2,
+        url: 'www.website2.com',
+        preview: false,
+      },
+      {
+        eventId: 3,
+        url: 'www.website2.com',
+        preview: false,
+      },
+      {
+        eventId: 4,
+        url: 'www.website2.com',
+        preview: false,
+      },
+      {
+        eventId: 5,
+        url: 'www.website2.com',
+        preview: true,
+      },
     ])
   },
 

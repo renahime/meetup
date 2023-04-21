@@ -295,7 +295,6 @@ router.put('/:eventId', async (req,res,next) => {
 })
 
 //delete /:eventId
-
 router.delete('/:eventId', async (req,res,next) => {
   const deleteEvent = await Event.findByPk(req.params.eventId);
 
@@ -311,6 +310,56 @@ router.delete('/:eventId', async (req,res,next) => {
   message: "Successfully deleted"
   })
 })
+
+//get /:eventId/attendees
+router.get('/:eventId/attendees', async (req,res,next) => {
+  const {user} = req;
+  const foundEvent = await Event.findByPk(req.params.eventId);
+  const users = await foundEvent.getUsers();
+  let cohostCheck = false;
+  const sendingUsers = [];
+
+  if(!foundEvent){
+    return next({message:"Event couldn't be found"});
+  }
+
+  const findMembershp = await Group.findOne({
+    where:{
+      id:foundEvent.groupId,
+    },
+    include: [{
+      model:Membership,
+      attributes:['status','userId'],
+    }]
+  })
+
+
+  const nonPending = await Group.findByPk(foundEvent.groupId, {
+      include:[{
+        model:Membership,
+        attributes:['userId', 'status'],
+      }]
+    })
+
+  // findMembershp.Memberships.forEach(member => {
+  //   if(member.userId == user.id){
+  //     if(member.status == "Co-Host"){
+  //       cohostCheck = true;
+  //     }
+  //   }
+  // })
+
+  // if(user.id == findMembershp.organizerId || cohostCheck == true){
+  //   users.forEach(user =>{
+  //     sendingUsers.push(user.toJSON);
+  //   })
+  // } else{
+
+  // }
+
+  return res.json(nonPending);
+})
+
 
 
 module.exports = router;

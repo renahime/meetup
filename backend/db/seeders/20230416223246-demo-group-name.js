@@ -34,7 +34,32 @@ module.exports = {
         groupId: 5,
         url: 'www.picture1.com',
         preview: true,
-      }
+      },
+      {
+        groupId: 1,
+        url: 'www.picture2.com',
+        preview: true,
+      },
+      {
+        groupId: 2,
+        url: 'www.picture2.com',
+        preview: true,
+      },
+      {
+        groupId: 3,
+        url: 'www.picture2.com',
+        preview: false,
+      },
+      {
+        groupId: 4,
+        url: 'www.picture2.com',
+        preview: false,
+      },
+      {
+        groupId: 5,
+        url: 'www.picture2.com',
+        preview: true,
+      },
     ])
   },
 

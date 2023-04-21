@@ -13,43 +13,27 @@ module.exports = {
     await queryInterface.bulkInsert(options, [
       {
         groupId: 1,
-        address: '1 Two Street',
-        city: 'City',
-        state: 'TX',
-        lat: 0,
-        lng: 0
+        address: 'Area 51',
+        city: 'Las Vegas',
+        state: 'NV',
+        lat: 37.2431,
+        lng: 115.7930
       },
       {
         groupId: 2,
-        address: '1 Two Street',
-        city: 'City',
-        state: 'TX',
-        lat: 0,
-        lng: 0
+        address: '1681 Broadway',
+        city: 'New York City',
+        state: 'NY',
+        lat: 40.7634,
+        lng: 73.9833
       },
       {
         groupId: 3,
-        address: '1 Two Street',
-        city: 'City',
+        address: '2207 Lou Neff Rd',
+        city: 'Austin',
         state: 'TX',
-        lat: 0,
-        lng: 0
-      },
-      {
-        groupId: 4,
-        address: '1 Two Street',
-        city: 'City',
-        state: 'TX',
-        lat: 0,
-        lng: 0
-      },
-      {
-        groupId: 5,
-        address: '1 Two Street',
-        city: 'City',
-        state: 'TX',
-        lat: 0,
-        lng: 0
+        lat: 30.2665,
+        lng: 97.7688
       }
     ])
   },
@@ -58,7 +42,7 @@ module.exports = {
     const Op = Sequelize.Op;
     options.tableName = 'Venues';
     await queryInterface.bulkDelete(options, {
-      groupId: {[Op.in]: [1,2,3,4,5]}
+      groupId: {[Op.in]: [1,2,3]}
     }, {})
   }
 };

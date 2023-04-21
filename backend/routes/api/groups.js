@@ -32,7 +32,7 @@ router.get('', async (req,res) => {
 })
 
 //get /api/groups/current
-router.get('/current', async (req, res) => {
+router.get('/current', requireAuth, async (req, res) => {
   const {user} = req;
   let userId = user.id;
   let currentGroups = await Group.findAll({where:{
@@ -594,14 +594,14 @@ router.get('/:groupId/members', async (req,res,next) => {
 //post /:groupId/membership
 router.post('/:groupId/membership', async (req, res, next) => {
   const foundGroup = await Group.findByPk(req.params.groupId);
+  const {user} = req;
   if(!foundGroup){
     return next({message:"Group couldn't be found"})
   }
   const members = await foundGroup.getMemberships();
-  const users = await foundGroup.getUsers();
 
-  for(let i = 0; i < users.length; i++){
-    if(members[i].userId === users[i].id){
+  for(let i = 0; i < members.length; i++){
+    if(members[i].userId === user.id){
       if(members[i].status.toLowerCase() == "member"){
         return next({
           "message": "User is already a member of the group",
@@ -617,13 +617,12 @@ router.post('/:groupId/membership', async (req, res, next) => {
 
   let newMember = foundGroup.createMembership({
   groupId:req.params.groupId,
+  userId: user.id,
   status:'Pending'
   })
 
-  newMember = newMember.toJSON();
-
   return res.json({
-    memberId:newMember.id,
+    userId:user.id,
     status:'Pending'
   });
 })
@@ -637,28 +636,37 @@ router.put('/:groupId/membership', async(req,res,next) => {
     return next({message:"Group couldn't be found"});
   }
 
-  let foundMembership = await Membership.findByPk(memberId);
+  let foundMembership = await Membership.findOne({
+    where:{
+      userId:memberId,
+      groupId:req.params.groupId
+    }
+  });
+
+  let userStatus = await Membership.findOne({
+    where:{
+      userId:user.id,
+    }
+  });
+
+  if(userStatus.status.toLowerCase() !== 'co-host'){
+    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
+  }
 
   if(!foundMembership){
     return next({message:"Membership between the user and the group does not exist"})
   }
 
-  if(foundMembership.userId !== user.id){
-    return next({message:"User couldn't be found"})
-  }
 
-  if(status.toLowerCase() == 'pending' && (foundMembership.status.toLowerCase() == 'pending' ||
-  foundMembership.status.toLowerCase() == 'co-host' || foundMembership.status.toLowerCase() == 'member'))
-  return next({message:"Cannot change a membership to pending"});
+  if(status.toLowerCase() == 'pending')
+    return next({message:"Cannot change a membership to pending"});
 
-  if(user.id == checkGroup.organizerId || foundMembership.status.toLowerCase() == "co-host"){
-    if(foundMembership.status.toLowerCase() == 'pending')
+  if(status.toLowerCase() == 'member' && foundMembership.status.toLowerCase() == 'pending')
     foundMembership.status = 'Member';
-  }
 
   if(user.id == checkGroup.organizerId){
-    console.log("hi");
     if(status.toLowerCase() == 'co-host'){
+      console.log("hi");
       foundMembership.status = 'Co-Host';
     }
   }
@@ -667,6 +675,8 @@ router.put('/:groupId/membership', async(req,res,next) => {
 
   foundMembership = foundMembership.toJSON();
   checkGroup = checkGroup.toJSON();
+
+  return res.json(foundMembership);
 
   return res.json({
     id:user.id,

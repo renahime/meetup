@@ -317,7 +317,7 @@ router.get('/:eventId/attendees', async (req,res,next) => {
   const foundEvent = await Event.findByPk(req.params.eventId);
   const users = await foundEvent.getUsers();
   let cohostCheck = false;
-  const sendingUsers = [];
+  let sendingUsers = [];
 
   if(!foundEvent){
     return next({message:"Event couldn't be found"});
@@ -333,31 +333,190 @@ router.get('/:eventId/attendees', async (req,res,next) => {
     }]
   })
 
+  let nonPendingUsers = [];
 
-  const nonPending = await Group.findByPk(foundEvent.groupId, {
-      include:[{
-        model:Membership,
-        attributes:['userId', 'status'],
-      }]
+  findMembershp.Memberships.forEach(member => {
+    if(member.status.toLowerCase() !== 'pending'){
+      nonPendingUsers.push(member.toJSON());
+    }
+    if(member.userId == user.id){
+      if(member.status == "Co-Host"){
+        cohostCheck = true;
+      }
+    }
+  })
+
+  if(cohostCheck){
+    sendingUsers = findMembershp.Memberships;
+  }
+  else {
+    sendingUsers = nonPendingUsers;
+  }
+
+  return res.json(sendingUsers);
+})
+
+//post /:eventId/attendance
+router.post('/:eventId/attendance', async (req,res,next) =>{
+  const {user} = req;
+  const {userId, status} = req.body;
+
+  const findEvent = await Event.findByPk(req.params.eventId);
+  if(!findEvent){
+    return next({message:"Event couldn't be found"});
+  }
+
+  const findMembershp = await Group.findOne({
+    where:{
+      id:findEvent.groupId,
+    },
+    include: [{
+      model:Membership,
+      attributes:['status','userId'],
+      where:{
+        userId: user.id,
+      }
+    }]
+  })
+
+  if(!findMembershp){
+    return next({message:"User is not in the group"})
+  }
+
+  members = findMembershp.Memberships;
+
+  members.forEach(member => {
+    if(member.userId == user.id){
+      if(member.status.toLowerCase() == 'pending'){
+        return next({message:"Cannot join event user is pending for group"});
+      }
+    }
+  })
+
+
+  let findAttendace = await Attendance.findOne({
+    where:{
+      userId:user.id,
+      eventId:req.params.eventId,
+    }
+  })
+
+  let newAttendance;
+
+  if(!findAttendace){
+      newAttendance = await Attendance.create({
+      eventId:req.params.eventId,
+      userId:user.id,
+      status:'Pending',
     })
+  } else {
+    if(findAttendace.status.toLowerCase() == 'pending'){
+      return next({message:"Attendance has already been requested"})
+    } else{
+      return next({message:"User is already an attendee of the event"})
+    }
+  }
 
-  // findMembershp.Memberships.forEach(member => {
-  //   if(member.userId == user.id){
-  //     if(member.status == "Co-Host"){
-  //       cohostCheck = true;
-  //     }
-  //   }
-  // })
+  return res.json({
+    userId:newAttendance.userId,
+    status:newAttendance.status,
+  });
+})
 
-  // if(user.id == findMembershp.organizerId || cohostCheck == true){
-  //   users.forEach(user =>{
-  //     sendingUsers.push(user.toJSON);
-  //   })
-  // } else{
+//put /:eventId/attendance
+router.put('/:eventId/attendance', async (req,res,next) =>{
+  const {userId, status} = req.body;
+  const {user} = req;
 
-  // }
+  let checkEvent = await Event.findByPk(req.params.eventId);
 
-  return res.json(nonPending);
+  let userStatus = await Membership.findOne({
+    where:{
+      userId:user.id
+    }
+  })
+
+  if(userStatus.status.toLowerCase() !== 'co-host'){
+    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
+  }
+
+  let groupStatus = await Group.findOne({
+    where:{
+      organizerId:user.id
+    }
+  })
+
+  if(!groupStatus){
+    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
+  }
+
+  if(!checkEvent){
+    return next({message:"Event couldn't be found"});
+  }
+
+  if(status.toLowerCase() == 'pending'){
+    return next ({message:"Event couldn't be found"});
+  }
+
+  let foundAttendance = await Attendance.findOne({
+    where:{
+      userId:userId,
+      eventId:req.params.eventId,
+    }
+  })
+
+  if(!foundAttendance){
+    return next({message:"Attendance between the user and the event does not exist"});
+  }
+
+  foundAttendance.status = 'Attending';
+  await foundAttendance.save();
+  foundAttendance = foundAttendance.toJSON();
+
+  return res.json({
+    id: foundAttendance.id,
+    eventId:foundAttendance.eventId,
+    userId:foundAttendance.userId,
+    status:foundAttendance.status
+  });
+})
+
+//delete /:eventId/attendance
+router.delete('/:eventId/attendance', async (req,res,next) => {
+  const {user} = req;
+  const {userId} = req.body;
+
+  let findEvent = await Event.findByPk(req.params.eventId);
+  let userStatus = await Membership.findOne({
+    where:{
+      userId:user.id
+    }
+  })
+  if(!findEvent){
+    return next({message:"Event couldn't be found"});
+  }
+
+  let findAttendace = await Attendance.findOne({
+    where:{
+      userId:userId,
+      eventId:req.params.eventId,
+    }
+  })
+
+  if(!findAttendace){
+    return next({message:"Attendance does not exist for this User"})
+  }
+
+  if(user.id !== findAttendace.userId && userStatus.status !== "Host"){
+    return next({message:"Only the User or organizer may delete an attendance"});
+  }
+
+  await findAttendace.destroy();
+
+  return res.json({
+    "message": "Successfully deleted attendance from event"
+  }
+  )
 })
 
 

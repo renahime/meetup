@@ -1,10 +1,21 @@
+<!--!!START SILENT -->
 # Meetup Clone
+<!--!!END -->
+<!--!!ADD -->
+<!-- # `<name of application here>` -->
+<!--!!END_ADD -->
 
 ## Database Schema Design
 
-![meetup-dbdiagram]
+<!--!!START SILENT -->
+![meetup-database-schema]
 
-[meetup-dbdiagram]: ../assets/meetup_dbdiagram.png
+[meetup-database-schema]: https://appacademy-open-assets.s3.us-west-1.amazonaws.com/Modular-Curriculum/content/week-12/meetup-db-schema.png
+[meetup-db-diagram-info]: https://appacademy-open-assets.s3.us-west-1.amazonaws.com/Modular-Curriculum/content/week-12/meetup-db-diagram-info.txt
+<!--!!END -->
+<!--!!ADD -->
+<!-- `<insert database schema design here>` -->
+<!--!!END_ADD -->
 
 ## API Documentation
 
@@ -23,7 +34,7 @@ All endpoints that require a current user to be logged in.
 
     ```json
     {
-      "message": "Authentication required",
+      "message": "Authentication required"
     }
     ```
 
@@ -41,7 +52,7 @@ correct role(s) or permission(s).
 
     ```json
     {
-      "message": "Forbidden",
+      "message": "Forbidden"
     }
     ```
 
@@ -51,11 +62,17 @@ Returns the information about the current user that is logged in.
 
 * Require Authentication: true
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/session
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
-* Successful Response
+* Successful Response when there is a logged in user
   * Status Code: 200
   * Headers:
     * Content-Type: application/json
@@ -73,6 +90,18 @@ Returns the information about the current user that is logged in.
     }
     ```
 
+* Successful Response when there is no logged in user
+  * Status Code: 200
+  * Headers:
+    * Content-Type: application/json
+  * Body:
+
+    ```json
+    {
+      "user": null
+    }
+    ```
+
 ### Log In a User
 
 Logs in a current user with valid credentials and returns the current user's
@@ -80,15 +109,21 @@ information.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/session
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
 
     ```json
     {
-      "credential": "john.smith@gmail.com",
+      "email": "john.smith@gmail.com",
       "password": "secret password"
     }
     ```
@@ -107,7 +142,7 @@ information.
         "lastName": "Smith",
         "email": "john.smith@gmail.com",
         "username": "JohnSmith"
-      }
+      } 
     }
     ```
 
@@ -119,7 +154,7 @@ information.
 
     ```json
     {
-      "message": "Invalid credentials",
+      "message": "Invalid credentials"
     }
     ```
 
@@ -146,8 +181,14 @@ user's information.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/users
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -170,11 +211,13 @@ user's information.
 
     ```json
     {
-      "id": 1,
-      "firstName": "John",
-      "lastName": "Smith",
-      "username": "JohnSmith",
-      "email": "john.smith@gmail.com"
+      "user": {
+        "id": 1,
+        "firstName": "John",
+        "lastName": "Smith",
+        "email": "john.smith@gmail.com",
+        "username": "JohnSmith"
+      }
     }
     ```
 
@@ -233,8 +276,14 @@ Returns all the groups.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/groups
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -244,71 +293,25 @@ Returns all the groups.
   * Body:
 
     ```json
-  {
-    "Groups": [
+    {
+      "Groups": [
         {
-            "id": 1,
-            "organizerId": 1,
-            "name": "Black Energetic Bears",
-            "about": "We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.",
-            "type": "In-Person",
-            "private": false,
-            "city": "Las Vegas",
-            "state": "NV",
-            "createdAt": "2023-04-21T16:19:27.000Z",
-            "updatedAt": "2023-04-21T16:19:27.000Z"
-        },
-        {
-            "id": 2,
-            "organizerId": 2,
-            "name": "Purple Witty Pigeons",
-            "about": "We are a group of people who like to go to musicals and watch preformers sing and dance. Anyone is welcome to join as long as they love musicals.",
-            "type": "In-Person",
-            "private": false,
-            "city": "New York City",
-            "state": "NY",
-            "createdAt": "2023-04-21T16:19:27.000Z",
-            "updatedAt": "2023-04-21T16:19:27.000Z"
-        },
-        {
-            "id": 3,
-            "organizerId": 3,
-            "name": "Red Hungry Turtles",
-            "about": "We are a group of people who like to host events where we eat all kinds of food regardless of ethics. Anyone that passes the trials are welcome.",
-            "type": "In-Person",
-            "private": false,
-            "city": "Austin",
-            "state": "TX",
-            "createdAt": "2023-04-21T16:19:27.000Z",
-            "updatedAt": "2023-04-21T16:19:27.000Z"
-        },
-        {
-            "id": 4,
-            "organizerId": 4,
-            "name": "Pink Idol Kittens",
-            "about": "We are a group filled with idols and idol lovers alike. We meet to go to virtual concerts and events. Anyone who loves idols can join.",
-            "type": "Virtual",
-            "private": false,
-            "city": "Online",
-            "state": "Online",
-            "createdAt": "2023-04-21T16:19:27.000Z",
-            "updatedAt": "2023-04-21T16:19:27.000Z"
-        },
-        {
-            "id": 5,
-            "organizerId": 5,
-            "name": "Orange Laughing Parrots",
-            "about": "We are a group of people who enjoy laughing and making silly jokes. If you can make us laugh you are welcome to join.",
-            "type": "Virtual",
-            "private": false,
-            "city": "Online",
-            "state": "Online",
-            "createdAt": "2023-04-21T16:19:27.000Z",
-            "updatedAt": "2023-04-21T16:19:27.000Z"
+          "id": 1,
+          "organizerId": 1,
+          "name": "Evening Tennis on the Water",
+          "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+          "type": "In person",
+          "private": true,
+          "city": "New York",
+          "state": "NY",
+          "createdAt": "2021-11-19 20:39:36",
+          "updatedAt": "2021-11-19 20:39:36",
+          "numMembers": 10,
+          "previewImage": "image url",
         }
-    ]
-  }
-  ```
+      ]
+    }
+    ```
 
 ### Get all Groups joined or organized by the Current User
 
@@ -316,8 +319,14 @@ Returns all the groups.
 
 * Require Authentication: true
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/groups/current
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -327,21 +336,25 @@ Returns all the groups.
   * Body:
 
     ```json
-  [
     {
-        "id": 1,
-        "organizerId": 1,
-        "name": "Black Energetic Bears",
-        "about": "We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.",
-        "type": "In-Person",
-        "private": false,
-        "city": "Las Vegas",
-        "state": "NV",
-        "createdAt": "2023-04-21T16:19:27.000Z",
-        "updatedAt": "2023-04-21T16:19:27.000Z"
+      "Groups": [
+        {
+          "id": 1,
+          "organizerId": 1,
+          "name": "Evening Tennis on the Water",
+          "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
+          "type": "In person",
+          "private": true,
+          "city": "New York",
+          "state": "NY",
+          "createdAt": "2021-11-19 20:39:36",
+          "updatedAt": "2021-11-19 20:39:36",
+          "numMembers": 10,
+          "previewImage": "image url",
+        }
+      ]
     }
-  ]
-   ```
+    ```
 
 ### Get details of a Group from an id
 
@@ -349,8 +362,14 @@ Returns the details of a group specified by its id.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/groups/:groupId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -421,8 +440,14 @@ Creates and returns a new group.
 
 * Require Authentication: true
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/groups
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -486,8 +511,14 @@ Create and return a new image for a group specified by id.
 * Require Authentication: true
 * Require proper authorization: Current User must be the organizer for the group
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/groups/:groupId/images
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -521,7 +552,7 @@ Create and return a new image for a group specified by id.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -532,8 +563,14 @@ Updates and returns an existing group.
 * Require Authentication: true
 * Require proper authorization: Group must belong to the current user
 * Request
+  <!--!!START SILENT -->
   * Method: PUT
   * URL: /api/groups/:groupId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -598,7 +635,7 @@ Updates and returns an existing group.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -609,8 +646,14 @@ Deletes an existing group.
 * Require Authentication: true
 * Require proper authorization: Group must belong to the current user
 * Request
+  <!--!!START SILENT -->
   * Method: DELETE
   * URL: /api/groups/:groupId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -621,7 +664,7 @@ Deletes an existing group.
 
     ```json
     {
-      "message": "Successfully deleted",
+      "message": "Successfully deleted"
     }
     ```
 
@@ -633,7 +676,7 @@ Deletes an existing group.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -647,8 +690,14 @@ Returns all venues for a group specified by its id
 * Require Authentication: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/groups/:groupId/venues
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -673,7 +722,7 @@ Returns all venues for a group specified by its id
       }
     ]
   }
-
+  
   ```
 
 * Error response: Couldn't find a Group with the specified id
@@ -684,7 +733,7 @@ Returns all venues for a group specified by its id
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -696,8 +745,14 @@ Creates and returns a new venue for a group specified by its id
 * Require Authentication: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/groups/:groupId/venues
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -738,7 +793,7 @@ Creates and returns a new venue for a group specified by its id
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -769,8 +824,14 @@ Edit a new venue specified by its id
 * Require Authentication: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: PUT
   * URL: /api/venues/:venueId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -811,7 +872,7 @@ Edit a new venue specified by its id
 
     ```json
     {
-      "message": "Venue couldn't be found",
+      "message": "Venue couldn't be found"
     }
     ```
 
@@ -842,8 +903,14 @@ Returns all the events.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/events
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -905,8 +972,14 @@ Returns all the events of a group specified by its id
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/groups/:groupId/events
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -970,7 +1043,7 @@ Returns all the events of a group specified by its id
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -980,8 +1053,14 @@ Returns the details of an event specified by its id.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/events/:eventId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -1041,7 +1120,7 @@ Returns the details of an event specified by its id.
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1053,8 +1132,14 @@ Creates and returns a new event for a group specified by its id
 * Require Authorization: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/groups/:groupId/events
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1123,7 +1208,7 @@ Creates and returns a new event for a group specified by its id
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -1134,8 +1219,14 @@ Create and return a new image for an event specified by id.
 * Require Authentication: true
 * Require proper authorization: Current User must be an attendee, host, or co-host of the event
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/events/:eventId/images
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1169,7 +1260,7 @@ Create and return a new image for an event specified by id.
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1181,8 +1272,14 @@ Edit and returns an event specified by its id
 * Require Authorization: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: PUT
   * URL: /api/events/:eventId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1251,7 +1348,7 @@ Edit and returns an event specified by its id
 
     ```json
     {
-      "message": "Venue couldn't be found",
+      "message": "Venue couldn't be found"
     }
     ```
 
@@ -1263,7 +1360,7 @@ Edit and returns an event specified by its id
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1275,8 +1372,14 @@ Delete an event specified by its id
 * Require Authorization: Current User must be the organizer of the group or a member of
   the group with a status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: DELETE
   * URL: /api/events/:eventId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -1299,7 +1402,7 @@ Delete an event specified by its id
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1311,8 +1414,14 @@ Returns the members of a group specified by its id.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/groups/:groupId/members
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response: If you ARE the organizer or a co-host of the group. Shows
@@ -1391,7 +1500,7 @@ Returns the members of a group specified by its id.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -1401,8 +1510,14 @@ Request a new membership for a group specified by id.
 
 * Require Authentication: true
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/groups/:groupId/membership
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -1428,7 +1543,7 @@ Request a new membership for a group specified by id.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -1441,7 +1556,7 @@ Request a new membership for a group specified by id.
 
     ```json
     {
-      "message": "Membership has already been requested",
+      "message": "Membership has already been requested"
     }
     ```
 
@@ -1453,7 +1568,7 @@ Request a new membership for a group specified by id.
 
     ```json
     {
-      "message": "User is already a member of the group",
+      "message": "User is already a member of the group"
     }
     ```
 
@@ -1469,8 +1584,14 @@ Change the status of a membership for a group specified by id.
   * To change the status from "member" to "co-host":
     * Current User must already be the organizer
 * Request
+  <!--!!START SILENT -->
   * Method: PUT
   * URL: /api/groups/:groupId/membership
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1535,7 +1656,7 @@ Change the status of a membership for a group specified by id.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -1547,7 +1668,7 @@ Change the status of a membership for a group specified by id.
 
     ```json
     {
-      "message": "Membership between the user and the group does not exist",
+      "message": "Membership between the user and the group does not exist"
     }
     ```
 
@@ -1559,8 +1680,14 @@ Delete a membership to a group specified by id.
 * Require proper authorization: Current User must be the host of the group, or
   the user whose membership is being deleted
 * Request
+  <!--!!START SILENT -->
   * Method: DELETE
   * URL: /api/groups/:groupId/membership
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1606,7 +1733,7 @@ Delete a membership to a group specified by id.
 
     ```json
     {
-      "message": "Group couldn't be found",
+      "message": "Group couldn't be found"
     }
     ```
 
@@ -1618,7 +1745,7 @@ Delete a membership to a group specified by id.
 
     ```json
     {
-      "message": "Membership does not exist for this User",
+      "message": "Membership does not exist for this User"
     }
     ```
 
@@ -1630,8 +1757,14 @@ Returns the attendees of an event specified by its id.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/events/:eventId/attendees
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response: If you ARE the organizer of the group or a member of the
@@ -1712,7 +1845,7 @@ Returns the attendees of an event specified by its id.
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1723,8 +1856,14 @@ Request attendance for an event specified by id.
 * Require Authentication: true
 * Require Authorization: Current User must be a member of the group
 * Request
+  <!--!!START SILENT -->
   * Method: POST
   * URL: /api/events/:eventId/attendance
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body: none
@@ -1750,7 +1889,7 @@ Request attendance for an event specified by id.
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1763,7 +1902,7 @@ Request attendance for an event specified by id.
 
     ```json
     {
-      "message": "Attendance has already been requested",
+      "message": "Attendance has already been requested"
     }
     ```
 
@@ -1775,7 +1914,7 @@ Request attendance for an event specified by id.
 
     ```json
     {
-      "message": "User is already an attendee of the event",
+      "message": "User is already an attendee of the event"
     }
     ```
 
@@ -1787,8 +1926,14 @@ Change the status of an attendance for an event specified by id.
 * Require proper authorization: Current User must already be the organizer or
   have a membership to the group with the status of "co-host"
 * Request
+  <!--!!START SILENT -->
   * Method: PUT
   * URL: /api/events/:eventId/attendance
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1823,7 +1968,7 @@ Change the status of an attendance for an event specified by id.
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1835,7 +1980,7 @@ Change the status of an attendance for an event specified by id.
 
     ```json
     {
-      "message": "Cannot change an attendance status to pending",
+      "message": "Cannot change an attendance status to pending"
     }
     ```
 
@@ -1847,7 +1992,7 @@ Change the status of an attendance for an event specified by id.
 
     ```json
     {
-      "message": "Attendance between the user and the event does not exist",
+      "message": "Attendance between the user and the event does not exist"
     }
     ```
 
@@ -1859,8 +2004,14 @@ Delete an attendance to an event specified by id.
 * Require proper authorization: Current User must be the host of the group, or
   the user whose attendance is being deleted
 * Request
+  <!--!!START SILENT -->
   * Method: DELETE
   * URL: /api/events/:eventId/attendance
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1891,7 +2042,7 @@ Delete an attendance to an event specified by id.
 
     ```json
     {
-      "message": "Event couldn't be found",
+      "message": "Event couldn't be found"
     }
     ```
 
@@ -1903,7 +2054,7 @@ Delete an attendance to an event specified by id.
 
     ```json
     {
-      "message": "Attendance does not exist for this User",
+      "message": "Attendance does not exist for this User"
     }
     ```
 
@@ -1915,7 +2066,7 @@ Delete an attendance to an event specified by id.
 
     ```json
     {
-      "message": "Only the User or organizer may delete an Attendance",
+      "message": "Only the User or organizer may delete an Attendance"
     }
     ```
 
@@ -1929,8 +2080,14 @@ Delete an existing image for a Group.
 * Require proper authorization: Current user must be the organizer or "co-host"
   of the Group
 * Request
+  <!--!!START SILENT -->
   * Method: DELETE
   * URL: /api/group-images/:imageId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -1941,7 +2098,7 @@ Delete an existing image for a Group.
 
     ```json
     {
-      "message": "Successfully deleted",
+      "message": "Successfully deleted"
     }
     ```
 
@@ -1953,7 +2110,7 @@ Delete an existing image for a Group.
 
     ```json
     {
-      "message": "Group Image couldn't be found",
+      "message": "Group Image couldn't be found"
     }
     ```
 
@@ -1966,8 +2123,14 @@ Delete an existing image for an Event.
 * Require proper authorization: Current user must be the organizer or "co-host"
   of the Group that the Event belongs to
 * Request
+  <!--!!START SILENT -->
   * Method: DELETE
   * URL: /api/event-images/:imageId
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Body: none
 
 * Successful Response
@@ -1978,7 +2141,7 @@ Delete an existing image for an Event.
 
     ```json
     {
-      "message": "Successfully deleted",
+      "message": "Successfully deleted"
     }
     ```
 
@@ -1990,7 +2153,7 @@ Delete an existing image for an Event.
 
     ```json
     {
-      "message": "Event Image couldn't be found",
+      "message": "Event Image couldn't be found"
     }
     ```
 
@@ -2001,8 +2164,14 @@ Return events filtered by query parameters.
 
 * Require Authentication: false
 * Request
+  <!--!!START SILENT -->
   * Method: GET
   * URL: /api/events
+  <!--!!END -->
+  <!--!!ADD -->
+  <!-- * Method: ? -->
+  <!-- * URL: ? -->
+  <!--!!END_ADD -->
   * Query Parameters
     * page: integer, minimum: 1, maximum: 10, default: 1
     * size: integer, minimum: 1, maximum: 20, default: 20

@@ -11,8 +11,8 @@ module.exports = {
     await queryInterface.bulkInsert(options, [
       {
         organizerId: 1,
-        name: 'Naruto Run',
-        about: 'Come join us as we Naruto run our way into Area 51, if they cannot catch all of us then they will not arrest us',
+        name: 'Black Energetic Bears',
+        about: 'We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.',
         type: 'In-Person',
         private: false,
         city: 'Las Vegas',
@@ -20,8 +20,8 @@ module.exports = {
       },
       {
         organizerId: 2,
-        name: 'Les Miserables Live',
-        about: "Set in early 19th-century France, Les Misérables is the story of Jean Valjean, a French peasant, and his desire for redemption, released in 1815 after serving nineteen years in jail for stealing a loaf of bread for his sister's starving child. ",
+        name: "Purple Witty Pigeons",
+        about: "We are a group of people who like to go to musicals and watch preformers sing and dance. Anyone is welcome to join as long as they love musicals.",
         type: 'In-Person',
         private: false,
         city: 'New York City',
@@ -29,8 +29,8 @@ module.exports = {
       },
       {
         organizerId: 3,
-        name: 'BBQ Competition',
-        about: 'Looking to show off your incredible BBQ making skills? Or maybe the opposite. As long as you show up with BBQ of any kind (SOYLENT GREEN BANNED SINCE 2021) we will serve it',
+        name: 'Red Hungry Turtles',
+        about: 'We are a group of people who like to host events where we eat all kinds of food regardless of ethics. Anyone that passes the trials are welcome.',
         type: 'In-Person',
         private: false,
         city: 'Austin',
@@ -38,8 +38,8 @@ module.exports = {
       },
       {
         organizerId: 4,
-        name: 'MIKUEXPO',
-        about: 'A free online and VR Concert made together, with fans from around the world! Come enjoy the wonder tunes of Hatsune Miku!',
+        name: 'Pink Idol Kittens',
+        about: 'We are a group filled with idols and idol lovers alike. We meet to go to virtual concerts and events. Anyone who loves idols can join.',
         type: 'Virtual',
         private: false,
         city: 'Online',
@@ -47,8 +47,8 @@ module.exports = {
       },
       {
         organizerId: 5,
-        name: 'Comedy In English',
-        about: "LA 's Popular Intl. Com Show now on Zoom! Join us every Sunday at 10am Pacific! Check out the Show 5EveryDay.com named one of the Top 5!",
+        name: 'Orange Laughing Parrots',
+        about: "We are a group of people who enjoy laughing and making silly jokes. If you can make us laugh you are welcome to join.",
         type: 'Virtual',
         private: false,
         city: 'Online',

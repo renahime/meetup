@@ -21,7 +21,7 @@ module.exports = {
       {
         organizerId: 2,
         name: 'Les Miserables Live',
-        about: "Set in early 19th-century France, Les Misérables is the story of Jean Valjean, a French peasant, and his desire for redemption, released in 1815 after serving nineteen years in jail for stealing a loaf of bread for his sister's starving child.",
+        about: "Set in early 19th-century France, Les Misérables is the story of Jean Valjean, a French peasant, and his desire for redemption, released in 1815 after serving nineteen years in jail for stealing a loaf of bread for his sister's starving child. ",
         type: 'In-Person',
         private: false,
         city: 'New York City',
@@ -51,8 +51,8 @@ module.exports = {
         about: "LA 's Popular Intl. Com Show now on Zoom! Join us every Sunday at 10am Pacific! Check out the Show 5EveryDay.com named one of the Top 5!",
         type: 'Virtual',
         private: false,
-        city: 'Los Angeles',
-        state: 'CA'
+        city: 'Online',
+        state: 'Online'
       }
     ])
   },

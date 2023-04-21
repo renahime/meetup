@@ -20,9 +20,12 @@ router.delete('/:imageId', async (req,res,next) => {
     return next({message:"Group Image couldn't be found"})
   }
 
-  const {user} = req;
+  foundImage.destory();
 
-  return res.json(user);
+  return res.json({
+    "message": "Successfully deleted",
+  }
+  );
 });
 
 

@@ -6,7 +6,7 @@ const { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { Group, User, GroupImage, Membership, Event, Venue } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-const { group } = require('console');
+const { group, error } = require('console');
 const { requireAuth } = require('../../utils/auth');
 const { url } = require('inspector');
 const e = require('express');
@@ -15,13 +15,100 @@ const e = require('express');
 const router = express.Router();
 
 //get /events
-router.get("/", async (req,res) => {
-  const events = await Event.findAll();
+router.get("/", async (req,res, next) => {
+  const where = {};
+  const pagination = {};
+  let errors = {};
+  let {page, size, name, type, startDate} = req.query;
+
+  if(!page) page = 1;
+  if(!size) size = 20;
+
+  page = parseInt(page);
+  size = parseInt(size);
+
+  if((page >= 1 && size >= 1) && (size < 20 && page < 10)){
+    pagination.limit = size;
+    pagination.offset = size * (page - 1);
+  } else if (page > 10){
+    errors.page = "Page must be less than 10";
+    return next({
+      message:"Bad Request",
+      errors:errors,
+    })
+  } else if (size > 20){
+    errors.size = "Size must be less than 20";
+    return next({
+      message:"Bad Request",
+      errors:errors,
+    })
+  } else if (page < 1){
+    errors.page = "Page must be greater than or equal to 1";
+    return next({
+      message:"Bad Request",
+      errors:errors
+    })
+  } else if (size < 1){
+    errors.size = "Size must be greater than or equal to 1";
+    return next({
+      message:"Bad Request",
+      errors:errors
+    })
+  }
+
+
+  if(name) {
+      if(typeof name !== 'string') {
+        errors.name = "Name must be a string";
+        return next({
+          message:"Bad Request",
+          errors:errors,
+        })
+      }
+  where.name = { [Op.substring]: name };
+  }
+
+  if(type){
+    if(type !== "Virtual" && type !== 'In-Person'){
+      errors.type = "Type must be 'Virtual' or 'In-Person'"
+      return next({
+        message:"Bad Request",
+        errors:errors,
+      })
+    }
+
+    if(type == 'Virtual'){
+      where.type = 'Virtual';
+    }
+    else {
+      where.type = 'In-Person';
+    }
+  }
+
+  if(startDate){
+
+  }
+
+
+
+  const events = await Event.findAll({
+    include: [{
+      model:Venue,
+      attributes:['id', 'city', 'state'],
+    }],
+    where:where,
+    ...pagination,
+  });
 
   let eventsList = [];
 
   events.forEach(event => {
     eventsList.push(event.toJSON());
+  })
+
+  eventsList.forEach(event => {
+    delete event.createdAt;
+    delete event.updatedAt;
   })
 
   return res.json({Events:eventsList});

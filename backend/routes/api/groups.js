@@ -655,5 +655,31 @@ router.put('/:groupId/membership', async(req,res,next) => {
   });
 })
 
+//delete /:groupId/membership
+router.delete('/:groupId/membership', async (req,res,next) => {
+  const {memberId} = memberId;
+  const {user} = req;
+  let checkGroup = await Group.findByPk(req.params.groupId);
+  if(!checkGroup){
+    return next({message:"Group couldn't be found"});
+  }
+
+  let foundMembership = await Membership.findByPk(memberId);
+
+  if(!foundMembership){
+    return next({message:"Membership between the user and the group does not exist"})
+  }
+
+  if(foundMembership.userId !== user.id){
+    return next({message:"User couldn't be found"})
+  }
+
+  await foundMembership.destroy();
+
+  return res.json({
+    message: "Successfully deleted membership from group"
+  })
+})
+
 
 module.exports = router;

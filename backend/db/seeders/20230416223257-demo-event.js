@@ -50,8 +50,8 @@ module.exports = {
         type: 'Virtual',
         capacity: 50,
         price: 25.69,
-        startDate: Date('2023-12-12'),
-        endDate: Date('2023-12-12'),
+        startDate: new Date('2023-12-12'),
+        endDate: new Date('2023-12-12'),
       },
       {
         venueId: null,
@@ -61,8 +61,8 @@ module.exports = {
         type: 'Virtual',
         capacity: 50,
         price: 25.69,
-        startDate: Date('2023-12-12'),
-        endDate: Date('2023-12-12'),
+        startDate: new Date('2023-12-12'),
+        endDate: new Date('2023-12-12'),
       }
     ])
   },

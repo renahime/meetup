@@ -6,10 +6,13 @@ const { setTokenCookie, restoreUser } = require('../../utils/auth');
 const { Group, User, GroupImage, Membership, Event, Venue } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-const { group } = require('console');
+const { group, error } = require('console');
 const { requireAuth } = require('../../utils/auth');
 const { url } = require('inspector');
 const e = require('express');
+const { resolveSoa } = require('dns');
+const { stat } = require('fs');
+const { isErrored } = require('stream');
 
 
 const router = express.Router();
@@ -540,5 +543,117 @@ router.post('/:groupId/events', async (req,res,next) => {
 
   return res.json(newEvent);
 })
+
+//get /:groupId/members
+router.get('/:groupId/members', async (req,res,next) => {
+  const foundGroup = await Group.findByPk(req.params.groupId);
+  if(!foundGroup){
+    return next({message:"Group couldn't be found"})
+  }
+  const members = await foundGroup.getMemberships();
+  const users = await foundGroup.getUsers();
+
+  const sendingUsers = [];
+  users.forEach(user => {
+  sendingUsers.push(user.toJSON());
+  })
+
+  sendingUsers.forEach(user => {
+    delete user.username;
+    delete user.Membership.id;
+    delete user.Membership.userId;
+    delete user.Membership.groupId;
+    delete user.Membership.createdAt;
+    delete user.Membership.updatedAt;
+  })
+
+  return res.json({Members:sendingUsers});
+})
+
+//post /:groupId/membership
+router.post('/:groupId/membership', async (req, res, next) => {
+  const foundGroup = await Group.findByPk(req.params.groupId);
+  if(!foundGroup){
+    return next({message:"Group couldn't be found"})
+  }
+  const members = await foundGroup.getMemberships();
+  const users = await foundGroup.getUsers();
+
+  for(let i = 0; i < users.length; i++){
+    if(members[i].userId === users[i].id){
+      if(members[i].status.toLowerCase() == "member"){
+        return next({
+          "message": "User is already a member of the group",
+        })
+      }
+      else if(members[i].status.toLowerCase() == "pending"){
+        return next({
+          "message": "Membership has already been requested",
+        })
+      }
+    }
+  }
+
+  let newMember = foundGroup.createMembership({
+  groupId:req.params.groupId,
+  status:'Pending'
+  })
+
+  newMember = newMember.toJSON();
+
+  return res.json({
+    memberId:newMember.id,
+    status:'Pending'
+  });
+})
+
+//put /:groupId/membership
+router.put('/:groupId/membership', async(req,res,next) => {
+  const {memberId, status} = req.body;
+  const {user} = req;
+  let checkGroup = await Group.findByPk(req.params.groupId);
+  if(!checkGroup){
+    return next({message:"Group couldn't be found"});
+  }
+
+  let foundMembership = await Membership.findByPk(memberId);
+
+  if(!foundMembership){
+    return next({message:"Membership between the user and the group does not exist"})
+  }
+
+  if(foundMembership.userId !== user.id){
+    return next({message:"User couldn't be found"})
+  }
+
+  if(status.toLowerCase() == 'pending' && (foundMembership.status.toLowerCase() == 'pending' ||
+  foundMembership.status.toLowerCase() == 'co-host' || foundMembership.status.toLowerCase() == 'member'))
+  return next({message:"Cannot change a membership to pending"});
+
+  if(user.id == checkGroup.organizerId || foundMembership.status.toLowerCase() == "co-host"){
+    if(foundMembership.status.toLowerCase() == 'pending')
+    foundMembership.status = 'Member';
+  }
+
+  if(user.id == checkGroup.organizerId){
+    console.log("hi");
+    if(status.toLowerCase() == 'co-host'){
+      foundMembership.status = 'Co-Host';
+    }
+  }
+
+  await foundMembership.save();
+
+  foundMembership = foundMembership.toJSON();
+  checkGroup = checkGroup.toJSON();
+
+  return res.json({
+    id:user.id,
+    groupId: req.params.groupId,
+    memberId: memberId,
+    status: foundMembership.status
+  });
+})
+
 
 module.exports = router;

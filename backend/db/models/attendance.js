@@ -12,12 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Attendance.belongsTo(models.User, {
         foreignKey: 'userId',
-        onDelete: 'CASCADE',
         hooks: true
       })
       Attendance.belongsTo(models.Event, {
         foreignKey: 'eventId',
-        onDelete: 'CASCADE',
         hooks: true
       })
     }
@@ -34,7 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Events'
       },
-      onDelete: 'CASCADE',
       hooks: true
     },
     userId: {
@@ -42,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Users'
       },
-      onDelete: 'CASCADE',
       hooks: true
     },
     status:{

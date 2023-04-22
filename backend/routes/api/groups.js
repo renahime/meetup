@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
-const { Group, User, GroupImage, Membership, Event, Venue } = require('../../db/models');
+const { Group, User, GroupImage, Membership, Event, Venue, Attendance } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const { group, error } = require('console');
@@ -20,13 +20,34 @@ const router = express.Router();
 
 //get api/groups
 router.get('', async (req,res) => {
-    const groups = await Group.findAll();
+    const groups = await Group.findAll({
+      include:[{
+        model:GroupImage,
+        attributes:['url']
+      }]
+    });
 
     let groupsList = [];
 
-    groups.forEach(group => {
-      groupsList.push(group.toJSON());
-    })
+    for(let i = 0; i < groups.length; i++){
+      let amount = await Membership.findAll({
+        where:{
+          groupId:groups[i].id,
+        }
+      })
+
+      let previewImage = groups[i].GroupImages[0];
+      let group = groups[i].toJSON();
+      delete group.GroupImages;
+      group.numMembers = amount.length;
+      group.previewImage = previewImage;
+
+      groupsList.push(group);
+    }
+
+    // groups.forEach(group => {
+    //   groupsList.push(group.toJSON());
+    // })
 
     return res.json({Groups:groupsList});
 })
@@ -34,39 +55,94 @@ router.get('', async (req,res) => {
 //get /api/groups/current
 router.get('/current', requireAuth, async (req, res) => {
   const {user} = req;
-  let userId = user.id;
-  let currentGroups = await Group.findAll({where:{
-    organizerId:userId,
-  }})
-
-  let currentGroupsList = [];
-
-  currentGroupsList.forEach(group => {
-    currentGroupsList.push(group.toJSON());
+  const grabMembership = await Membership.findAll({
+    where:{
+      userId:user.id
+    }
   })
 
-  return res.json(currentGroups);
+  const groupArr = [];
+
+  for(let i = 0; i < grabMembership.length; i++){
+    let group = await Group.findByPk(grabMembership[i].groupId, {
+      include:[{
+        model:GroupImage,
+        attributes:['url'],
+      }]
+    })
+
+    let amount = await Membership.findAll({
+      where:{
+        groupId:group.id,
+      }
+    })
+    let previewImage = null;
+    console.log(group.GroupImages);
+    if(group.GroupImages.length !== 0){
+    previewImage = group.GroupImages[0].url;
+    }
+    group = group.toJSON();
+    delete group.GroupImages;
+    group.numMembers = amount.length
+    group.previewImage = previewImage;
+
+    groupArr.push(group);
+  }
+
+  return res.json({Groups:groupArr});
 })
+
 
 //get api/groups/:groupId
 router.get('/:groupId', async(req,res, next) => {
   const groupId = await Group.findByPk(req.params.groupId);
 
   if(!groupId){
+  res.status(404);
   return next({
     message:"Group couldn't be found",
   });
   }
 
   const payloadGroupId = groupId.toJSON();
-  const Organizer = await groupId.getUsers({where:groupId.organizerId});
-  const payloadOrganizer = Organizer[0].toJSON();
-  const groupImages = await groupId.getGroupImages();
-  const payloadGroupImages = groupImages[0].toJSON();
-  const Venues = await groupId.getVenues({
+  const Organizer = await User.findByPk(groupId.organizerId, {
+    attributes:['id', 'firstName', 'lastName']
+  });
+  const payloadOrganizer = Organizer.toJSON();
+  delete payloadOrganizer.Membership
+  const groupImages = await GroupImage.findAll({
+    where:{
+      groupId:req.params.groupId
+    },
+    attributes:['id','url','preview']
+  });
+  const payloadGroupImages = [];
+  groupImages.forEach(image => {
+    payloadGroupImages.push(image.toJSON());
+  })
+
+  const Venues = await Venue.findAll({
+    where:{
+      groupId:req.params.groupId,
+    },
     attributes:['id','groupId','address','city','state','lat','lng']
   });
-  const payloadVenue = Venues[0].toJSON();
+
+  let payloadVenue = null;
+  if(Venues.length > 0){
+    payloadVenue = [];
+    Venues.forEach(venue => {
+      venue = venue.toJSON();
+      delete venue.Event;
+      payloadVenue.push(venue);
+    })
+  }
+
+  const members = await Membership.findAll({
+    where:{
+      groupId:req.params.groupId,
+    }
+  })
 
   const payload = {
     id: payloadGroupId.id,
@@ -79,12 +155,11 @@ router.get('/:groupId', async(req,res, next) => {
     state: payloadGroupId.state,
     createdAt: payloadGroupId.createdAt,
     updatedAt: payloadGroupId.updatedAt,
+    numMembers: members.length,
     GroupImages: payloadGroupImages,
     Organizer: payloadOrganizer,
     Venues: payloadVenue,
   }
-
-  delete payload.Venues.Event;
 
   return res.json(payload);
 })
@@ -92,6 +167,7 @@ router.get('/:groupId', async(req,res, next) => {
 //post /api/groups
 router.post('', async (req,res, next) =>{
     const {name,about,type,private,city,state} = req.body;
+    const {user} = req;
     const errors = {};
 
     //Name Checker
@@ -100,8 +176,9 @@ router.post('', async (req,res, next) =>{
     for(let char of chars){
       count++;
     }
-    if(count > 60){
+    if(count > 60 || !name){
       errors.name = "Name must be 60 characters or less"
+      res.status(400);
       return next({
         message:"Bad Request",
         errors:errors,
@@ -116,6 +193,7 @@ router.post('', async (req,res, next) =>{
     }
     if(count < 50){
       errors.about = "About must be 50 characters or more"
+      res.status(400);
       return next({
         message:"Bad Request",
         errors:errors,
@@ -123,8 +201,9 @@ router.post('', async (req,res, next) =>{
     }
 
     //Type Checker
-    if(type.toLowerCase() !== "virtual" && type.toLowerCase() !== "in-person"){
-      errors.type = "Type must be 'Virtual' or 'In-Person'"
+    if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
+      errors.type = "Type must be 'Online' or 'In person'"
+      res.status(400);
       return next({
         message:"Bad Request",
         errors:errors,
@@ -132,7 +211,8 @@ router.post('', async (req,res, next) =>{
     }
 
     //Private Checker
-    if(typeof private !== "boolean"){
+    if(typeof private !== "boolean" || !private){
+      res.status(400);
       errors.private = "Private must be boolean";
       return next({
         message:"Bad Request",
@@ -142,6 +222,7 @@ router.post('', async (req,res, next) =>{
 
     //City Checker
     if(!city){
+      res.status(400);
       errors.city = "City is required";
       return next({
         message:"Bad Request",
@@ -151,6 +232,7 @@ router.post('', async (req,res, next) =>{
 
     //State Checker
     if(!state){
+      res.status(400);
       errors.state = "State is required";
       return next({
         message:"Bad Request",
@@ -160,7 +242,7 @@ router.post('', async (req,res, next) =>{
 
     const newGroup = await Group.create({
       name:name,
-      organizerId: 2,
+      organizerId: user.id,
       about:about,
       type:type,
       private:private,
@@ -168,6 +250,13 @@ router.post('', async (req,res, next) =>{
       state:state
     })
 
+    newGroup.createMembership({
+      userId:user.id,
+      groupId:newGroup.id,
+      status:'host',
+    })
+
+    res.status(201);
     return res.json(newGroup.toJSON());
 })
 
@@ -176,12 +265,21 @@ router.post('/:groupId/images', async (req,res,next) => {
   const group = await Group.findByPk(req.params.groupId);
 
   if(!group){
+    res.status(404);
     return next({
       message:"Group couldn't be found",
     })
     }
 
   const {preview, url} = req.body;
+  const {user} = req;
+
+  if(user.id !== group.organizerId){
+    res.status(403);
+    return next({
+      message:"Forbidden",
+    })
+  }
 
   let newImage = await group.createGroupImage({
     groupId:req.params.groupId,
@@ -190,7 +288,6 @@ router.post('/:groupId/images', async (req,res,next) => {
   })
 
   newImage = newImage.toJSON();
-  delete newImage.id;
   delete newImage.groupId;
   delete newImage.updatedAt;
   delete newImage.createdAt;
@@ -208,6 +305,15 @@ router.put('/:groupId', async (req,res,next) => {
     })
     }
 
+  const {user} = req;
+
+  if(user.id !== updatedGroup.organizerId){
+    res.status(403);
+    return next({
+      message:"Forbiddem"
+    })
+  }
+
   const {name,about,type,private,city,state} = req.body;
   let errors = {};
 
@@ -215,12 +321,13 @@ router.put('/:groupId', async (req,res,next) => {
     //Name Checker
     let chars = name.split('');
     let count = 0;
+    console.log(chars.length);
     for(let char of chars){
       count++;
     }
-    if(count > 60){
+    if(count > 60 || chars.length == 0){
       errors.name = "Name must be 60 characters or less"
-      next({
+      return next({
         message:"Bad Request",
         errors:errors,
       })
@@ -249,8 +356,8 @@ router.put('/:groupId', async (req,res,next) => {
 
   if(type !== undefined){
 
-    if(type.toLowerCase() !== "virtual" && type.toLowercase() !== "in-person"){
-      errors.type = "Type must be 'Virtual' or 'In-Person'"
+    if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
+      errors.type = "Type must be 'Online' or 'In person'"
       return next({
         message:"Bad Request",
         errors:errors,
@@ -307,12 +414,19 @@ router.put('/:groupId', async (req,res,next) => {
 //delete /api/groups/:groupId
 router.delete('/:groupId', async (req, res, next) => {
   const deleteGroup = await Group.findByPk(req.params.groupId);
+  const {user} = req;
 
   if(!deleteGroup){
     return next({
       message:"Group couldn't be found",
     })
     }
+
+  if(deleteGroup.organizerId !== user.id){
+    return next({
+      message:"forbidden",
+    })
+  }
 
   await deleteGroup.destroy();
 
@@ -323,22 +437,39 @@ router.delete('/:groupId', async (req, res, next) => {
 
 //get /:groupId/venues
 router.get('/:groupId/venues', async (req,res,next) => {
+  const {user} = req;
+  const findGroup = await Group.findByPk(req.params.groupId)
+  if(!findGroup){
+    return next({
+      message:"Group couldn't be found",
+    })
+  }
+
+  const findMembership = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:findGroup.id,
+    }
+  })
+
+  if((findMembership == null || findMembership.status !== "co-host") && user.id !== findGroup.organizerId){
+    return next({message:"Forbidden"});
+  }
+
   const allVenues = await Venue.findAll({
     where:{
       groupId: req.params.groupId,
     }
   })
 
-  const sentVenues = [];
+  let sentVenues = [];
 
   allVenues.forEach(venue => {
     sentVenues.push(venue.toJSON());
   })
 
   if(sentVenues.length === 0){
-    return next({
-      message:"Group couldn't be found",
-    })
+    sentVenues = null;
   }
 
   return res.json({Venues:sentVenues});
@@ -346,6 +477,8 @@ router.get('/:groupId/venues', async (req,res,next) => {
 
 //post /:groupId/venues
 router.post('/:groupId/venues', async (req,res,next) => {
+  const {user} = req;
+
   const {address, city, state, lat, lng} = req.body;
 
   const foundGroup = await Group.findByPk(req.params.groupId);
@@ -355,6 +488,18 @@ router.post('/:groupId/venues', async (req,res,next) => {
   if(!foundGroup){
     return next({message:"Group couldn't be found"});
   }
+
+  const findMembership = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:foundGroup.id,
+    }
+  })
+
+  if((findMembership == null || findMembership.status !== "co-host") && user.id !== foundGroup.organizerId){
+    return next({message:"Forbidden"});
+  }
+
 
   if(!address) {
     errors.address = 'Street address is required'
@@ -381,7 +526,7 @@ router.post('/:groupId/venues', async (req,res,next) => {
 
   }
 
-  if(lat > 90 || lat < -90){
+  if((lat > 90 || lat < -90) && typeof lat !== "integer"){
     errors.lat = 'Latitude is not valid'
     return next({
       message: "Bad Request",
@@ -389,7 +534,7 @@ router.post('/:groupId/venues', async (req,res,next) => {
     });
   }
 
-  if(lng > 180 || lng < -180){
+  if(lng > 180 || lng < -180 && typeof lng !== "integer"){
     errors.lng = 'Longitude is not valid'
     return next({
       message: "Bad Request",
@@ -416,6 +561,12 @@ router.post('/:groupId/venues', async (req,res,next) => {
 
 //get /:groupId/events
 router.get('/:groupId/events', async (req,res,next) => {
+  let findGroup = await Group.findByPk(req.params.groupId);
+
+  if(!findGroup){
+    return next({message:"Group couldn't be found"});
+  }
+
   let foundEvents = await Event.findAll({
     where:{
       groupId:req.params.groupId,
@@ -432,17 +583,22 @@ router.get('/:groupId/events', async (req,res,next) => {
 
   let pushedEvents = [];
 
-  foundEvents.forEach(event => {
-    let ele = event.toJSON();
-    delete ele.updatedAt;
-    delete ele.createdAt;
-    pushedEvents.push(ele);
-  })
-
-  if(pushedEvents.length === 0){
-    return next({
-      message:"Group couldn't be found",
+  for(let i = 0; i < foundEvents.length; i++){
+    let event = foundEvents[i];
+    let attendance = await Attendance.findAll({
+      where:{
+        eventId:event.id,
+      }
     })
+    event = event.toJSON();
+    delete event.createdAt;
+    delete event.updatedAt;
+    event.numAttending = attendance.length;
+    pushedEvents.push(event);
+  }
+
+  if(pushedEvents.length == 0){
+    pushedEvents = "There are no events right now";
   }
 
   return res.json({Events:pushedEvents});
@@ -451,6 +607,7 @@ router.get('/:groupId/events', async (req,res,next) => {
 //post /:groupId/events
 router.post('/:groupId/events', async (req,res,next) => {
   const group = await Group.findByPk(req.params.groupId);
+  const {user} = req;
 
   if(!group){
     return next({
@@ -458,14 +615,28 @@ router.post('/:groupId/events', async (req,res,next) => {
     })
   }
 
+  const grabMembership = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:req.params.groupId,
+    }
+  })
+
+  if(!grabMembership){
+    return next({message:"Forbidden"});
+  } else if (user.id !== group.organizerId && grabMembership.status !== 'co-host'){
+    return next({message:"Forbidden"});
+  }
+
   const errors = {};
   const {venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
 
   let checkVenue = await Venue.findByPk(venueId);
 
+
   if(!checkVenue){
     errors.venueId = "Venue does not exist";
-    next({
+    return next({
       message:"Bad Request",
       errors:errors
     })
@@ -473,21 +644,22 @@ router.post('/:groupId/events', async (req,res,next) => {
 
   if(name.length < 5){
     errors.name = "Name must be at least 5 characters";
-    next({
+    return next({
       message:"Bad Request",
       errors:errors
     })
   }
 
-  if(type.toLowerCase() !== "virtual" && type.toLowercase() !== "in-person"){
-    errors.type = "Type must be 'Virtual' or 'In-Person'"
+  if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
+    errors.type = "Type must be 'Online' or 'In person'"
     return next({
       message:"Bad Request",
       errors:errors,
     })
   }
 
-  if(typeof capacity !== "Integer"){
+
+  if(typeof capacity !== "number"){
     errors.capacity = "Capacity must be an integer";
     return next({
       message:"Bad Request",
@@ -495,7 +667,7 @@ router.post('/:groupId/events', async (req,res,next) => {
     })
   }
 
-  if(price < 0){
+  if(price < 0 || typeof price !== "number"){
     errors.price = "Price is invalid";
     return next({
       message:"Bad Request",
@@ -511,7 +683,7 @@ router.post('/:groupId/events', async (req,res,next) => {
     })
   }
 
-  if(startDate <= new Date()){
+  if(new Date(startDate) <= new Date()){
     errors.startDate = "Start date must be in the future";
     return next({
       message:"Bad Request",
@@ -519,7 +691,7 @@ router.post('/:groupId/events', async (req,res,next) => {
     })
   }
 
-  if(endDate < startDate){
+  if(new Date(endDate) < new Date(startDate)){
     errors.endDate = "End date is less than start date";
     return next({
       message:"Bad Request",
@@ -537,6 +709,12 @@ router.post('/:groupId/events', async (req,res,next) => {
     description:description,
     startDate:startDate,
     endDate:endDate
+  })
+
+  let newAttendance = await Attendance.create({
+    eventId:newEvent.id,
+    userId: user.id,
+    status: 'attending'
   })
 
   newEvent = newEvent.toJSON();
@@ -598,32 +776,31 @@ router.post('/:groupId/membership', async (req, res, next) => {
   if(!foundGroup){
     return next({message:"Group couldn't be found"})
   }
-  const members = await foundGroup.getMemberships();
 
-  for(let i = 0; i < members.length; i++){
-    if(members[i].userId === user.id){
-      if(members[i].status.toLowerCase() == "member"){
-        return next({
-          "message": "User is already a member of the group",
-        })
-      }
-      else if(members[i].status.toLowerCase() == "pending"){
-        return next({
-          "message": "Membership has already been requested",
-        })
-      }
+  const checkMembership = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:req.params.groupId
+    }
+  })
+
+  if(checkMembership){
+    if(checkMembership.status !== 'pending'){
+      return next({message:"User is already a member of the group"});
+    } else {
+      return next({message:"Membership has already been requested"});
     }
   }
 
   let newMember = foundGroup.createMembership({
   groupId:req.params.groupId,
   userId: user.id,
-  status:'Pending'
+  status:'pending'
   })
 
   return res.json({
     userId:user.id,
-    status:'Pending'
+    status:'pending'
   });
 })
 
@@ -645,11 +822,12 @@ router.put('/:groupId/membership', async(req,res,next) => {
 
   let userStatus = await Membership.findOne({
     where:{
+      groupId:req.params.groupId,
       userId:user.id,
     }
   });
 
-  if(userStatus.status.toLowerCase() !== 'co-host'){
+  if(userStatus.status.toLowerCase() !== 'co-host' && userStatus.status.toLowerCase() !== 'host'){
     return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
   }
 
@@ -662,27 +840,29 @@ router.put('/:groupId/membership', async(req,res,next) => {
     return next({message:"Cannot change a membership to pending"});
 
   if(status.toLowerCase() == 'member' && foundMembership.status.toLowerCase() == 'pending')
-    foundMembership.status = 'Member';
+    foundMembership.status = 'member';
 
-  if(user.id == checkGroup.organizerId){
-    if(status.toLowerCase() == 'co-host'){
-      console.log("hi");
-      foundMembership.status = 'Co-Host';
+
+
+  if(status.toLowerCase() == 'co-host'){
+    if(user.id == checkGroup.organizerId){
+      foundMembership.status = 'co-host';
+    } else {
+      return next({message:"To change to co-host user must be organizer"})
     }
   }
+
 
   await foundMembership.save();
 
   foundMembership = foundMembership.toJSON();
   checkGroup = checkGroup.toJSON();
 
-  return res.json(foundMembership);
-
   return res.json({
-    id:user.id,
-    groupId: req.params.groupId,
-    memberId: memberId,
-    status: foundMembership.status
+    id:foundMembership.id,
+    groupId:foundMembership.groupId,
+    memberId:foundMembership.userId,
+    status:foundMembership.status
   });
 })
 
@@ -695,17 +875,28 @@ router.delete('/:groupId/membership', async (req,res,next) => {
     return next({message:"Group couldn't be found"});
   }
 
-  let foundMembership = await Membership.findByPk(memberId);
+  let checkUser = await Users.findByPk(memberId);
+
+  if(!checkUser){
+    return next({message:"User couldn't be found"})
+  }
+
+  let foundMembership = await Membership.findOne({
+    where:{
+      userId:memberId,
+      groupId:req.params.groupId,
+    }
+  });
 
   if(!foundMembership){
     return next({message:"Membership between the user and the group does not exist"})
   }
 
-  if(foundMembership.userId !== user.id){
-    return next({message:"User couldn't be found"})
-  }
-
+  if(foundMembership.status!== "host" || user.id !== memberId)
   await foundMembership.destroy();
+  else{
+    return {message:"Forbidden"}
+  }
 
   return res.json({
     message: "Successfully deleted membership from group"

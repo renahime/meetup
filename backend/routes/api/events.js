@@ -3,13 +3,14 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
-const { Group, User, GroupImage, Membership, Event, Venue, Attendance } = require('../../db/models');
+const { Group, User, GroupImage, Membership, Event, Venue, Attendance, EventImage } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const { group, error } = require('console');
 const { requireAuth } = require('../../utils/auth');
 const { url } = require('inspector');
 const e = require('express');
+const event = require('../../db/models/event');
 
 
 const router = express.Router();
@@ -69,8 +70,8 @@ router.get("/", async (req,res, next) => {
   }
 
   if(type){
-    if(type !== "Virtual" && type !== 'In-Person'){
-      errors.type = "Type must be 'Virtual' or 'In-Person'"
+    if(type.toLowerCase() !== "online" && type.toLowerCase() !== 'In person'){
+      errors.type = "Type must be 'online' or 'In person'"
       return next({
         message:"Bad Request",
         errors:errors,
@@ -86,7 +87,14 @@ router.get("/", async (req,res, next) => {
   }
 
   if(startDate){
+    try{
+      new Date(startDate)
+    }
+    catch{
+      return next({message:"Start date must be a valid datetime"})
+    }
 
+    where.startDate =  { [Op.substring]: startDate };
   }
 
   const events = await Event.findAll({
@@ -130,15 +138,31 @@ router.get('/:eventId', async (req,res,next) => {
   delete payloadGroup.createdAt;
   delete payloadGroup.updatedAt;
   const venue = await event.getVenue({where:event.venueId});
-  const payloadVenue = venue.toJSON();
-  delete payloadVenue.groupId;
-  delete payloadVenue.createdAt;
-  delete payloadVenue.updatedAt;
-  const eventImages = await event.getEventImages({where:event.eventId});
-  const payloadEventImages = eventImages[0].toJSON();
-  delete payloadEventImages.eventId;
-  delete payloadEventImages.createdAt;
-  delete payloadEventImages.updatedAt;
+  let payloadVenue = null;
+  if(venue){
+    payloadVenue = venue.toJSON();
+    delete payloadVenue.groupId;
+    delete payloadVenue.createdAt;
+    delete payloadVenue.updatedAt;
+  }
+  const eventImages = await EventImage.findAll({
+    where:{
+      eventId:req.params.eventId,
+    },
+    attributes:['eventId', 'url', 'preview']
+  });
+  const payloadEventImages = [];
+  eventImages.forEach(event =>{
+    event = event.toJSON();
+    payloadEventImages.push(event);
+  })
+
+  const grabAttendance = await Attendance.findAll({
+    where:{
+      eventId:req.params.eventId,
+      status:'attending',
+    }
+  })
 
   const payload = {
     id: payloadEvent.id,
@@ -151,6 +175,7 @@ router.get('/:eventId', async (req,res,next) => {
     price: payloadEvent.price,
     startDate: payloadEvent.startDate,
     endDate: payloadEvent.endDate,
+    numAttending: grabAttendance.length,
     Group: payloadGroup,
     Venue: payloadVenue,
     EventImages: payloadEventImages
@@ -163,11 +188,34 @@ router.get('/:eventId', async (req,res,next) => {
 //post /:eventId/images
 router.post('/:eventId/images', async (req,res,next) => {
   const event = await Event.findByPk(req.params.eventId);
+  const {user} = req;
 
   if(!event){
     return next({
       message:"Event couldn't be found",
     })
+  }
+
+  const grabMembership = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:event.groupId
+    }
+  })
+
+  const grabAttendance = await Attendance.findOne({
+    where:{
+      eventId: req.params.eventId,
+      userId: user.id
+    }
+  })
+
+  if(!grabMembership){
+    return next({message:"Forbidden"});
+  } else if(!grabAttendance){
+    return next({message:"Forbidden"});
+  } else if(grabMembership.status !== 'host' && grabMembership.status !== 'co-host' && grabAttendance.status !== 'attending'){
+    return next({message:"Forbidden"});
   }
 
   const {preview, url} = req.body;
@@ -190,12 +238,32 @@ router.post('/:eventId/images', async (req,res,next) => {
 //put /:eventId
 router.put('/:eventId', async (req,res,next) => {
   const event = await Event.findByPk(req.params.eventId);
-
+  const {user} = req;
   if(!event){
     return next({
       message:"Event couldn't be found",
     })
   }
+
+  const grabGroup = await Group.findOne({
+    where:{
+      groupId:event.groupId,
+    }
+  })
+
+  const grabMembership = await Membership.findOne({
+    where:{
+      groupId:event.groupId,
+      userId:user.id,
+    }
+  })
+
+  if(!grabMembership){
+    return next({message:"Forbidden"})
+  } else if (user.id !== grabGroup.organizerId && grabMembership.status !== 'co-host'){
+    return next({message:"Forbidden"});
+  }
+
 
   const errors = {};
   const {venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
@@ -224,7 +292,7 @@ router.put('/:eventId', async (req,res,next) => {
   }
 
   if(type !== undefined){
-    if(type.toLowerCase() !== "virtual" && type.toLowercase() !== "in-person"){
+    if(type.toLowerCase() !== "virtual" && type.toLowerCase() !== "in-person"){
       errors.type = "Type must be 'Virtual' or 'In-Person'"
       return next({
         message:"Bad Request",
@@ -268,7 +336,7 @@ router.put('/:eventId', async (req,res,next) => {
   }
 
   if(startDate !== undefined){
-    if(startDate <= new Date()){
+    if(new Date(startDate) <= new Date()){
       errors.startDate = "Start date must be in the future";
       return next({
         message:"Bad Request",
@@ -279,7 +347,7 @@ router.put('/:eventId', async (req,res,next) => {
   }
 
   if(endDate !== undefined){
-    if(endDate < startDate){
+    if(new Date(endDate) < new Date(startDate)){
       errors.endDate = "End date is less than start date";
       return next({
         message:"Bad Request",
@@ -315,45 +383,50 @@ router.delete('/:eventId', async (req,res,next) => {
 router.get('/:eventId/attendees', async (req,res,next) => {
   const {user} = req;
   const foundEvent = await Event.findByPk(req.params.eventId);
-  const users = await foundEvent.getUsers();
-  let cohostCheck = false;
-  let sendingUsers = [];
+  let attending = [];
 
   if(!foundEvent){
     return next({message:"Event couldn't be found"});
   }
 
-  const findMembershp = await Group.findOne({
+  const grabMembership = await Membership.findOne({
     where:{
-      id:foundEvent.groupId,
+      userId:user.id,
+      groupId: foundEvent.groupId
+    }
+  })
+
+  const grabAttendance = await Attendance.findAll({
+    where:{
+      eventId:req.params.eventId
     },
-    include: [{
-      model:Membership,
-      attributes:['status','userId'],
+    include:[{
+      model:User,
+      attributes:['id','firstName','lastName']
     }]
   })
 
-  let nonPendingUsers = [];
-
-  findMembershp.Memberships.forEach(member => {
-    if(member.status.toLowerCase() !== 'pending'){
-      nonPendingUsers.push(member.toJSON());
-    }
-    if(member.userId == user.id){
-      if(member.status == "Co-Host"){
-        cohostCheck = true;
+  grabAttendance.forEach(attendance => {
+    attendance = attendance.toJSON();
+    let newAttendance = {
+      id:attendance.User.id,
+      firstName:attendance.User.firstName,
+      lastName:attendance.User.lastName,
+      attendance:{
+        Attendance:{
+          status:attendance.status,
+        }
       }
+    }
+    if(attendance.status == 'pending') {
+      if(grabMembership && (grabMembership.status == 'host' || grabMembership.status == 'co-host'))
+        attending.push(newAttendance);
+    } else {
+      attending.push(newAttendance);
     }
   })
 
-  if(cohostCheck){
-    sendingUsers = findMembershp.Memberships;
-  }
-  else {
-    sendingUsers = nonPendingUsers;
-  }
-
-  return res.json(sendingUsers);
+  return res.json(attending);
 })
 
 //post /:eventId/attendance
@@ -366,33 +439,17 @@ router.post('/:eventId/attendance', async (req,res,next) =>{
     return next({message:"Event couldn't be found"});
   }
 
-  const findMembershp = await Group.findOne({
+  const findMembership = await Membership.findOne({
     where:{
-      id:findEvent.groupId,
-    },
-    include: [{
-      model:Membership,
-      attributes:['status','userId'],
-      where:{
-        userId: user.id,
-      }
-    }]
-  })
+      userId:user.id,
+      groupId:findEvent.groupId
+    }
+  }
+  )
 
-  if(!findMembershp){
+  if(!findMembership){
     return next({message:"User is not in the group"})
   }
-
-  members = findMembershp.Memberships;
-
-  members.forEach(member => {
-    if(member.userId == user.id){
-      if(member.status.toLowerCase() == 'pending'){
-        return next({message:"Cannot join event user is pending for group"});
-      }
-    }
-  })
-
 
   let findAttendace = await Attendance.findOne({
     where:{
@@ -407,7 +464,7 @@ router.post('/:eventId/attendance', async (req,res,next) =>{
       newAttendance = await Attendance.create({
       eventId:req.params.eventId,
       userId:user.id,
-      status:'Pending',
+      status:'pending',
     })
   } else {
     if(findAttendace.status.toLowerCase() == 'pending'){
@@ -430,32 +487,27 @@ router.put('/:eventId/attendance', async (req,res,next) =>{
 
   let checkEvent = await Event.findByPk(req.params.eventId);
 
-  let userStatus = await Membership.findOne({
-    where:{
-      userId:user.id
-    }
-  })
-
-  if(userStatus.status.toLowerCase() !== 'co-host'){
-    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
-  }
-
-  let groupStatus = await Group.findOne({
-    where:{
-      organizerId:user.id
-    }
-  })
-
-  if(!groupStatus){
-    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
-  }
-
   if(!checkEvent){
     return next({message:"Event couldn't be found"});
   }
 
+  let userStatus = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:checkEvent.groupId
+    }
+  })
+
+  if(!userStatus){
+    return next({message:"Membership does not exist"})
+  }
+
+  if(userStatus.status.toLowerCase() !== 'co-host' && userStatus.status.toLowerCase() !== 'host'){
+    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
+  }
+
   if(status.toLowerCase() == 'pending'){
-    return next ({message:"Event couldn't be found"});
+    return next ({message:"Cannot change an attendance status to pending"});
   }
 
   let foundAttendance = await Attendance.findOne({
@@ -469,7 +521,7 @@ router.put('/:eventId/attendance', async (req,res,next) =>{
     return next({message:"Attendance between the user and the event does not exist"});
   }
 
-  foundAttendance.status = 'Attending';
+  foundAttendance.status = 'attending';
   await foundAttendance.save();
   foundAttendance = foundAttendance.toJSON();
 
@@ -487,13 +539,22 @@ router.delete('/:eventId/attendance', async (req,res,next) => {
   const {userId} = req.body;
 
   let findEvent = await Event.findByPk(req.params.eventId);
-  let userStatus = await Membership.findOne({
-    where:{
-      userId:user.id
-    }
-  })
+
   if(!findEvent){
     return next({message:"Event couldn't be found"});
+  }
+
+  let userStatus = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:findEvent.groupId,
+    }
+  })
+
+  //return res.json(userStatus);
+
+  if((!userStatus) || (userStatus.status !== 'host' && userId !== user.id)){
+    return next({message:"Only the User or organizer may delete an Attendance"})
   }
 
   let findAttendace = await Attendance.findOne({
@@ -505,10 +566,6 @@ router.delete('/:eventId/attendance', async (req,res,next) => {
 
   if(!findAttendace){
     return next({message:"Attendance does not exist for this User"})
-  }
-
-  if(user.id !== findAttendace.userId && userStatus.status !== "Host"){
-    return next({message:"Only the User or organizer may delete an attendance"});
   }
 
   await findAttendace.destroy();

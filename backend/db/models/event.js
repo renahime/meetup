@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Event.belongsTo(models.Group, {
         foreignKey: 'groupId',
-        onDelete: 'CASCADE',
         hooks: true
       })
       Event.belongsTo(models.Venue, {
@@ -40,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model:'Venues'
       },
-      onDelete: 'CASCADE',
       hooks: true,
       allowNull:true,
     },
@@ -49,14 +47,14 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Groups'
       },
-      onDelete: 'CASCADE',
       hooks: true
     },
     name: {
       type:DataTypes.STRING,
       validate: {
         isFive(value){
-          throw new Error('Must be at least 5 chars')
+          if(value < 5)
+            throw new Error('Must be at least 5 chars');
         }
       }
     },
@@ -77,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     price:{
-      type:DataTypes.INTEGER,
+      type:DataTypes.DECIMAL(4,2),
       validate:{
         min:0
       }

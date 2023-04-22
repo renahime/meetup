@@ -15,9 +15,21 @@ const e = require('express');
 const router = express.Router();
 //delete /group-images/:imageId
 router.delete('/:imageId', async (req,res,next) => {
+  const {user} = req;
+
   const foundImage = await GroupImage.findByPk(req.params.imageId);
   if(!foundImage){
     return next({message:"Group Image couldn't be found"})
+  }
+  const findMembership = Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId:foundImage.groupId,
+    }
+  })
+
+  if((!findMembership) || (findMembership.status !== 'host' && findMembership.status !== 'co-host')){
+    return next({message:"Forbidden"})
   }
 
   foundImage.destory();

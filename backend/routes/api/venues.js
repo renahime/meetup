@@ -18,10 +18,22 @@ const router = express.Router();
 //put /venues/:venueId
 router.put('/:venueId', async (req,res,next) => {
   let foundVenue = await Venue.findByPk(req.params.venueId);
+  const {user} = req;
   const errors = {};
 
   if(!foundVenue){
     return next({message:"Venue couldn't be found"});
+  }
+
+  let grabMembership = await Membership.findOne({
+    where:{
+      groupId:foundVenue.groupId,
+      userId:user.id
+    }
+  });
+
+  if(grabMembership.status !== "host" && grabMembership.status!= "co-host"){
+    return next({message:"Forbidden"});
   }
 
   const {address, city, state, lat, lng} = req.body;
@@ -59,7 +71,7 @@ router.put('/:venueId', async (req,res,next) => {
     foundVenue.state = state;
   }
 
-  if(lat !== undefined){
+  if(lat !== undefined && typeof lat !== "integer"){
       if(lat > 90 || lat < -90){
         errors.lat = 'Latitude is not valid'
         return next({
@@ -71,7 +83,7 @@ router.put('/:venueId', async (req,res,next) => {
   }
 
   if(lng !== undefined){
-      if(lng > 180 || lng < -180){
+      if(lng > 180 || lng < -180 && typeof lng !== "integer"){
         errors.lng = 'Longitude is not valid'
         return next({
           message: "Bad Request",

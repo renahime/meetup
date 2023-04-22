@@ -19,7 +19,6 @@ module.exports = {
         references: {
           model:'Users'
         },
-        onDelete: 'CASCADE',
         hooks:true
       },
       groupId: {
@@ -27,7 +26,6 @@ module.exports = {
         references: {
           model:'Groups'
         },
-        onDelete:'CASCADE',
         hooks:true
       },
       status: {

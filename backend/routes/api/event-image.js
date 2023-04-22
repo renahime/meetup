@@ -10,12 +10,28 @@ const { group, error } = require('console');
 const { requireAuth } = require('../../utils/auth');
 const { url } = require('inspector');
 const e = require('express');
+const user = require('../../db/models/user');
 
 const router = express.Router();
 router.delete('/:imageId', async (req,res,next) => {
+  const {user} = req;
   const foundImage = await EventImage.findByPk(req.params.imageId);
   if(!foundImage){
     return next({message:"Group Image couldn't be found"})
+  }
+
+  const findEvent = await Event.findByPk(foundImage.eventId);
+
+  const findMembership = await Membership.findOne({
+    where:{
+      userId:user.id,
+      groupId: findEvent.groupId,
+    }
+  })
+
+
+  if((!findMembership) || (findMembership.status !== 'host' && findMembership.status !== 'co-host')){
+    return next({message:"Forbidden"})
   }
 
   foundImage.destroy();

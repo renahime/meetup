@@ -16,7 +16,7 @@ const e = require('express');
 const router = express.Router();
 
 //put /venues/:venueId
-router.put('/:venueId', async (req,res,next) => {
+router.put('/:venueId',requireAuth, async (req,res,next) => {
   let foundVenue = await Venue.findByPk(req.params.venueId);
   const {user} = req;
   const errors = {};

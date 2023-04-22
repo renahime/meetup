@@ -186,7 +186,7 @@ router.get('/:eventId', async (req,res,next) => {
 
 
 //post /:eventId/images
-router.post('/:eventId/images', async (req,res,next) => {
+router.post('/:eventId/images',requireAuth, async (req,res,next) => {
   const event = await Event.findByPk(req.params.eventId);
   const {user} = req;
 
@@ -236,7 +236,7 @@ router.post('/:eventId/images', async (req,res,next) => {
 })
 
 //put /:eventId
-router.put('/:eventId', async (req,res,next) => {
+router.put('/:eventId',requireAuth, async (req,res,next) => {
   const event = await Event.findByPk(req.params.eventId);
   const {user} = req;
   if(!event){
@@ -363,7 +363,7 @@ router.put('/:eventId', async (req,res,next) => {
 })
 
 //delete /:eventId
-router.delete('/:eventId', async (req,res,next) => {
+router.delete('/:eventId',requireAuth, async (req,res,next) => {
   const deleteEvent = await Event.findByPk(req.params.eventId);
 
   if(!deleteEvent){
@@ -430,7 +430,7 @@ router.get('/:eventId/attendees', async (req,res,next) => {
 })
 
 //post /:eventId/attendance
-router.post('/:eventId/attendance', async (req,res,next) =>{
+router.post('/:eventId/attendance', requireAuth,async (req,res,next) =>{
   const {user} = req;
   const {userId, status} = req.body;
 
@@ -481,7 +481,7 @@ router.post('/:eventId/attendance', async (req,res,next) =>{
 })
 
 //put /:eventId/attendance
-router.put('/:eventId/attendance', async (req,res,next) =>{
+router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
   const {userId, status} = req.body;
   const {user} = req;
 
@@ -534,7 +534,7 @@ router.put('/:eventId/attendance', async (req,res,next) =>{
 })
 
 //delete /:eventId/attendance
-router.delete('/:eventId/attendance', async (req,res,next) => {
+router.delete('/:eventId/attendance', requireAuth, async (req,res,next) => {
   const {user} = req;
   const {userId} = req.body;
 

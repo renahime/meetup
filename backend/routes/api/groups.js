@@ -165,7 +165,7 @@ router.get('/:groupId', async(req,res, next) => {
 })
 
 //post /api/groups
-router.post('', async (req,res, next) =>{
+router.post('', requireAuth, async (req,res, next) =>{
     const {name,about,type,private,city,state} = req.body;
     const {user} = req;
     const errors = {};
@@ -261,7 +261,7 @@ router.post('', async (req,res, next) =>{
 })
 
 //post /api/groups/:groupId/images
-router.post('/:groupId/images', async (req,res,next) => {
+router.post('/:groupId/images', requireAuth, async (req,res,next) => {
   const group = await Group.findByPk(req.params.groupId);
 
   if(!group){
@@ -296,7 +296,7 @@ router.post('/:groupId/images', async (req,res,next) => {
 })
 
 //put /api/groups/:groupId
-router.put('/:groupId', async (req,res,next) => {
+router.put('/:groupId', requireAuth, async (req,res,next) => {
   let updatedGroup = await Group.findByPk(req.params.groupId);
 
   if(!updatedGroup){
@@ -412,7 +412,7 @@ router.put('/:groupId', async (req,res,next) => {
 })
 
 //delete /api/groups/:groupId
-router.delete('/:groupId', async (req, res, next) => {
+router.delete('/:groupId', requireAuth, async (req, res, next) => {
   const deleteGroup = await Group.findByPk(req.params.groupId);
   const {user} = req;
 
@@ -436,7 +436,7 @@ router.delete('/:groupId', async (req, res, next) => {
 })
 
 //get /:groupId/venues
-router.get('/:groupId/venues', async (req,res,next) => {
+router.get('/:groupId/venues', requireAuth, async (req,res,next) => {
   const {user} = req;
   const findGroup = await Group.findByPk(req.params.groupId)
   if(!findGroup){
@@ -476,7 +476,7 @@ router.get('/:groupId/venues', async (req,res,next) => {
 })
 
 //post /:groupId/venues
-router.post('/:groupId/venues', async (req,res,next) => {
+router.post('/:groupId/venues', requireAuth, async (req,res,next) => {
   const {user} = req;
 
   const {address, city, state, lat, lng} = req.body;
@@ -560,7 +560,7 @@ router.post('/:groupId/venues', async (req,res,next) => {
 })
 
 //get /:groupId/events
-router.get('/:groupId/events', async (req,res,next) => {
+router.get('/:groupId/events',  async (req,res,next) => {
   let findGroup = await Group.findByPk(req.params.groupId);
 
   if(!findGroup){
@@ -605,7 +605,7 @@ router.get('/:groupId/events', async (req,res,next) => {
 })
 
 //post /:groupId/events
-router.post('/:groupId/events', async (req,res,next) => {
+router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   const group = await Group.findByPk(req.params.groupId);
   const {user} = req;
 
@@ -770,7 +770,7 @@ router.get('/:groupId/members', async (req,res,next) => {
 })
 
 //post /:groupId/membership
-router.post('/:groupId/membership', async (req, res, next) => {
+router.post('/:groupId/membership', requireAuth, async (req, res, next) => {
   const foundGroup = await Group.findByPk(req.params.groupId);
   const {user} = req;
   if(!foundGroup){
@@ -805,7 +805,7 @@ router.post('/:groupId/membership', async (req, res, next) => {
 })
 
 //put /:groupId/membership
-router.put('/:groupId/membership', async(req,res,next) => {
+router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
   const {memberId, status} = req.body;
   const {user} = req;
   let checkGroup = await Group.findByPk(req.params.groupId);
@@ -867,7 +867,7 @@ router.put('/:groupId/membership', async(req,res,next) => {
 })
 
 //delete /:groupId/membership
-router.delete('/:groupId/membership', async (req,res,next) => {
+router.delete('/:groupId/membership', requireAuth, async (req,res,next) => {
   const {memberId} = memberId;
   const {user} = req;
   let checkGroup = await Group.findByPk(req.params.groupId);

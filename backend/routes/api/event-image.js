@@ -13,7 +13,7 @@ const e = require('express');
 const user = require('../../db/models/user');
 
 const router = express.Router();
-router.delete('/:imageId', async (req,res,next) => {
+router.delete('/:imageId', requireAuth, async (req,res,next) => {
   const {user} = req;
   const foundImage = await EventImage.findByPk(req.params.imageId);
   if(!foundImage){

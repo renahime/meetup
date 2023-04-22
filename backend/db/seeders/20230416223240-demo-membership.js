@@ -13,105 +13,105 @@ module.exports = {
       {
         userId: 1,
         groupId: 1,
-        status: 'Host',
+        status: 'host',
       },
       {
         userId: 2,
         groupId: 2,
-        status: 'Host',
+        status: 'host',
       },
       {
         userId: 3,
         groupId: 3,
-        status: 'Host',
+        status: 'host',
       },
 
       {
         userId: 4,
         groupId: 4,
-        status: 'Host',
+        status: 'host',
       },
       {
         userId: 5,
         groupId: 5,
-        status: 'Host',
+        status: 'host',
       },
       {
         userId: 6,
         groupId: 1,
-        status: 'Member',
+        status: 'member',
       },
       {
         userId: 7,
         groupId: 2,
-        status: 'Member',
+        status: 'member',
       },
       {
         userId: 8,
         groupId: 3,
-        status: 'Member',
+        status: 'member',
       },
 
       {
         userId: 9,
         groupId: 4,
-        status: 'Member',
+        status: 'member',
       },
       {
         userId: 10,
         groupId: 5,
-        status: 'Member',
+        status: 'member',
       },
       {
         userId: 11,
         groupId: 1,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 12,
         groupId: 2,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 13,
         groupId: 3,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 14,
         groupId: 4,
-        status: 'Pending',
+        status: 'pending',
       },
 
       {
         userId: 15,
         groupId: 5,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 16,
         groupId: 1,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 17,
         groupId: 2,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 18,
         groupId: 3,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 19,
         groupId: 4,
-        status: 'Pending',
+        status: 'pending',
       },
       {
         userId: 20,
         groupId: 5,
-        status: 'Pending'
+        status: 'pending'
       },
     ], {})
   },

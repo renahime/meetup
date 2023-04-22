@@ -13,7 +13,7 @@ module.exports = {
         organizerId: 1,
         name: 'Black Energetic Bears',
         about: 'We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.',
-        type: 'In-Person',
+        type: 'In person',
         private: false,
         city: 'Las Vegas',
         state: 'NV'
@@ -22,7 +22,7 @@ module.exports = {
         organizerId: 2,
         name: "Purple Witty Pigeons",
         about: "We are a group of people who like to go to musicals and watch preformers sing and dance. Anyone is welcome to join as long as they love musicals.",
-        type: 'In-Person',
+        type: 'In person',
         private: false,
         city: 'New York City',
         state: 'NY'
@@ -31,7 +31,7 @@ module.exports = {
         organizerId: 3,
         name: 'Red Hungry Turtles',
         about: 'We are a group of people who like to host events where we eat all kinds of food regardless of ethics. Anyone that passes the trials are welcome.',
-        type: 'In-Person',
+        type: 'In person',
         private: false,
         city: 'Austin',
         state: 'TX'
@@ -40,7 +40,7 @@ module.exports = {
         organizerId: 4,
         name: 'Pink Idol Kittens',
         about: 'We are a group filled with idols and idol lovers alike. We meet to go to virtual concerts and events. Anyone who loves idols can join.',
-        type: 'Virtual',
+        type: 'Online',
         private: false,
         city: 'Online',
         state: 'Online'
@@ -49,7 +49,7 @@ module.exports = {
         organizerId: 5,
         name: 'Orange Laughing Parrots',
         about: "We are a group of people who enjoy laughing and making silly jokes. If you can make us laugh you are welcome to join.",
-        type: 'Virtual',
+        type: 'Online',
         private: false,
         city: 'Online',
         state: 'Online'

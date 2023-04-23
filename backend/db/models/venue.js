@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Venue.belongsTo(models.Group, {
         foreignKey: 'groupId',
         as: 'Venue',
+        onDelete: 'SET NULL',
         hooks: true
       })
       Venue.belongsToMany(models.Group, {

@@ -406,7 +406,6 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
   updatedGroup = updatedGroup.toJSON();
 
   return res.json(updatedGroup);
-
 })
 
 //delete /api/groups/:groupId
@@ -873,35 +872,63 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
 
 //delete /:groupId/membership
 router.delete('/:groupId/membership', requireAuth, async (req,res,next) => {
-  const {memberId} = memberId;
+  const {memberId} = req.body;
   const {user} = req;
   let checkGroup = await Group.findByPk(req.params.groupId);
+
   if(!checkGroup){
     return next({message:"Group couldn't be found"});
   }
 
-  let checkUser = await Users.findByPk(memberId);
+  let checkUser = await User.findByPk(memberId);
 
   if(!checkUser){
     return next({message:"User couldn't be found"})
   }
 
-  let foundMembership = await Membership.findOne({
+  let checkMembership = await Membership.findOne({
     where:{
-      userId:memberId,
+      userId:user.id,
       groupId:req.params.groupId,
     }
   });
+
+
+  if((!checkMembership || checkMembership.status !== "host") && user.id !== memberId){
+    return next({message:"Forbidden"});
+  }
+
+  let foundMembership = await Membership.findOne({
+    where:{
+      userId:memberId,
+      groupId:req.params.groupId
+    }
+  })
+
 
   if(!foundMembership){
     return next({message:"Membership between the user and the group does not exist"})
   }
 
-  if(foundMembership.status!== "host" || user.id !== memberId)
-  await foundMembership.destroy();
-  else{
-    return {message:"Forbidden"}
+  let events = await Event.findAll({
+    where:{
+      groupId:req.params.groupId,
+    }
+  })
+
+  for(let i = 0; i < events.length; i++){
+    let event = events[i];
+    let grabAttendance = await Attendance.findOne({
+      where:{
+        userId:memberId,
+         eventId:event.id,
+      }
+    })
+    if(grabAttendance){
+     await grabAttendance.destroy();
+    }
   }
+  await foundMembership.destroy();
 
   return res.json({
     message: "Successfully deleted membership from group"

@@ -30,11 +30,12 @@ router.delete('/:imageId', requireAuth, async (req,res,next) => {
   })
 
 
-  if((!findMembership) && (findMembership.status !== 'host' && findMembership.status !== 'co-host')){
+  if((!findMembership) || (findMembership.status !== 'host' && findMembership.status !== 'co-host')){
     return next({message:"Forbidden"})
   }
 
-  foundImage.destroy();
+  await foundImage.destroy();
+
   return res.json({
     "message": "Successfully deleted",
   }

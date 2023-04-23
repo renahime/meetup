@@ -399,11 +399,33 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
 //delete /:eventId
 router.delete('/:eventId',requireAuth, async (req,res,next) => {
   const deleteEvent = await Event.findByPk(req.params.eventId);
+  const {user} = req;
+
+  console.log(deleteEvent.groupId);
 
   if(!deleteEvent){
     return next({
       message:"Event couldn't be found",
     })
+  }
+
+  const grabGroup = await Group.findOne({
+    where:{
+      id:deleteEvent.groupId,
+    }
+  })
+
+  const grabMembership = await Membership.findOne({
+    where:{
+      groupId:deleteEvent.groupId,
+      userId:user.id,
+    }
+  })
+
+  if(!grabMembership){
+    return next({message:"Forbidden"})
+  } else if (user.id !== grabGroup.organizerId && grabMembership.status !== 'co-host'){
+    return next({message:"Forbidden"});
   }
 
   await deleteEvent.destroy();
@@ -429,6 +451,9 @@ router.get('/:eventId/attendees', async (req,res,next) => {
       groupId: foundEvent.groupId
     }
   })
+  console.log(user.id);
+  console.log(foundEvent.groupId);
+  console.log(grabMembership);
 
   const grabAttendance = await Attendance.findAll({
     where:{
@@ -453,8 +478,11 @@ router.get('/:eventId/attendees', async (req,res,next) => {
       }
     }
     if(attendance.status == 'pending') {
-      if(grabMembership && (grabMembership.status == 'host' || grabMembership.status == 'co-host'))
+      if(grabMembership){
+        console.log(grabMembership.status == 'host' || grabMembership.status == 'co-host')
+        if (grabMembership.status == 'host' || grabMembership.status == 'co-host')
         attending.push(newAttendance);
+      }
     } else {
       attending.push(newAttendance);
     }

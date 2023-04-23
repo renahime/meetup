@@ -19,6 +19,7 @@ module.exports = {
         references: {
           model: 'Groups',
         },
+        onDelete: 'SET NULL',
         hooks: true
       },
       address: {

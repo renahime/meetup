@@ -12,18 +12,24 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Event.belongsTo(models.Group, {
         foreignKey: 'groupId',
-        hooks: true
       })
       Event.belongsTo(models.Venue, {
         foreignKey: 'venueId'
       })
       Event.hasMany(models.EventImage, {
-        foreignKey: 'eventId'
+        foreignKey: 'eventId',
+        onDelete: 'CASCADE',
+        hooks: true
       })
       Event.belongsToMany(models.User, {
         through: 'Attendance',
         foreignKey: 'eventId',
         otherKey: 'userId'
+      })
+      Event.hasMany(models.Attendance, {
+        foreignKey: 'eventId',
+        onDelete: 'CASCADE',
+        hooks: true
       })
     }
   }
@@ -53,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.STRING,
       validate: {
         isFive(value){
-          if(value < 5)
+          if(value.length < 5)
             throw new Error('Must be at least 5 chars');
         }
       }

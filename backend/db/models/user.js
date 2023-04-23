@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       })
       User.hasMany(models.Membership, {
         foreignKey: 'userId',
-        onDelete:'CASCADE',
       })
       User.belongsToMany(models.Group, {
         through: 'Membership',

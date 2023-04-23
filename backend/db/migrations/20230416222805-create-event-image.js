@@ -19,6 +19,7 @@ module.exports = {
         references: {
           model: 'Events'
         },
+        onDelete: 'CASCADE',
         hooks: true
       },
       url: {

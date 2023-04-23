@@ -98,24 +98,59 @@ router.get("/", async (req,res, next) => {
   }
 
   const events = await Event.findAll({
-    include: [{
-      model:Venue,
-      attributes:['id', 'city', 'state'],
-    }],
+    include:
+    [
+      {
+        model:Group,
+        attributes:['id', 'name', 'city', 'state']
+      },
+      {
+        model:Venue,
+        attributes:['id', 'city', 'state']
+      }
+    ],
     where:where,
     ...pagination,
   });
 
   let eventsList = [];
 
-  events.forEach(event => {
-    eventsList.push(event.toJSON());
-  })
+  for(let i = 0; i < events.length; i++){
+    let event = events[i];
+    let eventImage = await EventImage.findOne({
+      where:{
+        eventId:event.id,
+      },
+      attributes:['url']
+    })
 
-  eventsList.forEach(event => {
-    delete event.createdAt;
-    delete event.updatedAt;
-  })
+    let attendance = await Attendance.findAll({
+      where:{
+        eventId:event.id,
+      }
+    })
+
+
+    event = event.toJSON();
+    eventImage = eventImage.toJSON();
+    eventImage = eventImage.url;
+    attendance = attendance.length;
+
+    eventsList.push({
+      id:event.id,
+      groupId:event.groupId,
+      venueId:event.venueId,
+      name:event.name,
+      type:event.type,
+      startDate:event.startDate,
+      endDate:event.endDate,
+      numAttending:attendance,
+      previewImage:eventImage,
+      Group:event.Group,
+      Venue:event.Venue
+    })
+
+  }
 
   return res.json({Events:eventsList});
 
@@ -227,7 +262,6 @@ router.post('/:eventId/images',requireAuth, async (req,res,next) => {
   })
 
   newImage = newImage.toJSON();
-  delete newImage.id;
   delete newImage.eventId;
   delete newImage.createdAt;
   delete newImage.updatedAt;
@@ -426,7 +460,7 @@ router.get('/:eventId/attendees', async (req,res,next) => {
     }
   })
 
-  return res.json(attending);
+  return res.json({Attendees:attending});
 })
 
 //post /:eventId/attendance

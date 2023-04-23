@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
-const { Group, User, GroupImage, Membership, Event, Venue, Attendance } = require('../../db/models');
+const { Group, User, GroupImage, Membership, Event, Venue, Attendance, EventImage} = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const { group, error } = require('console');
@@ -37,6 +37,8 @@ router.get('', async (req,res) => {
       })
 
       let previewImage = groups[i].GroupImages[0];
+      previewImage = previewImage.toJSON();
+      previewImage = previewImage.url;
       let group = groups[i].toJSON();
       delete group.GroupImages;
       group.numMembers = amount.length;
@@ -44,10 +46,6 @@ router.get('', async (req,res) => {
 
       groupsList.push(group);
     }
-
-    // groups.forEach(group => {
-    //   groupsList.push(group.toJSON());
-    // })
 
     return res.json({Groups:groupsList});
 })
@@ -590,10 +588,16 @@ router.get('/:groupId/events',  async (req,res,next) => {
         eventId:event.id,
       }
     })
+    let eventImage = await EventImage.findOne({
+      where:{
+        eventId:event.id,
+      }
+    })
     event = event.toJSON();
     delete event.createdAt;
     delete event.updatedAt;
     event.numAttending = attendance.length;
+    event.previewImage = eventImage.url;
     pushedEvents.push(event);
   }
 
@@ -727,6 +731,11 @@ router.get('/:groupId/members', async (req,res,next) => {
   const {user} = req;
 
   const foundGroup = await Group.findByPk(req.params.groupId);
+
+  if(!foundGroup){
+    return next({message:"Group couldn't be found"})
+  }
+
   const members = await foundGroup.getMemberships();
   const users = await foundGroup.getUsers();
   const sendingUsers = [];
@@ -740,10 +749,6 @@ router.get('/:groupId/members', async (req,res,next) => {
       }
     }
   })
-
-  if(!foundGroup){
-    return next({message:"Group couldn't be found"})
-  }
 
   if(user.id == foundGroup.organizerId || cohostCheck == true){
     users.forEach(user => {

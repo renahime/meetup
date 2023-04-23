@@ -11,6 +11,7 @@ const { requireAuth } = require('../../utils/auth');
 const { url } = require('inspector');
 const e = require('express');
 const event = require('../../db/models/event');
+const { start } = require('repl');
 
 
 const router = express.Router();
@@ -57,9 +58,8 @@ router.get("/", async (req,res, next) => {
     })
   }
 
-
   if(name) {
-      if(typeof name !== 'string') {
+      if(!isNaN(name)) {
         errors.name = "Name must be a string";
         return next({
           message:"Bad Request",
@@ -70,30 +70,28 @@ router.get("/", async (req,res, next) => {
   }
 
   if(type){
-    if(type.toLowerCase() !== "online" && type.toLowerCase() !== 'In person'){
-      errors.type = "Type must be 'online' or 'In person'"
+    if(type.toLowerCase() !== "online" && type.toLowerCase() !== 'in person'){
+      errors.type = "Type must be 'Online' or 'In person'"
       return next({
         message:"Bad Request",
         errors:errors,
       })
     }
 
-    if(type == 'Virtual'){
-      where.type = 'Virtual';
+    if(type.toLowerCase() == 'online'){
+      where.type = 'Online';
     }
     else {
-      where.type = 'In-Person';
+      where.type = 'In person';
     }
   }
 
   if(startDate){
-    try{
-      new Date(startDate)
-    }
-    catch{
-      return next({message:"Start date must be a valid datetime"})
-    }
-
+      let date = new Date(startDate);
+      console.log(isNaN(date.valueOf()));
+      if(!(date instanceof Date) || isNaN(date.valueOf())){
+        return next({message:"Start date must be a valid datetime"})
+      }
     where.startDate =  { [Op.substring]: startDate };
   }
 
@@ -127,6 +125,7 @@ router.get("/", async (req,res, next) => {
     let attendance = await Attendance.findAll({
       where:{
         eventId:event.id,
+        status:'attending',
       }
     })
 
@@ -135,7 +134,6 @@ router.get("/", async (req,res, next) => {
     eventImage = eventImage.toJSON();
     eventImage = eventImage.url;
     attendance = attendance.length;
-
     eventsList.push({
       id:event.id,
       groupId:event.groupId,
@@ -152,7 +150,11 @@ router.get("/", async (req,res, next) => {
 
   }
 
-  return res.json({Events:eventsList});
+  return res.json({
+    Events:eventsList,
+    page:page,
+    size:size
+  });
 
 })
 
@@ -201,7 +203,7 @@ router.get('/:eventId', async (req,res,next) => {
 
   const payload = {
     id: payloadEvent.id,
-    groupid: payloadEvent.groupid,
+    groupId: payloadEvent.groupId,
     venueId: payloadEvent.venueId,
     name: payloadEvent.name,
     description: payloadEvent.description,
@@ -271,7 +273,7 @@ router.post('/:eventId/images',requireAuth, async (req,res,next) => {
 
 //put /:eventId
 router.put('/:eventId',requireAuth, async (req,res,next) => {
-  const event = await Event.findByPk(req.params.eventId);
+  let event = await Event.findByPk(req.params.eventId);
   const {user} = req;
   if(!event){
     return next({
@@ -281,7 +283,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
 
   const grabGroup = await Group.findOne({
     where:{
-      groupId:event.groupId,
+      id:event.groupId,
     }
   })
 
@@ -291,6 +293,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
       userId:user.id,
     }
   })
+
 
   if(!grabMembership){
     return next({message:"Forbidden"})
@@ -306,7 +309,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     let checkVenue = await Venue.findByPk(venueId);
     if(!checkVenue){
       errors.venueId = "Venue does not exist";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors
       })
@@ -317,7 +320,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
   if(name !== undefined){
     if(name.length < 5){
       errors.name = "Name must be at least 5 characters";
-      next({
+      return next({
         message:"Bad Request",
         errors:errors
       })
@@ -326,8 +329,8 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
   }
 
   if(type !== undefined){
-    if(type.toLowerCase() !== "virtual" && type.toLowerCase() !== "in-person"){
-      errors.type = "Type must be 'Virtual' or 'In-Person'"
+    if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
+      errors.type = "Type must be 'virtual' or 'In person'"
       return next({
         message:"Bad Request",
         errors:errors,
@@ -336,8 +339,9 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     event.type = type;
   }
 
+
   if(capacity !== undefined){
-    if(typeof capacity !== "Integer"){
+    if(typeof capacity !== "number"){
       errors.capacity = "Capacity must be an integer";
       return next({
         message:"Bad Request",
@@ -348,7 +352,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
   }
 
   if(price !== undefined){
-    if(price < 0){
+    if(price < 0 || typeof price !== 'number'){
       errors.price = "Price is invalid";
       return next({
         message:"Bad Request",
@@ -368,9 +372,10 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     }
     event.description = description;
   }
-
+  console.log(typeof startDate);
+  console.log(new Date(startDate));
   if(startDate !== undefined){
-    if(new Date(startDate) <= new Date()){
+    if((new Date(startDate) <= new Date())){
       errors.startDate = "Start date must be in the future";
       return next({
         message:"Bad Request",

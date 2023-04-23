@@ -596,7 +596,11 @@ router.get('/:groupId/events',  async (req,res,next) => {
     delete event.createdAt;
     delete event.updatedAt;
     event.numAttending = attendance.length;
-    event.previewImage = eventImage.url;
+    if(eventImage){
+      event.previewImage = eventImage.url;
+    } else {
+      event.previewImage = null;
+    }
     pushedEvents.push(event);
   }
 
@@ -627,7 +631,7 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
 
   if(!grabMembership){
     return next({message:"Forbidden"});
-  } else if (user.id !== group.organizerId && grabMembership.status !== 'co-host'){
+  } else if ((user.id !== group.organizerId && grabMembership.status !== 'co-host')){
     return next({message:"Forbidden"});
   }
 
@@ -803,7 +807,7 @@ router.post('/:groupId/membership', requireAuth, async (req, res, next) => {
   })
 
   return res.json({
-    userId:user.id,
+    memberId:newMember.id,
     status:'pending'
   });
 })
@@ -815,6 +819,12 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
   let checkGroup = await Group.findByPk(req.params.groupId);
   if(!checkGroup){
     return next({message:"Group couldn't be found"});
+  }
+
+  let checkUser = await User.findByPk(memberId)
+
+  if(!checkUser){
+    return next({message:"User couldn't be found"});
   }
 
   let foundMembership = await Membership.findOne({

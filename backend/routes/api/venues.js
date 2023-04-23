@@ -32,7 +32,7 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
     }
   });
 
-  if(grabMembership.status !== "host" && grabMembership.status!= "co-host"){
+  if(!grabMembership || (grabMembership.status !== "host" && grabMembership.status!= "co-host")){
     return next({message:"Forbidden"});
   }
 

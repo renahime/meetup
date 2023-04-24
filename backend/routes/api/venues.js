@@ -36,7 +36,7 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
     }
   });
 
-  if(!grabMembership || (grabMembership.status !== "host" && grabMembership.status!= "co-host")){
+  if(!grabMembership || (grabMembership.status !== "organizer" && grabMembership.status!= "co-host")){
     const err = new Error("Forbidden");
     err.title = "Forbidden";
     err.errors = {message:"User is not authorized"};
@@ -48,55 +48,55 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
 
   if(address !== undefined) {
     if(!address){
-      errors.address = 'Street address is required'
-      return next({
-        message: "Bad Request",
-        errors: errors,
-      });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Street address is required"};
+    err.status = 404;
+    return next(err);
     }
     foundVenue.address = address;
   }
 
   if(city !== undefined){
     if(!city){
-      errors.city = 'City is required'
-      return next({
-        message: "Bad Request",
-        errors: errors,
-      });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"City is required"};
+    err.status = 404;
+    return next(err);
     }
     foundVenue.city = city;
   }
 
   if(state !== undefined){
     if(!state){
-      errors.state = 'State is required'
-      return next({
-        message: "Bad Request",
-        errors: errors,
-      });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"State is required"};
+    err.status = 404;
+    return next(err);
     }
     foundVenue.state = state;
   }
 
   if(lat !== undefined && typeof lat !== "integer"){
       if(lat > 90 || lat < -90){
-        errors.lat = 'Latitude is not valid'
-        return next({
-          message: "Bad Request",
-          errors: errors,
-        });
+        const err = new Error("Resource not found.");
+        err.title = "Resource not found";
+        err.errors = {message:"Latitude is not valid"};
+        err.status = 404;
+        return next(err);
     }
     foundVenue.lat = lat;
   }
 
   if(lng !== undefined){
       if(lng > 180 || lng < -180 && typeof lng !== "integer"){
-        errors.lng = 'Longitude is not valid'
-        return next({
-          message: "Bad Request",
-          errors: errors,
-        });
+        const err = new Error("Resource not found.");
+        err.title = "Resource not found";
+        err.errors = {message:"Longitude is not valid"};
+        err.status = 404;
+        return next(err);
       }
       foundVenue.lng = lng;
     }

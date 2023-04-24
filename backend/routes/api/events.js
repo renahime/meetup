@@ -33,29 +33,29 @@ router.get("/", async (req,res, next) => {
     pagination.limit = size;
     pagination.offset = size * (page - 1);
   } else if (page > 10){
-    errors.page = "Page must be less than 10";
-    return next({
-      message:"Bad Request",
-      errors:errors,
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message: "Page must be less than 10"};
+    err.status = 400
+    return next(err)
   } else if (size > 20){
-    errors.size = "Size must be less than 20";
-    return next({
-      message:"Bad Request",
-      errors:errors,
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message: "Size must be less than 20"};
+    err.status = 400
+    return next(err)
   } else if (page < 1){
-    errors.page = "Page must be greater than or equal to 1";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message: "Page must be greater than or equal to 1"};
+    err.status = 400
+    return next(err)
   } else if (size < 1){
-    errors.size = "Size must be greater than or equal to 1";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message: "Size must be greater than or equal to 1"};
+    err.status = 400
+    return next(err)
   }
 
   if(name) {
@@ -87,7 +87,6 @@ router.get("/", async (req,res, next) => {
 
   if(startDate){
       let date = new Date(startDate);
-      console.log(isNaN(date.valueOf()));
       if(!(date instanceof Date) || isNaN(date.valueOf())){
         const err = new Error("Bad Request");
         err.title = "Bad Request";
@@ -445,8 +444,6 @@ router.delete('/:eventId',requireAuth, async (req,res,next) => {
   const deleteEvent = await Event.findByPk(req.params.eventId);
   const {user} = req;
 
-  console.log(deleteEvent.groupId);
-
   if(!deleteEvent){
     const err = new Error("Event couldn't be found.");
     err.title = "Resource not found";
@@ -653,7 +650,7 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
   if(status.toLowerCase() == 'pending'){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Current User must already be the organizer or have a membership to the group with the status of co-host"};
+    err.errors = {message:"Cannot change an attendance status to pending"};
     err.status = 403
     return next (err);
   }

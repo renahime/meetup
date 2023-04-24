@@ -14,6 +14,7 @@ const { resolveSoa } = require('dns');
 const { stat } = require('fs');
 const { isErrored } = require('stream');
 const eventimage = require('../../db/models/eventimage');
+const event = require('../../db/models/event');
 
 
 const router = express.Router();
@@ -531,44 +532,43 @@ router.post('/:groupId/venues', requireAuth, async (req,res,next) => {
 
 
   if(!address) {
-    errors.address = 'Street address is required'
-    return next({
-      message: "Bad Request",
-      errors: errors,
-    });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Street address is required"};
+    err.status = 404;
+    return next(err);
   }
 
   if(!city){
-    errors.city = 'City is required'
-    return next({
-      message: "Bad Request",
-      errors: errors,
-    });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"City is required"};
+    err.status = 404;
+    return next(err);
   }
 
   if(!state){
-    errors.state = 'State is required'
-    return next({
-      message: "Bad Request",
-      errors: errors,
-    });
-
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"State is required"};
+    err.status = 404;
+    return next(err);
   }
 
   if((lat > 90 || lat < -90) && typeof lat !== "integer"){
-    errors.lat = 'Latitude is not valid'
-    return next({
-      message: "Bad Request",
-      errors: errors,
-    });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Latitude is not valid"};
+    err.status = 404;
+    return next(err);
   }
 
   if(lng > 180 || lng < -180 && typeof lng !== "integer"){
-    errors.lng = 'Longitude is not valid'
-    return next({
-      message: "Bad Request",
-      errors: errors,
-    });
+    const err = new Error("Resource not found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Longitude is not valid"};
+    err.status = 404;
+    return next(err);
   }
 
   let newVenue = await foundGroup.createVenue({
@@ -706,68 +706,68 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
 
 
   if(!checkVenue){
-    errors.venueId = "Venue does not exist";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Resource Not Found");
+    err.title = "Resource Not Found";
+    err.errors = {message:"Venue does not exist"};
+    err.status = 404
+    return next(err)
   }
 
   if(name.length < 5){
-    errors.name = "Name must be at least 5 characters";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Name must be at least 5 characters"};
+    err.status = 400
+    return next(err)
   }
 
   if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
-    errors.type = "Type must be 'Online' or 'In person'"
-    return next({
-      message:"Bad Request",
-      errors:errors,
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Type must be 'Online' or 'In person"};
+    err.status = 400
+    return next(err)
   }
 
 
   if(typeof capacity !== "number"){
-    errors.capacity = "Capacity must be an integer";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Capacity must be an integer"};
+    err.status = 400
+    return next(err)
   }
 
   if(price < 0 || typeof price !== "number"){
-    errors.price = "Price is invalid";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Price is invalid"};
+    err.status = 400
+    return next(err)
   }
 
   if(!description){
-    errors.description = "Description is required"
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Description is required"};
+    err.status = 400
+    return next(err)
   }
 
   if(new Date(startDate) <= new Date()){
-    errors.startDate = "Start date must be in the future";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Start date must be in the future"};
+    err.status = 400
+    return next(err)
   }
 
   if(new Date(endDate) < new Date(startDate)){
-    errors.endDate = "End date is less than start date";
-    return next({
-      message:"Bad Request",
-      errors:errors
-    })
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"End date is less than start date"};
+    err.status = 400
+    return next(err)
   }
 
 
@@ -789,8 +789,21 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   })
 
   newEvent = newEvent.toJSON();
+  delete newEvent.createdAt;
+  delete newEvent.updatedAt;
 
-  return res.json(newEvent);
+  return res.json({
+    id:newEvent.id,
+    groupId:newEvent.groupId,
+    venueId:newEvent.venueId,
+    name:newEvent.name,
+    type:newEvent.type,
+    capacity:newEvent.capacity,
+    price:newEvent.price,
+    description:newEvent.description,
+    startDate:newEvent.startDate,
+    endDate:newEvent.endDate
+  });
 })
 
 //get /:groupId/members
@@ -808,19 +821,20 @@ router.get('/:groupId/members', async (req,res,next) => {
     return next(err);
   }
 
-  const members = await foundGroup.getMemberships();
+  const findMembership = await Membership.findOne({
+    where:{
+      groupId:req.params.groupId,
+      userId:user.id,
+    }
+  });
   const users = await foundGroup.getUsers();
   const sendingUsers = [];
 
   let cohostCheck = false;
 
-  members.forEach(member => {
-    if(user.id == member.userId){
-      if(member.status.toLowerCase() == 'co=host'){
-        cohostCheck = true;
-      }
-    }
-  })
+  if(findMembership && findMembership.status == 'co-host'){
+    cohostCheck = true;
+  }
 
   if(user.id == foundGroup.organizerId || cohostCheck == true){
     users.forEach(user => {
@@ -906,7 +920,7 @@ router.post('/:groupId/membership', requireAuth, async (req, res, next) => {
   })
 
   return res.json({
-    memberId:newMember.id,
+    memberId:user.id,
     status:'pending'
   });
 })
@@ -924,13 +938,6 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
     err.status = 404;
     return next(err);
   }
-  if(status.toLowerCase() !== 'pending' || status.toLowerCase() !== 'co-host' || status.toLowerCase() !== 'member'){
-    const err = new Error("Bad Request");
-    err.title = "Bad Request";
-    err.errors = {message:"Invalid Input"};
-    err.status = 400
-    return next(err)
-  }
 
   let checkUser = await User.findByPk(memberId)
 
@@ -942,21 +949,33 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
     return next(err)
   }
 
+  if(status.toLowerCase() !== 'pending' && status.toLowerCase() !== 'co-host' && status.toLowerCase() !== 'member'){
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Invalid Input"};
+    err.status = 400
+    return next(err)
+  }
+
+
+
   let foundMembership = await Membership.findOne({
     where:{
-      userId:memberId,
+      userId:user.id,
       groupId:req.params.groupId
     }
   });
 
-  let userStatus = await Membership.findOne({
+  let changeMembership = await Membership.findOne({
     where:{
       groupId:req.params.groupId,
-      userId:user.id,
+      userId:memberId,
     }
   });
 
-  if(userStatus.status.toLowerCase() !== 'co-host' && userStatus.status.toLowerCase() !== 'organizer'){
+
+
+  if(!foundMembership || (foundMembership.status.toLowerCase() !== 'co-host' && foundMembership.status.toLowerCase() !== 'organizer')){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
     err.errors = {message:"Current User must already be the organizer or have a membership to the group with the status of co-host"};
@@ -964,7 +983,7 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
     return next(err)
   }
 
-  if(!foundMembership){
+  if(!changeMembership){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
     err.errors = {message:"Membership between the user and the group does not exist"};
@@ -981,12 +1000,12 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
     return next(err)
   }
 
-  if(status.toLowerCase() == 'member' && foundMembership.status.toLowerCase() == 'pending')
-    foundMembership.status = 'member';
+  if(status.toLowerCase() == 'member' && changeMembership.status.toLowerCase() == 'pending')
+    changeMembership.status = 'member';
 
-  if(status.toLowerCase() == 'member' && foundMembership.status.toLowerCase() == 'co-host'){
+  if(status.toLowerCase() == 'member' && changeMembership.status.toLowerCase() == 'co-host'){
     if(user.id == checkGroup.organizerId){
-      foundMembership.status = 'member';
+      changeMembership.status = 'member';
     } else {
       const err = new Error("Forbidden");
       err.title = "Forbidden";
@@ -999,7 +1018,7 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
 
   if(status.toLowerCase() == 'co-host'){
     if(user.id == checkGroup.organizerId){
-      foundMembership.status = 'co-host';
+      changeMembership.status = 'co-host';
     } else {
       const err = new Error("Forbidden");
       err.title = "Forbidden";
@@ -1010,16 +1029,16 @@ router.put('/:groupId/membership', requireAuth, async(req,res,next) => {
   }
 
 
-  await foundMembership.save();
+  await changeMembership.save();
 
-  foundMembership = foundMembership.toJSON();
+  changeMembership = changeMembership.toJSON();
   checkGroup = checkGroup.toJSON();
 
   return res.json({
-    id:foundMembership.id,
-    groupId:foundMembership.groupId,
-    memberId:foundMembership.userId,
-    status:foundMembership.status
+    id:changeMembership.id,
+    groupId:changeMembership.groupId,
+    memberId:changeMembership.userId,
+    status:changeMembership.status
   });
 })
 

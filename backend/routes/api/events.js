@@ -94,7 +94,7 @@ router.get("/", async (req,res, next) => {
         err.status = 400
         return next(err)
       }
-    where.startDate =  { [Op.substring]: startDate };
+    where.startDate =  { [Op.eq]: startDate };
   }
 
   const events = await Event.findAll({
@@ -643,7 +643,7 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
     const err = new Error("Event couldn't be found.");
     err.title = "Resource not found";
     err.errors = {message:"Membership does not exist"};
-    err.status = 404;
+    err.status = 400
     return next(err);
   }
 
@@ -651,7 +651,7 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
     const err = new Error("Forbidden");
     err.title = "Forbidden";
     err.errors = {message:"Current User must already be the organizer or have a membership to the group with the status of co-host"};
-    err.status = 403
+    err.status = 400
     return next(err)
   }
 
@@ -659,7 +659,7 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
     const err = new Error("Bad Request");
     err.title = "Bad Request";
     err.errors = {message:"Cannot change an attendance status to pending"};
-    err.status = 403
+    err.status = 400
     return next (err);
   }
 

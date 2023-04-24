@@ -48,10 +48,10 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
 
   if(address !== undefined) {
     if(!address){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"Street address is required"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
     }
     foundVenue.address = address;
@@ -59,10 +59,10 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
 
   if(city !== undefined){
     if(!city){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"City is required"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
     }
     foundVenue.city = city;
@@ -70,10 +70,10 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
 
   if(state !== undefined){
     if(!state){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"State is required"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
     }
     foundVenue.state = state;
@@ -81,10 +81,10 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
 
   if(lat !== undefined && typeof lat !== "integer"){
       if(lat > 90 || lat < -90){
-        const err = new Error("Resource not found.");
-        err.title = "Resource not found";
+        const err = new Error("Bad Request.");
+        err.title = "Bad Request";
         err.errors = {message:"Latitude is not valid"};
-        err.status = 404;
+        err.status = 400;
         return next(err);
     }
     foundVenue.lat = lat;
@@ -92,10 +92,10 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
 
   if(lng !== undefined){
       if(lng > 180 || lng < -180 && typeof lng !== "integer"){
-        const err = new Error("Resource not found.");
-        err.title = "Resource not found";
+        const err = new Error("Bad Request.");
+        err.title = "Bad Request";
         err.errors = {message:"Longitude is not valid"};
-        err.status = 404;
+        err.status = 400;
         return next(err);
       }
       foundVenue.lng = lng;

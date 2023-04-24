@@ -180,6 +180,7 @@ router.get('/:eventId', async (req,res,next) => {
   const group = await event.getGroup({where:event.groupId});
   const payloadGroup = group.toJSON();
   delete payloadGroup.organizerId;
+  delete payloadGroup.about;
   delete payloadGroup.createdAt;
   delete payloadGroup.updatedAt;
   const venue = await event.getVenue({where:event.venueId});
@@ -408,8 +409,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     }
     event.description = description;
   }
-  console.log(typeof startDate);
-  console.log(new Date(startDate));
+
   if(startDate !== undefined){
     if((new Date(startDate) <= new Date())){
       const err = new Error("Bad Request");
@@ -558,13 +558,21 @@ router.post('/:eventId/attendance', requireAuth,async (req,res,next) =>{
 
   const findMembership = await Membership.findOne({
     where:{
-      userId:user.id,
+      userId:userId,
       groupId:findEvent.groupId
     }
   }
   )
 
-  if(!findMembership){
+  if(userId !== user.id){
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Only current user can request to attend event"};
+    err.status = 400
+    return next(err)
+  }
+
+  if(!findMembership || findMembership.status == "pending"){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
     err.errors = {message:"User is not in the group"};

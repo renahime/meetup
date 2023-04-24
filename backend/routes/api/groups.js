@@ -532,42 +532,42 @@ router.post('/:groupId/venues', requireAuth, async (req,res,next) => {
 
 
   if(!address) {
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"Street address is required"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
   if(!city){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"City is required"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
   if(!state){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"State is required"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
   if((lat > 90 || lat < -90) && typeof lat !== "integer"){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"Latitude is not valid"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
   if(lng > 180 || lng < -180 && typeof lng !== "integer"){
-    const err = new Error("Resource not found.");
-    err.title = "Resource not found";
+    const err = new Error("Bad Request.");
+    err.title = "Bad Request";
     err.errors = {message:"Longitude is not valid"};
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 

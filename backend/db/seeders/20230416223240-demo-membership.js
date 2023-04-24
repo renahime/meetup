@@ -13,28 +13,28 @@ module.exports = {
       {
         userId: 1,
         groupId: 1,
-        status: 'host',
+        status: 'organizer',
       },
       {
         userId: 2,
         groupId: 2,
-        status: 'host',
+        status: 'organizer',
       },
       {
         userId: 3,
         groupId: 3,
-        status: 'host',
+        status: 'organizer',
       },
 
       {
         userId: 4,
         groupId: 4,
-        status: 'host',
+        status: 'organizer',
       },
       {
         userId: 5,
         groupId: 5,
-        status: 'host',
+        status: 'organizer',
       },
       {
         userId: 6,

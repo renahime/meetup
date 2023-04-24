@@ -20,7 +20,11 @@ router.delete('/:imageId', requireAuth, async (req,res,next) => {
   const foundImage = await GroupImage.findByPk(req.params.imageId);
   console.log(foundImage);
   if(!foundImage){
-    return next({message:"Group Image couldn't be found"})
+    const err = new Error("GroupImage couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"GroupImage couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
   const  findMembership = await Membership.findOne({
     where:{
@@ -31,8 +35,12 @@ router.delete('/:imageId', requireAuth, async (req,res,next) => {
 
   console.log(findMembership);
 
-  if((!findMembership) || (findMembership.status !== 'host' && findMembership.status !== 'co-host')){
-    return next({message:"Forbidden"})
+  if((!findMembership) || (findMembership.status !== 'organizer' && findMembership.status !== 'co-host')){
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
   }
 
   await foundImage.destroy();

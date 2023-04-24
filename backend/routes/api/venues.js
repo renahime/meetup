@@ -22,7 +22,11 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
   const errors = {};
 
   if(!foundVenue){
-    return next({message:"Venue couldn't be found"});
+    const err = new Error("Venue couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Venue couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   let grabMembership = await Membership.findOne({
@@ -33,7 +37,11 @@ router.put('/:venueId',requireAuth, async (req,res,next) => {
   });
 
   if(!grabMembership || (grabMembership.status !== "host" && grabMembership.status!= "co-host")){
-    return next({message:"Forbidden"});
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
   }
 
   const {address, city, state, lat, lng} = req.body;

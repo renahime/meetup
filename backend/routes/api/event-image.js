@@ -17,7 +17,11 @@ router.delete('/:imageId', requireAuth, async (req,res,next) => {
   const {user} = req;
   const foundImage = await EventImage.findByPk(req.params.imageId);
   if(!foundImage){
-    return next({message:"Group Image couldn't be found"})
+    const err = new Error("EventImage couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"EventImage couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const findEvent = await Event.findByPk(foundImage.eventId);
@@ -30,8 +34,12 @@ router.delete('/:imageId', requireAuth, async (req,res,next) => {
   })
 
 
-  if((!findMembership) || (findMembership.status !== 'host' && findMembership.status !== 'co-host')){
-    return next({message:"Forbidden"})
+  if((!findMembership) || (findMembership.status !== 'organizer' && findMembership.status !== 'co-host')){
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
   }
 
   await foundImage.destroy();

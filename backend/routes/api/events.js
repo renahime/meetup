@@ -60,24 +60,23 @@ router.get("/", async (req,res, next) => {
 
   if(name) {
       if(!isNaN(name)) {
-        errors.name = "Name must be a string";
-        return next({
-          message:"Bad Request",
-          errors:errors,
-        })
+        const err = new Error("Bad Request");
+        err.title = "Bad Request";
+        err.errors = {message:"Name must be a string"};
+        err.status = 400
+        return next(err)
       }
-  where.name = { [Op.substring]: name };
+      where.name = { [Op.substring]: name };
   }
 
   if(type){
     if(type.toLowerCase() !== "online" && type.toLowerCase() !== 'in person'){
-      errors.type = "Type must be 'Online' or 'In person'"
-      return next({
-        message:"Bad Request",
-        errors:errors,
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message:"Type must be 'Online' or 'In person'"};
+      err.status = 400
+      return next(err)
     }
-
     if(type.toLowerCase() == 'online'){
       where.type = 'Online';
     }
@@ -90,7 +89,11 @@ router.get("/", async (req,res, next) => {
       let date = new Date(startDate);
       console.log(isNaN(date.valueOf()));
       if(!(date instanceof Date) || isNaN(date.valueOf())){
-        return next({message:"Start date must be a valid datetime"})
+        const err = new Error("Bad Request");
+        err.title = "Bad Request";
+        err.errors = {message:"Start date must be a valid datetime"};
+        err.status = 400
+        return next(err)
       }
     where.startDate =  { [Op.substring]: startDate };
   }
@@ -122,6 +125,13 @@ router.get("/", async (req,res, next) => {
       attributes:['url']
     })
 
+    if(eventImage){
+      eventImage = eventImage.toJSON();
+      eventImage = eventImage.url;
+    } else {
+      eventImage = "There are no images for this event"
+    }
+
     let attendance = await Attendance.findAll({
       where:{
         eventId:event.id,
@@ -131,8 +141,6 @@ router.get("/", async (req,res, next) => {
 
 
     event = event.toJSON();
-    eventImage = eventImage.toJSON();
-    eventImage = eventImage.url;
     attendance = attendance.length;
     eventsList.push({
       id:event.id,
@@ -147,7 +155,6 @@ router.get("/", async (req,res, next) => {
       Group:event.Group,
       Venue:event.Venue
     })
-
   }
 
   return res.json({
@@ -163,9 +170,11 @@ router.get('/:eventId', async (req,res,next) => {
   const event = await Event.findByPk(req.params.eventId);
 
   if(!event){
-    return next({
-      message:"Event couldn't be found",
-    })
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const payloadEvent = event.toJSON();
@@ -175,7 +184,7 @@ router.get('/:eventId', async (req,res,next) => {
   delete payloadGroup.createdAt;
   delete payloadGroup.updatedAt;
   const venue = await event.getVenue({where:event.venueId});
-  let payloadVenue = null;
+  let payloadVenue = "There is no venue associated with this event";
   if(venue){
     payloadVenue = venue.toJSON();
     delete payloadVenue.groupId;
@@ -188,11 +197,15 @@ router.get('/:eventId', async (req,res,next) => {
     },
     attributes:['eventId', 'url', 'preview']
   });
-  const payloadEventImages = [];
-  eventImages.forEach(event =>{
-    event = event.toJSON();
-    payloadEventImages.push(event);
-  })
+  let payloadEventImages = [];
+  if(eventImages.length !== 0){
+    eventImages.forEach(event =>{
+      event = event.toJSON();
+      payloadEventImages.push(event);
+    })
+  } else
+    payloadEventImages = "There are no images for this event";
+
 
   const grabAttendance = await Attendance.findAll({
     where:{
@@ -228,9 +241,11 @@ router.post('/:eventId/images',requireAuth, async (req,res,next) => {
   const {user} = req;
 
   if(!event){
-    return next({
-      message:"Event couldn't be found",
-    })
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const grabMembership = await Membership.findOne({
@@ -248,11 +263,23 @@ router.post('/:eventId/images',requireAuth, async (req,res,next) => {
   })
 
   if(!grabMembership){
-    return next({message:"Forbidden"});
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
   } else if(!grabAttendance){
-    return next({message:"Forbidden"});
-  } else if(grabMembership.status !== 'host' && grabMembership.status !== 'co-host' && grabAttendance.status !== 'attending'){
-    return next({message:"Forbidden"});
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
+  } else if(grabMembership.status !== 'organizer' && grabMembership.status !== 'co-host' && grabAttendance.status !== 'attending'){
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
   }
 
   const {preview, url} = req.body;
@@ -276,9 +303,11 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
   let event = await Event.findByPk(req.params.eventId);
   const {user} = req;
   if(!event){
-    return next({
-      message:"Event couldn't be found",
-    })
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const grabGroup = await Group.findOne({
@@ -296,10 +325,18 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
 
 
   if(!grabMembership){
-    return next({message:"Forbidden"})
-  } else if (user.id !== grabGroup.organizerId && grabMembership.status !== 'co-host'){
-    return next({message:"Forbidden"});
-  }
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)}
+      else if (user.id !== grabGroup.organizerId && grabMembership.status !== 'co-host'){
+      const err = new Error("Forbidden");
+      err.title = "Forbidden";
+      err.errors = {message:"User is not authorized"};
+      err.status = 403
+      return next(err)
+    }
 
 
   const errors = {};
@@ -308,33 +345,33 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
   if(venueId !== undefined){
     let checkVenue = await Venue.findByPk(venueId);
     if(!checkVenue){
-      errors.venueId = "Venue does not exist";
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message:"Venue does not exist"};
+      err.status = 400
+      return next(err)
     }
     event.venueId = venueId;
   }
 
   if(name !== undefined){
     if(name.length < 5){
-      errors.name = "Name must be at least 5 characters";
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Name must be at least 5 characters"};
+      err.status = 400
+      return next(err)
     }
     event.name = name;
   }
 
   if(type !== undefined){
     if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
-      errors.type = "Type must be 'virtual' or 'In person'"
-      return next({
-        message:"Bad Request",
-        errors:errors,
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Type must be 'Online' or 'In person'"};
+      err.status = 400
+      return next(err)
     }
     event.type = type;
   }
@@ -342,33 +379,33 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
 
   if(capacity !== undefined){
     if(typeof capacity !== "number"){
-      errors.capacity = "Capacity must be an integer";
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Capacity must be an integer"};
+      err.status = 400
+      return next(err)
     }
     event.capacity = capacity;
   }
 
   if(price !== undefined){
     if(price < 0 || typeof price !== 'number'){
-      errors.price = "Price is invalid";
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Price is invalid"};
+      err.status = 400
+      return next(err)
     }
     event.price = price;
   }
 
   if(description !== undefined){
     if(!description){
-      errors.description = "Description is required"
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Description is required"};
+      err.status = 400
+      return next(err)
     }
     event.description = description;
   }
@@ -376,28 +413,30 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
   console.log(new Date(startDate));
   if(startDate !== undefined){
     if((new Date(startDate) <= new Date())){
-      errors.startDate = "Start date must be in the future";
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Start date must be in the future"};
+      err.status = 400
+      return next(err)
     }
     event.startDate = startDate;
   }
 
   if(endDate !== undefined){
     if(new Date(endDate) < new Date(startDate)){
-      errors.endDate = "End date is less than start date";
-      return next({
-        message:"Bad Request",
-        errors:errors
-      })
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "End date is less than start date"};
+      err.status = 400
+      return next(err)
     }
     event.endDate = endDate;
   }
 
   await event.save();
   event = event.toJSON();
+  delete event.createdAt;
+  delete event.updatedAt;
   return res.json(event);
 })
 
@@ -409,9 +448,11 @@ router.delete('/:eventId',requireAuth, async (req,res,next) => {
   console.log(deleteEvent.groupId);
 
   if(!deleteEvent){
-    return next({
-      message:"Event couldn't be found",
-    })
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const grabGroup = await Group.findOne({
@@ -428,9 +469,17 @@ router.delete('/:eventId',requireAuth, async (req,res,next) => {
   })
 
   if(!grabMembership){
-    return next({message:"Forbidden"})
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"User is not authorized"};
+    err.status = 403
+    return next(err)
   } else if (user.id !== grabGroup.organizerId && grabMembership.status !== 'co-host'){
-    return next({message:"Forbidden"});
+      const err = new Error("Forbidden");
+      err.title = "Forbidden";
+      err.errors = {message:"User is not authorized"};
+      err.status = 403
+      return next(err)
   }
 
   await deleteEvent.destroy();
@@ -447,7 +496,11 @@ router.get('/:eventId/attendees', async (req,res,next) => {
   let attending = [];
 
   if(!foundEvent){
-    return next({message:"Event couldn't be found"});
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const grabMembership = await Membership.findOne({
@@ -456,9 +509,6 @@ router.get('/:eventId/attendees', async (req,res,next) => {
       groupId: foundEvent.groupId
     }
   })
-  console.log(user.id);
-  console.log(foundEvent.groupId);
-  console.log(grabMembership);
 
   const grabAttendance = await Attendance.findAll({
     where:{
@@ -484,8 +534,7 @@ router.get('/:eventId/attendees', async (req,res,next) => {
     }
     if(attendance.status == 'pending') {
       if(grabMembership){
-        console.log(grabMembership.status == 'host' || grabMembership.status == 'co-host')
-        if (grabMembership.status == 'host' || grabMembership.status == 'co-host')
+        if (grabMembership.status == 'organizer' || grabMembership.status == 'co-host')
         attending.push(newAttendance);
       }
     } else {
@@ -503,7 +552,11 @@ router.post('/:eventId/attendance', requireAuth,async (req,res,next) =>{
 
   const findEvent = await Event.findByPk(req.params.eventId);
   if(!findEvent){
-    return next({message:"Event couldn't be found"});
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   const findMembership = await Membership.findOne({
@@ -515,7 +568,11 @@ router.post('/:eventId/attendance', requireAuth,async (req,res,next) =>{
   )
 
   if(!findMembership){
-    return next({message:"User is not in the group"})
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"User is not in the group"};
+    err.status = 400
+    return next(err)
   }
 
   let findAttendace = await Attendance.findOne({
@@ -535,9 +592,17 @@ router.post('/:eventId/attendance', requireAuth,async (req,res,next) =>{
     })
   } else {
     if(findAttendace.status.toLowerCase() == 'pending'){
-      return next({message:"Attendance has already been requested"})
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message:"Attendance has already been requested"};
+      err.status = 400
+      return next(err)
     } else{
-      return next({message:"User is already an attendee of the event"})
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message:"User is already an attendee of the event"};
+      err.status = 400
+      return next(err)
     }
   }
 
@@ -555,7 +620,11 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
   let checkEvent = await Event.findByPk(req.params.eventId);
 
   if(!checkEvent){
-    return next({message:"Event couldn't be found"});
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   let userStatus = await Membership.findOne({
@@ -566,15 +635,27 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
   })
 
   if(!userStatus){
-    return next({message:"Membership does not exist"})
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Membership does not exist"};
+    err.status = 404;
+    return next(err);
   }
 
-  if(userStatus.status.toLowerCase() !== 'co-host' && userStatus.status.toLowerCase() !== 'host'){
-    return next({message:"Current User must already be the organizer or have a membership to the group with the status of co-host"})
+  if(userStatus.status.toLowerCase() !== 'co-host' && userStatus.status.toLowerCase() !== 'organizer'){
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"Current User must already be the organizer or have a membership to the group with the status of co-host"};
+    err.status = 403
+    return next(err)
   }
 
   if(status.toLowerCase() == 'pending'){
-    return next ({message:"Cannot change an attendance status to pending"});
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message:"Current User must already be the organizer or have a membership to the group with the status of co-host"};
+    err.status = 403
+    return next (err);
   }
 
   let foundAttendance = await Attendance.findOne({
@@ -585,7 +666,11 @@ router.put('/:eventId/attendance',requireAuth,  async (req,res,next) =>{
   })
 
   if(!foundAttendance){
-    return next({message:"Attendance between the user and the event does not exist"});
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Attendance between the user and the event does not exist"};
+    err.status = 404;
+    return next(err);
   }
 
   foundAttendance.status = 'attending';
@@ -608,7 +693,11 @@ router.delete('/:eventId/attendance', requireAuth, async (req,res,next) => {
   let findEvent = await Event.findByPk(req.params.eventId);
 
   if(!findEvent){
-    return next({message:"Event couldn't be found"});
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Event couldn't be found"};
+    err.status = 404;
+    return next(err);
   }
 
   let userStatus = await Membership.findOne({
@@ -620,8 +709,12 @@ router.delete('/:eventId/attendance', requireAuth, async (req,res,next) => {
 
   //return res.json(userStatus);
 
-  if((!userStatus) || (userStatus.status !== 'host' && userId !== user.id)){
-    return next({message:"Only the User or organizer may delete an Attendance"})
+  if((!userStatus) || (userStatus.status !== 'organizer' && userId !== user.id)){
+    const err = new Error("Forbidden");
+    err.title = "Forbidden";
+    err.errors = {message:"Only the User or organizer may delete an Attendance"};
+    err.status = 403
+    return next(err)
   }
 
   let findAttendace = await Attendance.findOne({
@@ -632,7 +725,11 @@ router.delete('/:eventId/attendance', requireAuth, async (req,res,next) => {
   })
 
   if(!findAttendace){
-    return next({message:"Attendance does not exist for this User"})
+    const err = new Error("Event couldn't be found.");
+    err.title = "Resource not found";
+    err.errors = {message:"Attendance does not exist for this User"};
+    err.status = 404;
+    return next(err);
   }
 
   await findAttendace.destroy();

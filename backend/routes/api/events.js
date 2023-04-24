@@ -94,7 +94,7 @@ router.get("/", async (req,res, next) => {
         err.status = 400
         return next(err)
       }
-      where.startDate = startDate
+    where.startDate =  { [Op.eq]: startDate.toDate() };
   }
 
   const events = await Event.findAll({

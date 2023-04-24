@@ -902,13 +902,13 @@ router.post('/:groupId/membership', requireAuth, async (req, res, next) => {
       const err = new Error("Bad Request");
       err.title = "Bad Request";
       err.errors = {message:"User is already a member of the group"};
-      err.status = 403
+      err.status = 400
       return next(err)
     } else {
       const err = new Error("Bad Request");
       err.title = "Bad Request";
       err.errors = {message:"Membership has already been requested"};
-      err.status = 403
+      err.status = 400
       return next(err)
     }
   }

@@ -76,9 +76,10 @@ router.delete(
 
 // Restore session user
 router.get(
-  '/', requireAuth,
+  '/',
   (req, res) => {
     const { user } = req;
+    console.log("*******************", user ,"**********");
     if (user) {
       const safeUser = {
         id: user.id,

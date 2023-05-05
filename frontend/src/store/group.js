@@ -87,19 +87,33 @@ export const updateGroup = (group) => async (dispatch) => {
   }
 }
 
+export const deleteGroup = (groupId) => async (dispatch) => {
+  const response = await fetch(`/api/reports/${groupId}`, {
+    method:'DELETE',
+  });
+
+  if(response.ok) {
+    dispatch(removeGroup(groupId));
+  } else {
+    const errors = await response.json();
+    return errors;
+  }
+}
+
 //** Group Reducer: */
 const groupReducer = (state = {}, action) => {
   switch(action.type) {
     case LOAD_GROUPS: {
       const groupsState = {};
-      action.groups.forEach((group) =>{
+      action.groups.Groups.forEach((group) =>{
         groupsState[group.id] = group;
       })
-    };
+      console.log(action.groups);
     return groupsState;
+    };
   case RECEIVE_GROUP:
     return {...state, [action.group.id]: action.group};
-  case UPDATE_REPORT:
+  case UPDATE_GROUP:
     return {...state, [action.group.id]: action.group};
   case REMOVE_GROUP:
     const newState = {...state};

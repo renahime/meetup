@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Switch } from "react-router-dom";
 import * as sessionActions from "./store/session";
+import * as groupActions from "./store/group";
 import Navigation from "./components/Navigation";
 
 function App() {

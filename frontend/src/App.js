@@ -19,12 +19,21 @@ function App() {
             <Navigation isLoaded={isLoaded} />
             {isLoaded &&
             <Switch>
-              <Route exact path="/groups">
-                <GroupList></GroupList>
-              </Route>
             </Switch>
           }
-          <HomeNavigation></HomeNavigation>
+          </div>
+          <div>
+          <Switch>
+              <Route exact path="/groups" component={GroupList}>
+              </Route>
+            </Switch>
+          </div>
+          <div>
+            <Switch>
+              <Route exact path="/">
+              <HomeNavigation></HomeNavigation>
+              </Route>
+            </Switch>
           </div>
     </div>
   );

@@ -1,0 +1,9 @@
+h3{
+  font-family: arial;
+  font-weight: normal;
+}
+
+.title{
+  border-bottom: 2px;
+  border-color: black;
+}

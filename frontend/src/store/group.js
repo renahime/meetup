@@ -108,7 +108,6 @@ const groupReducer = (state = {}, action) => {
       action.groups.Groups.forEach((group) =>{
         groupsState[group.id] = group;
       })
-      console.log(action.groups);
     return groupsState;
     };
   case RECEIVE_GROUP:

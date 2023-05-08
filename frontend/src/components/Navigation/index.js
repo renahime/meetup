@@ -8,8 +8,10 @@ import './Navigation.css';
 
 function Navigation({ isLoaded }){
   const sessionUser = useSelector(state => state.session.user);
-
+  console.log(isLoaded);
+  console.log(sessionUser)
   return (
+    <div className='Border'>
     <div className='Header'>
     <img src={logo} className='logo'></img>
     <ul>
@@ -22,6 +24,7 @@ function Navigation({ isLoaded }){
         </li>
       )}
     </ul>
+    </div>
     </div>
   );
 }

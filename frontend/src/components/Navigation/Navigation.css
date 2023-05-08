@@ -2,5 +2,9 @@
   height:100px;
   width: 100px;
   float:left;
-  padding-left:30px
+  padding-left:30px;
+}
+
+.border{
+  border-bottom: solid;
 }

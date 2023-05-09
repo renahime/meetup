@@ -28,7 +28,7 @@ const GroupList = () => {
     <div className='GroupList'>
       {events.map((event) => {
         return(
-        <NavLink path to={`/events/${event.id}`}>
+        <NavLink key = {event.groupId} path to={`/events/${event.id}`}>
         <div className='Event'>
           <div className='ImageContainer'>
             <img src={event.previewImage}></img>

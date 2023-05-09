@@ -178,12 +178,16 @@ router.get('/:eventId', async (req,res,next) => {
   }
 
   const payloadEvent = event.toJSON();
-  const group = await event.getGroup({where:event.groupId});
+  const group = await Group.findByPk(event.groupId);
   const payloadGroup = group.toJSON();
-  delete payloadGroup.organizerId;
-  delete payloadGroup.about;
-  delete payloadGroup.createdAt;
-  delete payloadGroup.updatedAt;
+  const organizer = await User.findByPk(payloadGroup.organizerId, {
+    attributes:['id', 'firstName', 'lastName']
+  });
+  let groupImage = await GroupImage.findAll({where:{
+    groupId:event.groupId,
+  }})
+  payloadGroupImage = groupImage[0].url;
+  let payloadOrganizer = organizer.toJSON();
   const venue = await event.getVenue({where:event.venueId});
   let payloadVenue = "There is no venue associated with this event";
   if(venue){
@@ -229,7 +233,9 @@ router.get('/:eventId', async (req,res,next) => {
     numAttending: grabAttendance.length,
     Group: payloadGroup,
     Venue: payloadVenue,
-    EventImages: payloadEventImages
+    EventImages: payloadEventImages,
+    GroupImage: payloadGroupImage,
+    Organizer: payloadOrganizer,
   }
 
   return res.json(payload);

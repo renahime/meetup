@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from 'react-redux';
+import { NavLink } from "react-router-dom";
 import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal';
@@ -42,10 +43,12 @@ function ProfileButton({ user }) {
 
   return (
     <>
-    {user && (
+    {user && (<>
+      <NavLink className="GroupNav" to='/newgroup'>Start a new Group</NavLink>
       <button onClick={openMenu}>
       <i className="fas fa-user-circle" />
     </button>
+    </>
     )}
       <ul className={ulClassName} ref={ulRef}>
         {user && (

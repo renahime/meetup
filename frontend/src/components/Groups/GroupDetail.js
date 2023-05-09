@@ -4,13 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchGroup } from '../../store/group';
 import { fetchEvents } from '../../store/event';
 
-const GroupDetail = () => {
+const GroupDetail = ({key}) => {
   const {groupId} = useParams();
   let group = useSelector(state => state.groups[groupId]);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
-  console.log(groupId);
+  console.log(key);
+
 
   useEffect(() => {
     dispatch(fetchGroup(groupId));

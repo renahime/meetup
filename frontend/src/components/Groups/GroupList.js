@@ -2,18 +2,15 @@ import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGroups } from '../../store/group';
-import './Groups.css'
+import './Groups.css';
+import { NavLink, Route } from 'react-router-dom';
 const GroupList = () => {
   const groupsObj =  useSelector((state) => state.groups);
   const groups = Object.values(groupsObj);
   const dispatch = useDispatch();
-
-  console.log(groups)
   useEffect(() => {
     dispatch(fetchGroups());
   }, [dispatch]);
-
-  console.log(groups)
 
   return(
     <div>
@@ -28,7 +25,7 @@ const GroupList = () => {
     <div className='GroupList'>
       {groups.map((group) => {
         return(
-        <Link path to={`/groups/${group.id}`}>
+        <NavLink key={group.id} to={`/groups/${group.id}`}>
         <div className='Group'>
           <div className='ImageContainer'>
             <img src={group.previewImage}></img>
@@ -42,9 +39,10 @@ const GroupList = () => {
               <h3 className='NumEvents'>## Events</h3>
               </div>
           </div>
-          </Link>)
+          </NavLink>)
       })}
     </div>
+
     </div>
   )
 }

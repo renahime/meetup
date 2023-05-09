@@ -5,6 +5,9 @@ import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
 import HomeNavigation from "./components/Navigation/HomePage";
 import GroupList from "./components/Groups/GroupList";
+import EventList from './components/Events/EventList';
+import GroupDetail from './components/Groups/GroupDetail'
+import EventDetail from "./components/Events/EventDetail";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,8 +27,10 @@ function App() {
           </div>
           <div>
           <Switch>
-              <Route exact path="/groups" component={GroupList}>
-              </Route>
+              <Route exact path="/groups" component={GroupList}></Route>
+              <Route exact path="/events" component={EventList}></Route>
+              <Route path="/groups/:groupId" component={GroupDetail}></Route>
+              <Route path='/events/:eventId' component={EventDetail}></Route>
             </Switch>
           </div>
           <div>

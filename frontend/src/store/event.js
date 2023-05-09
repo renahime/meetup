@@ -5,55 +5,55 @@ export const UPDATE_EVENT = 'events/UPDATE_EVENT';
 export const REMOVE_EVENT = 'events/REMOVE_EVENT';
 
 /**  Action Creators: */
-export const loadGroups = (events) => ({
+export const loadEvents = (events) => ({
   type: LOAD_EVENTS,
   events,
 })
 
-export const receiveGroup = (event) => ({
+export const receiveEvent = (event) => ({
   type:RECEIVE_EVENT,
   event,
 })
 
-export const editGroup = (event) => ({
+export const editEvent = (event) => ({
   type:UPDATE_EVENT,
   event
 })
 
-export const removeGroup = (eventId) => ({
+export const removeEvent = (eventId) => ({
     type: REMOVE_EVENT,
     eventId,
 })
 
 /** Thunk Action Creators: */
-export const fetchGroups = () => async(dispatch) => {
+export const fetchEvents = () => async(dispatch) => {
   const response = await fetch(`/api/events`, {
     method: 'GET',
   }
   )
   if(response.ok){
     const events = await response.json();
-    dispatch(loadGroups(events));
+    dispatch(loadEvents(events));
   } else {
     const errors = await response.json();
     return errors;
   }
 }
 
-export const fetchGroup = (eventId) => async (dispatch) => {
+export const fetchEvent = (eventId) => async (dispatch) => {
   const response = await fetch(`/api/events/${eventId}`, {
     method:'GET',
   });
   if(response.ok){
     const event = await response.json();
-    dispatch(receiveGroup(event));
+    dispatch(receiveEvent(event));
   } else {
     const errors = await response.json();
     return errors;
   }
 }
 
-export const createGroup = (event) => async (dispatch) => {
+export const createEvent = (event) => async (dispatch) => {
   const response = await fetch(`/api/events`, {
     method:'POST',
     headers:{ 'Content-Type': 'application/json' },
@@ -61,16 +61,16 @@ export const createGroup = (event) => async (dispatch) => {
   })
 
   if (response.ok){
-    const newGroup = await response.json();
-    dispatch(receiveGroup(newGroup));
-    return newGroup;
+    const newEvent = await response.json();
+    dispatch(receiveEvent(newEvent));
+    return newEvent;
   } else {
     const errors = await response.json();
     return errors;
   }
 }
 
-export const updateGroup = (event) => async (dispatch) => {
+export const updateEvent = (event) => async (dispatch) => {
   const response = await fetch(`/api/events/${event.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -78,29 +78,29 @@ export const updateGroup = (event) => async (dispatch) => {
   });
 
   if(response.ok) {
-    const updatedGroup = await response.json();
-    dispatch(editGroup(updatedGroup));
-    return updatedGroup;
+    const updatedEvent = await response.json();
+    dispatch(editEvent(updatedEvent));
+    return updatedEvent;
   } else {
     const errors = await response.json();
     return errors;
   }
 }
 
-export const deleteGroup = (eventId) => async (dispatch) => {
+export const deleteEvent = (eventId) => async (dispatch) => {
   const response = await fetch(`/api/reports/${eventId}`, {
     method:'DELETE',
   });
 
   if(response.ok) {
-    dispatch(removeGroup(eventId));
+    dispatch(removeEvent(eventId));
   } else {
     const errors = await response.json();
     return errors;
   }
 }
 
-//** Group Reducer: */
+//** Event Reducer: */
 const eventReducer = (state = {}, action) => {
   switch(action.type) {
     case LOAD_EVENTS: {

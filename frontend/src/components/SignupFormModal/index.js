@@ -35,7 +35,9 @@ function SignupFormModal() {
             setErrors(data.errors);
           }
         });
-    }
+    } else if(!email.includes('@')){
+      return setErrors({confirmEmail: "The provided email is invalid"});
+     }
     return setErrors({
       confirmPassword: "Confirm Password field must be the same as the Password field"
     });

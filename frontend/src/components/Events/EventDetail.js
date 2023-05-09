@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEvent } from '../../store/event';
+import { fetchGroup } from '../../store/group';
 
 const EventDetail = () => {
   const {eventId} = useParams();
@@ -10,15 +11,12 @@ const EventDetail = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
       dispatch(fetchEvent(eventId));
       setTimeout(() => {
         setLoading(false);
       }, 500)
   },[dispatch,eventId]);
-
-  console.log(event);
 
   return loading ? (<div><h1>Loading...</h1></div>) : (
   <div>

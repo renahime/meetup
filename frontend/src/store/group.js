@@ -1,3 +1,5 @@
+import { csrfFetch } from "./csrf";
+
 /** Action Type Constants: */
 export const LOAD_GROUPS = 'groups/LOAD_GROUPS';
 export const RECEIVE_GROUP = 'groups/RECEIVE_GROUP';
@@ -88,9 +90,12 @@ export const updateGroup = (group) => async (dispatch) => {
 }
 
 export const deleteGroup = (groupId) => async (dispatch) => {
-  const response = await fetch(`/api/reports/${groupId}`, {
+  const response = await csrfFetch(`/api/groups/${groupId}`, {
+    credentials: 'same-origin',
     method:'DELETE',
   });
+
+  // console.log(response);
 
   if(response.ok) {
     dispatch(removeGroup(groupId));

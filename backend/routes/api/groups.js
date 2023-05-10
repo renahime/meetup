@@ -38,6 +38,9 @@ router.get('', async (req,res) => {
           groupId:groups[i].id,
         }
       })
+
+      let organizer = await User.findByPk(groups[i].organizerId);
+
       if(previewImage){
         previewImage = previewImage.toJSON();
         previewImage = previewImage.url;
@@ -48,6 +51,7 @@ router.get('', async (req,res) => {
       delete group.GroupImages;
       group.numMembers = amount.length;
       group.previewImage = previewImage;
+      group.Organizer = organizer;
 
       groupsList.push(group);
     }

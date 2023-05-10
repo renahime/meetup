@@ -2,6 +2,7 @@ import GroupForm from "./GroupForm"
 
 const createGroupForm = () => {
   const group = {
+    location: '',
     city: '',
     state: '',
     name: '',
@@ -16,3 +17,5 @@ const createGroupForm = () => {
     </GroupForm>
   )
 }
+
+export default createGroupForm;

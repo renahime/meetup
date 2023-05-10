@@ -44,7 +44,7 @@ function ProfileButton({ user }) {
   return (
     <>
     {user && (<>
-      <NavLink className="GroupNav" to='/newgroup'>Start a new Group</NavLink>
+      <NavLink className="GroupNav" to='/groups/new'>Start a new Group</NavLink>
       <button onClick={openMenu}>
       <i className="fas fa-user-circle" />
     </button>

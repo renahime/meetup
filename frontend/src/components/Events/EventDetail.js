@@ -8,30 +8,18 @@ import DeleteModal from './EventDelete';
 const EventDetail = () => {
   const {eventId} = useParams();
   let event = useSelector(state => state.events[eventId]);
-  // const sessionUser = useSelector(state => state.session.user);
+  const sessionUser = useSelector(state => state.session.user);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [loading, setLoading] = useState(true);
-  const [groupOwner, setGroupOwner] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // console.log(sessionUser.id);
-  // console.log(event.Organizer);
 
 
   useEffect(() => {
       dispatch(fetchEvent(eventId));
-      setTimeout(() => {
-        // if(sessionUser){
-        //   if(event.Organizer.id === sessionUser.id){
-        //     setGroupOwner(true);
-        //   } else setGroupOwner(false)}
-        setLoading(false);
-      }, 500)
-  },[dispatch,eventId,groupOwner]);
+  },[dispatch,eventId]);
 
-
-  return loading ? (<div><h1>Loading...</h1></div>) : (
+  return !event ? (<div><h1>Loading...</h1></div>) : (
   <div>
     <div className='Return'>
       <h4>Events</h4>
@@ -57,7 +45,7 @@ const EventDetail = () => {
         <h2>{event.type}</h2>
       </div>
       <div className='Buttons'>
-        {groupOwner ? (
+        {(sessionUser && (event.Organizer.id === sessionUser.id)) ? (
           <>
           <div className='owner-buttons'>
           <button>Create Event</button>

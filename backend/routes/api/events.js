@@ -102,7 +102,7 @@ router.get("/", async (req,res, next) => {
     [
       {
         model:Group,
-        attributes:['id', 'name', 'city', 'state']
+        attributes:['id', 'name', 'city', 'state', 'organizerId']
       },
       {
         model:Venue,
@@ -113,10 +113,13 @@ router.get("/", async (req,res, next) => {
     ...pagination,
   });
 
+
+
   let eventsList = [];
 
   for(let i = 0; i < events.length; i++){
     let event = events[i];
+    let organizer = await User.findByPk(event.Group.organizerId);
     let eventImage = await EventImage.findOne({
       where:{
         eventId:event.id,
@@ -153,7 +156,8 @@ router.get("/", async (req,res, next) => {
       numAttending:attendance,
       previewImage:eventImage,
       Group:event.Group,
-      Venue:event.Venue
+      Venue:event.Venue,
+      Organizer:organizer,
     })
   }
 

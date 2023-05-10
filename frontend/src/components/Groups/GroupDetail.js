@@ -11,24 +11,16 @@ const GroupDetail = () => {
   const sessionUser = useSelector(state => state.session.user);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [loading, setLoading] = useState(true);
-  const [groupOwner, setGroupOwner] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchGroup(groupId));
-    setTimeout(() => {
-      setLoading(false);
-    }, 500)
+  },[dispatch,groupId]);
 
-    if(sessionUser){
-      if(group.organizerId === sessionUser.id){
-        setGroupOwner(true);
-      } else setGroupOwner(false)}
-  },[dispatch,groupId,sessionUser,groupOwner]);
+  console.log(group);
 
 
-  return loading ? (<div><h1>Loading...</h1></div>) : (
+  return !group ? (<div><h1>Loading...</h1></div>) : (
   <div>
     <div className='Return'>
       <h4>Groups</h4>
@@ -43,7 +35,7 @@ const GroupDetail = () => {
         <h2>Organized By {group.Organizer.firstName} {group.Organizer.lastName}</h2>
       </div>
       <div className='Buttons'>
-        {groupOwner ? (
+        {(sessionUser && (group.organizerId === sessionUser.id)) ? (
           <>
           <div className='owner-buttons'>
           <button>Create Event</button>

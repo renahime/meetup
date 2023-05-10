@@ -3,17 +3,15 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEvents } from '../../store/event';
 import './EventList.css'
-const GroupList = () => {
+const EventList = () => {
   const eventsObj =  useSelector((state) => state.events);
   const events = Object.values(eventsObj);
   const dispatch = useDispatch();
 
-  console.log(events)
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
 
-  console.log(events)
 
   return(
     <div>
@@ -49,4 +47,4 @@ const GroupList = () => {
   )
 }
 
-export default GroupList;
+export default EventList;

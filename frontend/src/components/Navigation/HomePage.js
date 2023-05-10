@@ -1,4 +1,4 @@
-import {NavLink} from "react-router-dom"
+import {NavLink, Switch} from "react-router-dom"
 import './HomePage.css'
 
 function HomeNavigation() {
@@ -7,7 +7,7 @@ function HomeNavigation() {
     <nav className="HomeList">
       <NavLink to="/groups">See All Groups</NavLink>
       <NavLink to="/events">Find an Event</NavLink>
-      <NavLink to="/newgroup">Start a new Group</NavLink>
+      <NavLink to="/groups/new">Start a new Group</NavLink>
     </nav>
     </div>
   )

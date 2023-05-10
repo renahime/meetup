@@ -1,3 +1,5 @@
+import { csrfFetch } from "./csrf";
+
 /** Action Type Constants: */
 export const LOAD_EVENTS = 'events/LOAD_EVENTS';
 export const RECEIVE_EVENT = 'events/RECEIVE_EVENT';
@@ -87,8 +89,9 @@ export const updateEvent = (event) => async (dispatch) => {
   }
 }
 
-export const deleteEvent = (eventId) => async (dispatch) => {
-  const response = await fetch(`/api/reports/${eventId}`, {
+export const deleteGroup = (eventId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/events/${eventId}`, {
+    credentials: 'same-origin',
     method:'DELETE',
   });
 
@@ -99,6 +102,7 @@ export const deleteEvent = (eventId) => async (dispatch) => {
     return errors;
   }
 }
+
 
 //** Event Reducer: */
 const eventReducer = (state = {}, action) => {

@@ -1,22 +1,35 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEvent } from '../../store/event';
+import DeleteModal from './EventDelete';
 
 const EventDetail = () => {
   const {eventId} = useParams();
   let event = useSelector(state => state.events[eventId]);
+  // const sessionUser = useSelector(state => state.session.user);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [loading, setLoading] = useState(true);
+  const [groupOwner, setGroupOwner] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // console.log(sessionUser.id);
+  // console.log(event.Organizer);
 
 
   useEffect(() => {
       dispatch(fetchEvent(eventId));
       setTimeout(() => {
+        // if(sessionUser){
+        //   if(event.Organizer.id === sessionUser.id){
+        //     setGroupOwner(true);
+        //   } else setGroupOwner(false)}
         setLoading(false);
-      }, 1000)
-  },[dispatch,eventId]);
+      }, 500)
+  },[dispatch,eventId,groupOwner]);
+
 
   return loading ? (<div><h1>Loading...</h1></div>) : (
   <div>
@@ -43,6 +56,28 @@ const EventDetail = () => {
         <h2>{event.price}</h2>
         <h2>{event.type}</h2>
       </div>
+      <div className='Buttons'>
+        {groupOwner ? (
+          <>
+          <div className='owner-buttons'>
+          <button>Create Event</button>
+          <button>Update</button>
+          <div className='Delete'>
+          <button onClick={() => setIsOpen(true)} >Delete</button>
+          <DeleteModal event={event} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>
+          </DeleteModal>
+          </div>
+          </div>
+          </>
+          ) : (
+            <>
+            <div className='user-buttons'>
+              <button>Join this Event</button>
+              </div>
+              </>
+          )
+        }
+        </div>
       <div className='EventDetails'>
         <h2>Details</h2>
         <h2>{event.description}</h2>

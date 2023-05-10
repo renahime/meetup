@@ -24,7 +24,7 @@ const GroupDetail = () => {
     if(sessionUser){
       if(group.organizerId === sessionUser.id){
         setGroupOwner(true);
-      }}
+      } else setGroupOwner(false)}
   },[dispatch,groupId,sessionUser,groupOwner]);
 
 

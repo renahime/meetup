@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const { Sequelize } = require('.');
 module.exports = (sequelize, DataTypes) => {
   class Group extends Model {
     static associate(models) {
@@ -92,6 +93,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false,
     },
     state:{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    previewImage:{
       type:DataTypes.STRING,
       allowNull:false
     }

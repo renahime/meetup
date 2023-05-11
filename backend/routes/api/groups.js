@@ -33,22 +33,22 @@ router.get('', async (req,res) => {
         }
       })
 
-      let previewImage = await GroupImage.findOne({
-        where:{
-          groupId:groups[i].id,
-        }
-      })
+      // let previewImage = await GroupImage.findOne({
+      //   where:{
+      //     groupId:groups[i].id,
+      //   }
+      // })
 
       let organizer = await User.findByPk(groups[i].organizerId);
 
-      if(previewImage){
-        previewImage = previewImage.toJSON();
-        previewImage = previewImage.url;
-      }
+      // if(previewImage){
+      //   previewImage = previewImage.toJSON();
+      //   previewImage = previewImage.url;
+      // }
       let group = groups[i].toJSON();
       delete group.GroupImages;
       group.numMembers = amount.length;
-      group.previewImage = previewImage;
+      // group.previewImage = previewImage;
       group.Organizer = organizer;
 
       groupsList.push(group);
@@ -164,6 +164,7 @@ router.get('/:groupId', async(req,res, next) => {
     private: payloadGroupId.private,
     city: payloadGroupId.city,
     state: payloadGroupId.state,
+    previewImage:payloadGroupId.previewImage,
     createdAt: payloadGroupId.createdAt,
     updatedAt: payloadGroupId.updatedAt,
     numMembers: members.length,
@@ -180,6 +181,15 @@ router.post('', requireAuth, async (req,res, next) =>{
     const {name,about,type,private,city,state,previewImage} = req.body;
     const {user} = req;
     const errors = {};
+
+
+    // if(!previewImage.includes('.jpg') || !previewImage.includes('.jpeg') || !previewImage.includes('.png')){
+    //   const err = new Error("Bad Request");
+    //   err.title = "Bad Request";
+    //   err.errors = {message: "Image URL must end in .png, .jpg, or .jpeg"},
+    //   err.status = 400;
+    //   return next(err);
+    // }
 
     //Name Checker
     let chars = name.split('');

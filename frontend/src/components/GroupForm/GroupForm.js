@@ -27,12 +27,6 @@ const GroupForm = ({group, formType}) => {
       group.state = location.split(',')[1]
     }
 
-    if(formType == 'Create Group'){
-      if(!group.previewImage.includes('.jpg') || !group.previewImage.includes('.jpeg') || !group.previewImage.includes('.png')){
-        setErrors({previewImage:'Image URL must end in .png, .jpg, or .jpeg'})
-      }
-    }
-
     if(group.isPrivate == 'Private'){
       group.private = true;
     } else group.private = false;

@@ -8,7 +8,6 @@ import GroupForm from "./GroupForm";
 const EditGroupForm = () => {
   const {groupId} = useParams();
   const group = useSelector((state) => state.groups ? state.groups[groupId] : null);
-  console.log("HI");
   const dispatch = useDispatch();
 
   useEffect(() => {

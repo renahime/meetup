@@ -28,6 +28,7 @@ const GroupDetail = () => {
     </div>
     <div className='GroupContainer'>
       <div className='GroupImage'>
+      <img src={group.previewImage}></img>
       </div>
       <div className='GroupText'>
         <h1>{group.name}</h1>

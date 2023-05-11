@@ -8,8 +8,9 @@ const createGroupForm = () => {
     name: '',
     about: '',
     type: '',
-    private: '',
-    previewImage:''
+    private:'',
+    previewImage:'',
+    isPrivate:'',
   }
 
   return (

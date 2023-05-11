@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
 import { updateGroup, createGroup } from '../../store/group';
+import './GroupForm.css'
 
 const GroupForm = ({group, formType}) => {
   const history = useHistory();
@@ -11,7 +11,7 @@ const GroupForm = ({group, formType}) => {
   const [name, setName] = useState(group?.name)
   const [about, setAbout] = useState(group?.about)
   const [type, setType] = useState(group?.type);
-  const [isPrivate, setPrivate] = useState(group?.private);
+  const [isPrivate, setPrivate] = useState(group?.isPrivate);
   const [previewImage, setPreviewImage] = useState(group?.previewImage)
   const [errors, setErrors] = useState({});
 
@@ -20,10 +20,40 @@ const GroupForm = ({group, formType}) => {
     setErrors({});
     group = {...group, location, name, about, type, isPrivate, previewImage};
 
+    if (!group.location.includes(',')){
+      setErrors({location:'Please include a , to separate city and state'})
+    } else {
+      group.city = location.split(',')[0]
+      group.state = location.split(',')[1]
+    }
 
-    if(group.errors){
+    if(formType == 'Create Group'){
+      if(!group.previewImage.includes('.jpg') || !group.previewImage.includes('.jpeg') || !group.previewImage.includes('.png')){
+        setErrors({previewImage:'Image URL must end in .png, .jpg, or .jpeg'})
+      }
+    }
+
+    if(group.isPrivate == 'Private'){
+      group.private = true;
+    } else group.private = false;
+
+    group.GroupImages = [previewImage];
+    group.previewImage = previewImage;
+
+    delete group.isPrivate;
+    delete group.location;
+
+    if(formType == "Create Group"){
+      const newGroup = await dispatch(createGroup(group));
+      group = newGroup;
+    } else if (formType == 'Update Group'){
+      const editedGroup = await dispatch(updateGroup(group));
+      group = editedGroup
+    }
+
+    if(group.error){
       setErrors(group.errors);
-    } else{
+    } else if(group){
       history.push(`/groups/${group.id}`);
     }
   };
@@ -41,6 +71,12 @@ const GroupForm = ({group, formType}) => {
       in your area, and more can join you online</h3>
       <input className='InputText' type="text" value={location} onChange={(e) => setLocation(e.target.value)}>
       </input>
+      <div>
+      <p className='errors'>{errors.location}</p>
+      </div>
+      <div>
+        <p className='errors'>{errors.message}</p>
+      </div>
     </div>
     <div className='Name'>
       <h2>What will your group's name be?</h2>
@@ -50,6 +86,9 @@ const GroupForm = ({group, formType}) => {
       <input className='InputText' type='text' value={name} onChange={(e) => setName(e.target.value)}>
       </input>
     </div>
+    <div>
+    <p className='errors'>{errors.message}</p>
+      </div>
     <div className='About'>
       <h2>Now describe what your group will be about</h2>
       <h5>People will see this when we promote your group, but you'll be able to add to it later, too.</h5>
@@ -59,6 +98,9 @@ const GroupForm = ({group, formType}) => {
       <textarea className='InputAbout' value={about} onChange={(e) => setAbout(e.target.value)}>
       </textarea>
     </div>
+    <div>
+    <p className='errors'>{errors.message}</p>
+      </div>
     <div className='Ect'>
       <h2>Final steps...</h2>
       <h4>Is this an in person or online group?</h4>
@@ -66,19 +108,30 @@ const GroupForm = ({group, formType}) => {
         <option value='In person'>In person</option>
         <option value='Online'>Online</option>
       </select>
+      <div>
+      <p className='errors'>{errors.message}</p>
+      </div>
       <h4>Is this group private or public?</h4>
-      <select value={isPrivate} className='Private' onChange={(e) => isPrivate == 'Private' ? setPrivate(true) : setPrivate(false)}>
+      <select value={isPrivate} className='isPrivate' onChange={(e) => setPrivate(e.target.value)}>
         <option value='Private'>Private</option>
         <option value='Public'>Public</option>
       </select>
+      <div>
+      <p className='errors'>{errors.message}</p>
+      </div>
     </div>
-    <div className='Image'>
+    {formType == 'Create Group' ? (    <div className='Image'>
       <h4>Please add in image url for your group below:</h4>
       <input className='InputText' type='text' value={previewImage} onChange={(e) => setPreviewImage(e.target.value)}></input>
+      <p className='errors'>{errors.previewImage}</p>
     </div>
+) : <></>}
+    {(formType == 'Create Group') ? (<button type="submit" >Create Group</button>) :  (<button type="submit" >Update Group</button>) }
     </form>
     </div>
   )
 }
 
 export default GroupForm;
+
+// e.target.value == 'Private' ? setPrivate(true) : setPrivate(false)

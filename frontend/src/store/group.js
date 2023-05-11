@@ -56,8 +56,9 @@ export const fetchGroup = (groupId) => async (dispatch) => {
 }
 
 export const createGroup = (group) => async (dispatch) => {
-  const response = await fetch(`/api/groups`, {
+  const response = await csrfFetch(`/api/groups`, {
     method:'POST',
+    credentials: 'same-origin',
     headers:{ 'Content-Type': 'application/json' },
     body: JSON.stringify(group),
   })
@@ -73,8 +74,9 @@ export const createGroup = (group) => async (dispatch) => {
 }
 
 export const updateGroup = (group) => async (dispatch) => {
-  const response = await fetch(`/api/groups/${group.id}`, {
+  const response = await csrfFetch(`/api/groups/${group.id}`, {
     method: 'PUT',
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(group)
   });

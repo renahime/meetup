@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchGroup } from '../../store/group';
 import DeleteModal from './GroupDeleteModal';
 import './Groups.css';
+import { NavLink } from 'react-router-dom/cjs/react-router-dom.min';
 
 const GroupDetail = () => {
   const {groupId} = useParams();
@@ -38,8 +39,12 @@ const GroupDetail = () => {
         {(sessionUser && (group.organizerId === sessionUser.id)) ? (
           <>
           <div className='owner-buttons'>
+          <Link to="/groups/new">
           <button>Create Event</button>
+          </Link>
+          <Link to={`/groups/${group.id}/edit`}>
           <button>Update</button>
+           </Link>
           <div className='Delete'>
           <button onClick={() => setIsOpen(true)} >Delete</button>
           <DeleteModal group={group} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>

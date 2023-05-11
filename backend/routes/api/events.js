@@ -417,6 +417,12 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
       err.errors = {message: "Description is required"};
       err.status = 400
       return next(err)
+    } else if (description.length < 30){
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {message: "Description must be 30 characters or more!"};
+      err.status = 400
+      return next(err)
     }
     event.description = description;
   }

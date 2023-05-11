@@ -44,8 +44,6 @@ router.get('', async (req,res) => {
       if(previewImage){
         previewImage = previewImage.toJSON();
         previewImage = previewImage.url;
-      } else {
-        previewImage = "There are no images for this group";
       }
       let group = groups[i].toJSON();
       delete group.GroupImages;
@@ -179,7 +177,7 @@ router.get('/:groupId', async(req,res, next) => {
 
 //post /api/groups
 router.post('', requireAuth, async (req,res, next) =>{
-    const {name,about,type,private,city,state} = req.body;
+    const {name,about,type,private,city,state,previewImage} = req.body;
     const {user} = req;
     const errors = {};
 
@@ -203,10 +201,10 @@ router.post('', requireAuth, async (req,res, next) =>{
     for(let char of chars){
       count++;
     }
-    if(count < 50){
+    if(count < 30){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "About must be 50 characters or more"};
+      err.errors = {message: "About must be 30 characters or more"};
       err.status = 400
       return next(err)
     }
@@ -254,7 +252,8 @@ router.post('', requireAuth, async (req,res, next) =>{
       type:type,
       private:private,
       city:city,
-      state:state
+      state:state,
+      previewImage:previewImage
     })
 
     newGroup.createMembership({
@@ -357,10 +356,10 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
      for(let char of chars){
        count++;
      }
-     if(count < 50){
+     if(count < 30){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "About must be 50 characters or more"};
+      err.errors = {message: "About must be 30 characters or more"};
       err.status = 400
       return next(err)
      }
@@ -753,7 +752,13 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(!description){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Description is required"};
+    err.errors = {message: "Description is required"};
+    err.status = 400
+    return next(err)
+  } else if (description.length < 30){
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {message: "Description must be 30 characters or more!"};
     err.status = 400
     return next(err)
   }

@@ -62,7 +62,7 @@ router.get("/", async (req,res, next) => {
       if(!isNaN(name)) {
         const err = new Error("Bad Request");
         err.title = "Bad Request";
-        err.errors = {message:"Name must be a string"};
+        err.errors = {name:"Name must be a string"};
         err.status = 400
         return next(err)
       }
@@ -73,7 +73,7 @@ router.get("/", async (req,res, next) => {
     if(type.toLowerCase() !== "online" && type.toLowerCase() !== 'in person'){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message:"Type must be 'Online' or 'In person'"};
+      err.errors = {type:"Type must be 'Online' or 'In person'"};
       err.status = 400
       return next(err)
     }
@@ -90,7 +90,7 @@ router.get("/", async (req,res, next) => {
       if(!(date instanceof Date) || isNaN(date.valueOf())){
         const err = new Error("Bad Request");
         err.title = "Bad Request";
-        err.errors = {message:"Start date must be a valid datetime"};
+        err.errors = {startDate:"Start date must be a valid datetime"};
         err.status = 400
         return next(err)
       }
@@ -151,10 +151,10 @@ router.get("/", async (req,res, next) => {
       name:event.name,
       type:event.type,
       description: event.description,
+      previewImage: event.previewImage,
       startDate:event.startDate,
       endDate:event.endDate,
       numAttending:attendance,
-      previewImage:eventImage,
       Group:event.Group,
       Venue:event.Venue,
       Organizer:organizer,
@@ -229,6 +229,7 @@ router.get('/:eventId', async (req,res,next) => {
     venueId: payloadEvent.venueId,
     name: payloadEvent.name,
     description: payloadEvent.description,
+    previewImage: payloadEvent.previewImage,
     type: payloadEvent.type,
     capacity: payloadEvent.capacity,
     price: payloadEvent.price,
@@ -369,7 +370,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if(name.length < 5){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Name must be at least 5 characters"};
+      err.errors = {name: "Name must be at least 5 characters"};
       err.status = 400
       return next(err)
     }
@@ -380,7 +381,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Type must be 'Online' or 'In person'"};
+      err.errors = {type: "Type must be 'Online' or 'In person'"};
       err.status = 400
       return next(err)
     }
@@ -392,7 +393,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if(typeof capacity !== "number"){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Capacity must be an integer"};
+      err.errors = {capacity: "Capacity must be an integer"};
       err.status = 400
       return next(err)
     }
@@ -403,7 +404,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if(price < 0 || typeof price !== 'number'){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Price is invalid"};
+      err.errors = {price: "Price is invalid"};
       err.status = 400
       return next(err)
     }
@@ -414,13 +415,13 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if(!description){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Description is required"};
+      err.errors = {description: "Description is required"};
       err.status = 400
       return next(err)
     } else if (description.length < 30){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Description must be 30 characters or more!"};
+      err.errors = {description: "Description must be 30 characters or more!"};
       err.status = 400
       return next(err)
     }
@@ -431,7 +432,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if((new Date(startDate) <= new Date())){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Start date must be in the future"};
+      err.errors = {startDate: "Start date must be in the future"};
       err.status = 400
       return next(err)
     }
@@ -442,7 +443,7 @@ router.put('/:eventId',requireAuth, async (req,res,next) => {
     if(new Date(endDate) < new Date(startDate)){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "End date is less than start date"};
+      err.errors = {endDate: "End date is less than start date"};
       err.status = 400
       return next(err)
     }

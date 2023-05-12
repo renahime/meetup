@@ -11,46 +11,52 @@ const GroupForm = ({group, formType}) => {
   const [name, setName] = useState(group?.name)
   const [about, setAbout] = useState(group?.about)
   const [type, setType] = useState(group?.type);
-  const [isPrivate, setPrivate] = useState(group?.isPrivate);
+  const [isPrivate, setPrivate] = useState(group?.private);
   const [previewImage, setPreviewImage] = useState(group?.previewImage)
   const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-    group = {...group, location, name, about, type, isPrivate, previewImage};
+    group = {...group, location, name, about, type, previewImage, isPrivate};
 
-    if (!group.location.includes(',')){
-      setErrors({location:'Please include a , to separate city and state'})
-    } else {
+    if (group.location.includes(',')){
       group.city = location.split(',')[0]
       group.state = location.split(',')[1]
     }
-
-    if(group.isPrivate == 'Private'){
-      group.private = true;
-    } else group.private = false;
-
-    group.GroupImages = [previewImage];
-    group.previewImage = previewImage;
-
-    delete group.isPrivate;
     delete group.location;
 
+    group.private = group.isPrivate;
+
     if(formType == "Create Group"){
-      const newGroup = await dispatch(createGroup(group));
+      const newGroup = await dispatch(createGroup(group)).catch(async (res) => {
+        const data = await res.json();
+        if (data && data.errors) {
+          setErrors(data.errors);
+        };
+    });
       group = newGroup;
     } else if (formType == 'Update Group'){
-      const editedGroup = await dispatch(updateGroup(group));
+      const editedGroup = await dispatch(updateGroup(group)).catch(async (res) => {
+        const data = await res.json();
+        if (data && data.errors) {
+          setErrors(data.errors);
+        };
+    });
       group = editedGroup
     }
 
-    if(group.error){
-      setErrors(group.errors);
-    } else if(group){
+    if(group){
       history.push(`/groups/${group.id}`);
     }
   };
+
+
+  useEffect(() => {
+    if(!group.location.includes(',')){
+      setErrors({location:'Please include a , to separate city and state'})
+    }
+  },[location])
 
   return (
     <div className='Body'>
@@ -68,9 +74,6 @@ const GroupForm = ({group, formType}) => {
       <div>
       <p className='errors'>{errors.location}</p>
       </div>
-      <div>
-        <p className='errors'>{errors.message}</p>
-      </div>
     </div>
     <div className='Name'>
       <h2>What will your group's name be?</h2>
@@ -81,7 +84,7 @@ const GroupForm = ({group, formType}) => {
       </input>
     </div>
     <div>
-    <p className='errors'>{errors.message}</p>
+    <p className='errors'>{errors.name}</p>
       </div>
     <div className='About'>
       <h2>Now describe what your group will be about</h2>
@@ -93,25 +96,27 @@ const GroupForm = ({group, formType}) => {
       </textarea>
     </div>
     <div>
-    <p className='errors'>{errors.message}</p>
+    <p className='errors'>{errors.about}</p>
       </div>
     <div className='Ect'>
       <h2>Final steps...</h2>
       <h4>Is this an in person or online group?</h4>
       <select value={type} className='Type' onChange={(e) => setType(e.target.value)}>
+        <option value='Select One'> Select One</option>
         <option value='In person'>In person</option>
         <option value='Online'>Online</option>
       </select>
       <div>
-      <p className='errors'>{errors.message}</p>
+      <p className='errors'>{errors.type}</p>
       </div>
       <h4>Is this group private or public?</h4>
-      <select value={isPrivate} className='isPrivate' onChange={(e) => setPrivate(e.target.value)}>
+      <select value={isPrivate} className='Private' onChange={(e) => setPrivate(e.target.value)}>
+      <option value='Select One'> Select One</option>
         <option value='Private'>Private</option>
         <option value='Public'>Public</option>
       </select>
       <div>
-      <p className='errors'>{errors.message}</p>
+      <p className='errors'>{errors.private}</p>
       </div>
     </div>
     {formType == 'Create Group' ? (    <div className='Image'>

@@ -86,6 +86,10 @@ module.exports = (sequelize, DataTypes) => {
         min:0
       }
     },
+    previewImage: {
+      type:DataTypes.STRING,
+      allowNull:false
+    },
     startDate:{
       type:DataTypes.DATE,
       validate:{

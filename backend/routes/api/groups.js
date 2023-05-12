@@ -82,7 +82,6 @@ router.get('/current', requireAuth, async (req, res) => {
       }
     })
     let previewImage = null;
-    console.log(group.GroupImages);
     if(group.GroupImages.length !== 0){
     previewImage = group.GroupImages[0].url;
     }
@@ -182,14 +181,11 @@ router.post('', requireAuth, async (req,res, next) =>{
     const {user} = req;
     const errors = {};
 
+    const organizer = await User.findByPk(user.id);
+    const payloadOrganizer = organizer.toJSON();
 
-    // if(!previewImage.includes('.jpg') || !previewImage.includes('.jpeg') || !previewImage.includes('.png')){
-    //   const err = new Error("Bad Request");
-    //   err.title = "Bad Request";
-    //   err.errors = {message: "Image URL must end in .png, .jpg, or .jpeg"},
-    //   err.status = 400;
-    //   return next(err);
-    // }
+
+
 
     //Name Checker
     let chars = name.split('');
@@ -197,10 +193,16 @@ router.post('', requireAuth, async (req,res, next) =>{
     for(let char of chars){
       count++;
     }
-    if(count > 60 || !name){
+    if(count > 60 ){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Name must be 60 characters or less"};
+      err.errors = {name: "Name must be 60 characters or less"};
+      err.status = 400
+      return next(err)
+    } else if (!name){
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {name: "Name is required"};
       err.status = 400
       return next(err)
     }
@@ -214,7 +216,7 @@ router.post('', requireAuth, async (req,res, next) =>{
     if(count < 30){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "About must be 30 characters or more"};
+      err.errors = {about: "About must be 30 characters or more"};
       err.status = 400
       return next(err)
     }
@@ -223,16 +225,16 @@ router.post('', requireAuth, async (req,res, next) =>{
     if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Type must be 'Online' or 'In person"};
+      err.errors = {type: "Type must be 'Online' or 'In person"};
       err.status = 400
       return next(err)
     }
 
     //Private Checker
-    if(typeof private !== "boolean" || !private){
+    if((private.toLowerCase() !== "private" && private.toLowerCase() !== "public") || !private){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Private must be boolean"};
+      err.errors = {private: "Must be public or private"};
       err.status = 400
       return next(err)
     }
@@ -241,7 +243,7 @@ router.post('', requireAuth, async (req,res, next) =>{
     if(!city){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "City is required"};
+      err.errors = {city: "City is required"};
       err.status = 400
       return next(err)
     }
@@ -250,9 +252,17 @@ router.post('', requireAuth, async (req,res, next) =>{
     if(!state){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "State is required"};
+      err.errors = {state: "State is required"};
       err.status = 400
       return next(err)
+    }
+
+    if((!previewImage.includes('.jpg') && !previewImage.includes('.jpeg') && !previewImage.includes('.png'))){
+      const err = new Error("Bad Request");
+      err.title = "Bad Request";
+      err.errors = {previewImage: "Image URL must end in .png, .jpg, or .jpeg"},
+      err.status = 400;
+      return next(err);
     }
 
     const newGroup = await Group.create({
@@ -263,8 +273,11 @@ router.post('', requireAuth, async (req,res, next) =>{
       private:private,
       city:city,
       state:state,
-      previewImage:previewImage
+      previewImage:previewImage,
     })
+
+    const payloadGroup = newGroup.toJSON();
+
 
     newGroup.createMembership({
       userId:user.id,
@@ -273,7 +286,19 @@ router.post('', requireAuth, async (req,res, next) =>{
     })
 
     res.status(201);
-    return res.json(newGroup.toJSON());
+    return res.json({
+      id:payloadGroup.id,
+      organizerId:payloadGroup.organizerId,
+      name:payloadGroup.name,
+      about:payloadGroup.about,
+      type:payloadGroup.type,
+      private:payloadGroup.private,
+      city: payloadGroup.city,
+      state:payloadGroup.state,
+      createdAt:payloadGroup.createdAt,
+      updatedAt:payloadGroup.updatedAt,
+      Organizer: payloadOrganizer,
+    });
 })
 
 //post /api/groups/:groupId/images
@@ -337,21 +362,20 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
     return next(err)
   }
 
-  const {name,about,type,private,city,state} = req.body;
+  const {name,about,type,private,city,state, previewImage} = req.body;
   let errors = {};
 
   if(name !== undefined){
     //Name Checker
     let chars = name.split('');
     let count = 0;
-    console.log(chars.length);
     for(let char of chars){
       count++;
     }
     if(count > 60 || chars.length == 0){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Name must be 60 characters or less"};
+      err.errors = {name: "Name must be 60 characters or less"};
       err.status = 400
       return next(err)
     }
@@ -369,7 +393,7 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
      if(count < 30){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "About must be 30 characters or more"};
+      err.errors = {about: "About must be 30 characters or more"};
       err.status = 400
       return next(err)
      }
@@ -382,7 +406,7 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
     if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Type must be 'Online' or 'In person"};
+      err.errors = {type: "Type must be 'Online' or 'In person"};
       err.status = 400
       return next(err)
     }
@@ -392,10 +416,10 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
 
   if(private !== undefined){
 
-    if(typeof private !== "boolean"){
+    if((private.toLowerCase() !== "private" && private.toLowerCase() !== "public") || !private){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "Private must be boolean"};
+      err.errors = {private: "Must be private or public"};
       err.status = 400
       return next(err)
     }
@@ -408,7 +432,7 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
         if(!city){
           const err = new Error("Bad Request");
           err.title = "Bad Request";
-          err.errors = {message: "City is required"};
+          err.errors = {city: "City is required"};
           err.status = 400
           return next(err)
           }
@@ -419,17 +443,33 @@ router.put('/:groupId', requireAuth, async (req,res,next) => {
     if(!state){
       const err = new Error("Bad Request");
       err.title = "Bad Request";
-      err.errors = {message: "State is required"};
+      err.errors = {state: "State is required"};
       err.status = 400
       return next(err)
     }
     updatedGroup.state = state;
   }
+
   await updatedGroup.save();
 
-  updatedGroup = updatedGroup.toJSON();
+  payloadGroup = updatedGroup.toJSON();
 
-  return res.json(updatedGroup);
+  organizer = await User.findByPk(user.id);
+  payloadOrganizer = organizer.toJSON();
+
+  return res.json({
+    id: payloadGroup.id,
+    organizerId: payloadGroup.organizerId,
+    name: payloadGroup.name,
+    about: payloadGroup.about,
+    type: payloadGroup.type,
+    private: payloadGroup.private,
+    city: payloadGroup.city,
+    state: payloadGroup.state,
+    createdAt: payloadGroup.createdAt,
+    updatedAt:payloadGroup.updatedAt,
+    Organizer: payloadOrganizer
+  });
 })
 
 //delete /api/groups/:groupId
@@ -657,6 +697,7 @@ router.get('/:groupId/events',  async (req,res,next) => {
       id:event.id,
       groupId:event.groupId,
       venueId:event.venueId,
+      description: event.description,
       name:event.name,
       type:event.type,
       startDate:event.startDate,
@@ -679,6 +720,12 @@ router.get('/:groupId/events',  async (req,res,next) => {
 router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   const group = await Group.findByPk(req.params.groupId);
   const {user} = req;
+
+  const groupPayload = group.toJSON();
+
+  const organizer = await User.findByPk(user.id);
+
+  const payloadOrganizer = organizer.toJSON();
 
 
   if(!group)
@@ -713,23 +760,19 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   }
 
   const errors = {};
-  const {venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
+  let {venueId, name, type, capacity, price, description, previewImage, startDate, endDate} = req.body;
 
   let checkVenue = await Venue.findByPk(venueId);
 
 
   if(!checkVenue){
-    const err = new Error("Resource Not Found");
-    err.title = "Resource Not Found";
-    err.errors = {message:"Venue does not exist"};
-    err.status = 404
-    return next(err)
+    venueId = 1;
   }
 
   if(name.length < 5){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Name must be at least 5 characters"};
+    err.errors = {name:"Name must be at least 5 characters"};
     err.status = 400
     return next(err)
   }
@@ -737,7 +780,7 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(type.toLowerCase() !== "online" && type.toLowerCase() !== "in person"){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Type must be 'Online' or 'In person"};
+    err.errors = {type:"Type must be 'Online' or 'In person"};
     err.status = 400
     return next(err)
   }
@@ -746,7 +789,7 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(typeof capacity !== "number"){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Capacity must be an integer"};
+    err.errors = {capacity:"Capacity must be an integer"};
     err.status = 400
     return next(err)
   }
@@ -754,7 +797,7 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(price < 0 || typeof price !== "number"){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Price is invalid"};
+    err.errors = {price:"Price is invalid"};
     err.status = 400
     return next(err)
   }
@@ -762,13 +805,13 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(!description){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message: "Description is required"};
+    err.errors = {description: "Description is required"};
     err.status = 400
     return next(err)
   } else if (description.length < 30){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message: "Description must be 30 characters or more!"};
+    err.errors = {description: "Description must be 30 characters or more!"};
     err.status = 400
     return next(err)
   }
@@ -776,7 +819,7 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(new Date(startDate) <= new Date()){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"Start date must be in the future"};
+    err.errors = {startDate:"Start date must be in the future"};
     err.status = 400
     return next(err)
   }
@@ -784,9 +827,23 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
   if(new Date(endDate) < new Date(startDate)){
     const err = new Error("Bad Request");
     err.title = "Bad Request";
-    err.errors = {message:"End date is less than start date"};
+    err.errors = {endDate:"End date is less than start date"};
     err.status = 400
     return next(err)
+  }
+
+  if(!previewImage){
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {previewImage: "Please Include an Image"};
+    err.status = 400
+    return next(err)
+  } else if((!previewImage.includes('.jpg') && !previewImage.includes('.jpeg') && !previewImage.includes('.png'))){
+    const err = new Error("Bad Request");
+    err.title = "Bad Request";
+    err.errors = {previewImage: "Image URL must end in .png, .jpg, or .jpeg"},
+    err.status = 400;
+    return next(err);
   }
 
 
@@ -797,6 +854,7 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
     capacity:capacity,
     price:price,
     description:description,
+    previewImage: previewImage,
     startDate:startDate,
     endDate:endDate
   })
@@ -820,8 +878,11 @@ router.post('/:groupId/events', requireAuth, async (req,res,next) => {
     capacity:newEvent.capacity,
     price:newEvent.price,
     description:newEvent.description,
+    previewImage: newEvent.previewImage,
     startDate:newEvent.startDate,
-    endDate:newEvent.endDate
+    endDate:newEvent.endDate,
+    Group:groupPayload,
+    Organizer: payloadOrganizer,
   });
 })
 

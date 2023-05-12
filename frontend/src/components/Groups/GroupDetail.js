@@ -3,12 +3,13 @@ import { useParams, useHistory, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchGroup } from '../../store/group';
 import DeleteModal from './GroupDeleteModal';
+import { fetchEventsGroupId } from '../../store/event';
 import './Groups.css';
-import { NavLink } from 'react-router-dom/cjs/react-router-dom.min';
 
 const GroupDetail = () => {
   const {groupId} = useParams();
   let group = useSelector(state => state.groups[groupId]);
+  let events = useSelector(state => state.events);
   const sessionUser = useSelector(state => state.session.user);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -18,10 +19,23 @@ const GroupDetail = () => {
     dispatch(fetchGroup(groupId));
   },[dispatch,groupId]);
 
-  console.log(group);
+  useEffect(() => {
+    if(group && group.id){
+      dispatch(fetchEventsGroupId(group.id))
+    }
+  }, [dispatch, group]);
 
+  const eventObj = Object.values(events);
 
-  return !group ? (<div><h1>Loading...</h1></div>) : (
+  const pastEvents = eventObj.filter((event) => event.startDate > Date());
+  const comingEvents = eventObj.filter((event) => event.startDate < Date());
+
+  console.log(pastEvents);
+  console.log(comingEvents);
+  console.log(pastEvents.length);
+  console.log(comingEvents.length);
+
+  return !group && events ? (<div><h1>Loading...</h1></div>) : (
   <div>
     <div className='Return'>
       <h4>Groups</h4>
@@ -32,15 +46,18 @@ const GroupDetail = () => {
       </div>
       <div className='GroupText'>
         <h1>{group.name}</h1>
-        <h2>{group.city},{group.state}</h2>
-        <h2>## Events Public</h2>
+        <h2>{group.city},{group.state}</h2>{
+          comingEvents.length == 0 ? <h3>0 Upcoming Events</h3> :
+          <h3>{comingEvents.length} Events</h3>
+        }
+        <h2 className='Private'>{group.private}</h2>
         <h2>Organized By {group.Organizer.firstName} {group.Organizer.lastName}</h2>
       </div>
       <div className='Buttons'>
         {(sessionUser && (group.organizerId === sessionUser.id)) ? (
           <>
           <div className='owner-buttons'>
-          <Link to="/groups/new">
+          <Link to={`/groups/${group.id}/events/new`} groupId={group.id}>
           <button>Create Event</button>
           </Link>
           <Link to={`/groups/${group.id}/edit`}>
@@ -71,8 +88,34 @@ const GroupDetail = () => {
         <h2>What we're about</h2>
         <h2>{group.about}</h2>
       </div>
-      <div className='Events'>
-        <h2>Past Events</h2>
+      <div className='UpcomingEventDiv'>
+        {comingEvents.length == 0 ? <h2>No Upcoming Events</h2> : <h2>Upcoming Events ({comingEvents.length})</h2>}
+        {comingEvents.map((event) => {
+          return (
+            <div className='SingleEvent'>
+              <div className='EventImage'>
+              <img src={event.previewImage}></img>
+              </div>
+              <div className='StartDate'>
+                <h4>{event.startDate}</h4>
+              </div>
+              <div className='EventName'>
+                <h3>{event.name}</h3>
+                </div>
+                <div className='EventLocation'>
+                  <h6>{group.city},{group.state}</h6>
+                </div>
+                <div className='EventTitle'>
+                  <h3>{event.description}</h3>
+                </div>
+            </div>
+          )
+        })}
+      </div>
+      <div className='PastEventDiv'>
+        {pastEvents.length == 0 ? <h2>There are no Past Events</h2> : <h2>Past Events ({pastEvents.length})</h2>}
+        {/* <h2>Past Events</h2>
+        {pastEvents.length == 0 ? <div className='NoPastEvents'><h3>There are no past events</h3></div> : <div><h3>Insert Past Event Logic Here</h3></div>} */}
         <div className='PastEvents'></div>
       </div>
     </div>

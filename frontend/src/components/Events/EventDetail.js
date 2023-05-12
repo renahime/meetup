@@ -19,6 +19,8 @@ const EventDetail = () => {
       dispatch(fetchEvent(eventId));
   },[dispatch,eventId]);
 
+  console.log(event);
+
   return !event ? (<div><h1>Loading...</h1></div>) : (
   <div>
     <div className='Return'>
@@ -30,12 +32,13 @@ const EventDetail = () => {
     </div>
     <div className='EventContainer'>
       <div className='EventImage'>
-        <img src={event.EventImages}></img>
+        <img src={event.previewImage}></img>
       </div>
       <NavLink to={`/groups/${event.groupId}`}>
       <div className='Group'>
-      <img src={event.GroupImage}></img>
+      <img src={event.Group.previewImage}></img>
         <h3>{event.Group.name}</h3>
+        <h3>{event.Group.type}</h3>
       </div>
       </NavLink>
       <div className='GroupText'>
@@ -48,8 +51,6 @@ const EventDetail = () => {
         {(sessionUser && (event.Organizer.id === sessionUser.id)) ? (
           <>
           <div className='owner-buttons'>
-          <button>Create Event</button>
-          <button>Update</button>
           <div className='Delete'>
           <button onClick={() => setIsOpen(true)} >Delete</button>
           <DeleteModal event={event} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>

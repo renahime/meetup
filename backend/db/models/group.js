@@ -71,8 +71,8 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.STRING,
       validate:{
         is50(value){
-          if(value.length < 50){
-            throw new Error('About must be 50 chars or more!')
+          if(value.length < 30){
+            throw new Error('About must be 30 chars or more!')
           }
         }
       }
@@ -85,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     } ,
     private: {
-      type:DataTypes.BOOLEAN,
+      type:DataTypes.STRING,
       allowNull:false
     },
     city: {

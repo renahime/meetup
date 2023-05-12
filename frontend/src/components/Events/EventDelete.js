@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { deleteGroup } from '../../store/group';
+import { deleteEvent } from '../../store/event';
 export default function DeleteModal({open, onClose, dispatch, event, history}) {
   if(!open) return null;
   const handleDelete = (e) => {
     e.preventDefault();
-    dispatch(deleteGroup(event.id));
+    dispatch(deleteEvent(event.id));
     history.push('/events')
   }
   return (<div>

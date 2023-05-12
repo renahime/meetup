@@ -5,6 +5,7 @@ export const LOAD_EVENTS = 'events/LOAD_EVENTS';
 export const RECEIVE_EVENT = 'events/RECEIVE_EVENT';
 export const UPDATE_EVENT = 'events/UPDATE_EVENT';
 export const REMOVE_EVENT = 'events/REMOVE_EVENT';
+export const LOAD_BY_GROUP = 'events/LOAD_BY_GROUP';
 
 /**  Action Creators: */
 export const loadEvents = (events) => ({
@@ -26,6 +27,12 @@ export const removeEvent = (eventId) => ({
     type: REMOVE_EVENT,
     eventId,
 })
+
+export const loadEventsByGroup = (events) => ({
+  type:LOAD_BY_GROUP,
+  events,
+})
+
 
 /** Thunk Action Creators: */
 export const fetchEvents = () => async(dispatch) => {
@@ -55,12 +62,14 @@ export const fetchEvent = (eventId) => async (dispatch) => {
   }
 }
 
-export const createEvent = (event) => async (dispatch) => {
-  const response = await fetch(`/api/events`, {
+export const createEvent = (event, groupId) => async (dispatch) => {
+  const response = await csrfFetch(`/api/groups/${groupId}/events  `, {
     method:'POST',
+    credentials: 'same-origin',
     headers:{ 'Content-Type': 'application/json' },
     body: JSON.stringify(event),
   })
+
 
   if (response.ok){
     const newEvent = await response.json();
@@ -81,7 +90,7 @@ export const updateEvent = (event) => async (dispatch) => {
 
   if(response.ok) {
     const updatedEvent = await response.json();
-    dispatch(editEvent(updatedEvent));
+    dispatch(loadEvents(updatedEvent));
     return updatedEvent;
   } else {
     const errors = await response.json();
@@ -89,7 +98,7 @@ export const updateEvent = (event) => async (dispatch) => {
   }
 }
 
-export const deleteGroup = (eventId) => async (dispatch) => {
+export const deleteEvent = (eventId) => async (dispatch) => {
   const response = await csrfFetch(`/api/events/${eventId}`, {
     credentials: 'same-origin',
     method:'DELETE',
@@ -97,6 +106,20 @@ export const deleteGroup = (eventId) => async (dispatch) => {
 
   if(response.ok) {
     dispatch(removeEvent(eventId));
+  } else {
+    const errors = await response.json();
+    return errors;
+  }
+}
+
+export const fetchEventsGroupId = (groupId) => async (dispatch) => {
+  const response = await fetch(`/api/groups/${groupId}/events`, {
+    method:'GET'
+  });
+
+  if(response.ok) {
+    const events = await response.json();
+    dispatch(loadEventsByGroup(events));
   } else {
     const errors = await response.json();
     return errors;
@@ -122,6 +145,13 @@ const eventReducer = (state = {}, action) => {
     const newState = {...state};
     delete newState[action.eventId];
     return newState;
+  case LOAD_BY_GROUP: {
+    const eventsState = {};
+    action.events.Events.forEach((event) => {
+      eventsState[event.id] = event;
+    })
+    return eventsState;
+  }
   default:
     return state;
   }

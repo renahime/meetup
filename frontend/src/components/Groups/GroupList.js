@@ -4,12 +4,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchGroups } from '../../store/group';
 import './Groups.css';
 import { NavLink, Route } from 'react-router-dom';
+import { fetchEvents } from '../../store/event';
+
 const GroupList = () => {
   const groupsObj =  useSelector((state) => state.groups);
   const groups = Object.values(groupsObj);
+  let events = useSelector(state => state.events);
+  const eventObj = Object.values(events);
+  const comingEvents = eventObj.filter((event) => event.startDate < Date());
+
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchGroups());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchEvents());
   }, [dispatch]);
 
   return(
@@ -35,8 +46,8 @@ const GroupList = () => {
               <h2 className='GroupLocation'>{group.city},{group.state}</h2>
               <h3 className='GroupDescription'>{group.about}</h3>
               </div>
-            <div className='EventsType'>
-              <h3 className='NumEvents'>## Events</h3>
+              <div className='EventsType'>
+              <h3 className='NumEvents'>{comingEvents.filter((event) => group.id == event.groupId).length} Events</h3>
               </div>
           </div>
           </NavLink>)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory,Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEvent } from '../../store/event';
@@ -19,12 +19,12 @@ const EventDetail = () => {
       dispatch(fetchEvent(eventId));
   },[dispatch,eventId]);
 
-  console.log(event);
-
   return !event ? (<div><h1>Loading...</h1></div>) : (
   <div>
     <div className='Return'>
-      <h4>Events</h4>
+    <Link to={`/events`}>
+    <h4>Events</h4>
+    </Link>
     </div>
     <div>
       <h1>{event.name}</h1>
@@ -58,13 +58,13 @@ const EventDetail = () => {
           </div>
           </div>
           </>
-          ) : (
+          ) : (sessionUser) ? (
             <>
             <div className='user-buttons'>
               <button>Join this Event</button>
               </div>
               </>
-          )
+          ) : <div></div>
         }
         </div>
       <div className='EventDetails'>

@@ -35,7 +35,9 @@ const GroupDetail = () => {
   return !group && events ? (<div><h1>Loading...</h1></div>) : (
   <div>
     <div className='Return'>
-      <h4>Groups</h4>
+    <Link to={`/groups/`}>
+    <h4>Groups</h4>
+          </Link>
     </div>
     <div className='GroupContainer'>
       <div className='GroupImage'>
@@ -67,13 +69,13 @@ const GroupDetail = () => {
           </div>
           </div>
           </>
-          ) : (
+          ) : (sessionUser) ? (
             <>
             <div className='user-buttons'>
-              <button>Join this Group</button>
+              <button>Join this Event</button>
               </div>
               </>
-          )
+          ) : <div></div>
         }
         </div>
       </div>

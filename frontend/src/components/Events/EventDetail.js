@@ -3,6 +3,7 @@ import { useParams, useHistory,Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEvent } from '../../store/event';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import DeleteModal from './EventDelete';
 
 const EventDetail = () => {
@@ -24,6 +25,7 @@ const EventDetail = () => {
     <div className='Return'>
     <Link to={`/events`}>
     <h4>Events</h4>
+    <i class="fa-solid fa-chevron-left"></i>
     </Link>
     </div>
     <div>

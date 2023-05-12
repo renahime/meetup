@@ -28,9 +28,10 @@ export const removeEvent = (eventId) => ({
     eventId,
 })
 
-export const loadEventsByGroup = (events) => ({
+export const loadEventsByGroup = (events, groupId) => ({
   type:LOAD_BY_GROUP,
   events,
+  groupId
 })
 
 
@@ -119,7 +120,7 @@ export const fetchEventsGroupId = (groupId) => async (dispatch) => {
 
   if(response.ok) {
     const events = await response.json();
-    dispatch(loadEventsByGroup(events));
+    dispatch(loadEventsByGroup(events, groupId));
   } else {
     const errors = await response.json();
     return errors;
@@ -147,8 +148,9 @@ const eventReducer = (state = {}, action) => {
     return newState;
   case LOAD_BY_GROUP: {
     const eventsState = {};
-    action.events.Events.forEach((event) => {
-      eventsState[event.id] = event;
+    const filter = action.events.Events.filter((event) => event.groupId == action.groupId);
+    filter.forEach((event) => {
+    eventsState[event.id] = event;
     })
     return eventsState;
   }

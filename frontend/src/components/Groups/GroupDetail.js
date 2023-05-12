@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchGroup } from '../../store/group';
 import DeleteModal from './GroupDeleteModal';
 import { fetchEventsGroupId } from '../../store/event';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './Groups.css';
 
 const GroupDetail = () => {
@@ -36,6 +37,7 @@ const GroupDetail = () => {
   <div>
     <div className='Return'>
     <Link to={`/groups/`}>
+    <i class="fa-solid fa-chevron-left"></i>
     <h4>Groups</h4>
           </Link>
     </div>

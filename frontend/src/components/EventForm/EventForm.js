@@ -96,12 +96,12 @@ const EventForm = ({event, formType}) => {
       </div>
       <div className='Date'>
         <h4>When does your event start?</h4>
-        <input value={startDate} type="date" min={Date()} onChange={(e) => setStartDate(e.target.value)}></input>
+        <input value={startDate} type="datetime-local" min={Date()} onChange={(e) => setStartDate(e.target.value)}></input>
         <div>
        <p className='errors'>{errors.startDate}</p>
       </div>
         <h4>When does your event end?</h4>
-        <input value={endDate} type="date" min={startDate} onChange={(e) => setEndDate(e.target.value)}></input>
+        <input value={endDate} type="datetime-local" min={startDate} onChange={(e) => setEndDate(e.target.value)}></input>
         <div>
         <p className='errors'>{errors.endDate}</p>
       </div>

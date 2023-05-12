@@ -30,10 +30,7 @@ const GroupDetail = () => {
   const pastEvents = eventObj.filter((event) => event.startDate > Date());
   const comingEvents = eventObj.filter((event) => event.startDate < Date());
 
-  console.log(pastEvents);
-  console.log(comingEvents);
-  console.log(pastEvents.length);
-  console.log(comingEvents.length);
+
 
   return !group && events ? (<div><h1>Loading...</h1></div>) : (
   <div>

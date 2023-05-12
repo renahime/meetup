@@ -1,9 +1,94 @@
+/* @import url(/frontend/fonts/lemonMilk/stylesheet.css); */
+
 .HomeList{
-  position: fixed;
-  top: 55%;
-  left: 45%;
-  margin-top: -50px;
-  margin-left: -75px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+
+.eventLink{
   display:flex;
-  gap:75px;
+  flex-direction: column;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  color: inherit;
+  justify-content: center;
+}
+
+.addGroupLink{
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  color: inherit;
+}
+
+.groupLink{
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.JoinButton{
+  font-family: Arial, Helvetica, sans-serif;
+  background-color:#709874;
+  border: none;
+  margin: center;
+}
+
+.eventImageImg{
+  height:150px;
+  width: 350px;
+  justify-content: center;
+}
+
+.addGroupImageImg{
+  height: 150px;
+  width: 150px;
+  justify-content: center;
+}
+
+.groupImageImg{
+  height: 156px;
+  width: 156px;
+  justify-content: center;
+}
+
+.eventText{
+  text-align: center;
+}
+
+.addGroupText{
+  text-align: center;
+}
+
+.groupText{
+  text-align: center;
+}
+
+.MidTitle{
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.MidBody{
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.HeaderTitle{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.HeaderBody{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+body{
+  background-color: #f6cde2;
 }

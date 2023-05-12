@@ -36,13 +36,12 @@ function App() {
               <Route exact path='/events/:eventId' component={EventDetail}></Route>
               <Route exact path='/groups/:groupId/edit' component={EditGroupForm}></Route>
               <Route exact path='/groups/:groupId/events/new' component={CreateEventForm}></Route>
+              <Route exact path="/" component={HomeNavigation}></Route>
             </Switch>
           </div>
           <div>
             <Switch>
-              <Route exact path="/">
-              <HomeNavigation></HomeNavigation>
-              </Route>
+
             </Switch>
           </div>
     </div>

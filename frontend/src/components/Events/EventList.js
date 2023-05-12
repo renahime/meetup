@@ -7,6 +7,8 @@ const EventList = () => {
   const eventsObj =  useSelector((state) => state.events);
   const events = Object.values(eventsObj);
   const dispatch = useDispatch();
+  const comingEvents = events.filter((event) => new Date(event.startDate) < new Date());
+
 
   useEffect(() => {
     dispatch(fetchEvents());
@@ -24,7 +26,7 @@ const EventList = () => {
     <h3>Events In Meetup</h3>
     </div>
     <div className='GroupList'>
-      {events.map((event) => {
+      {comingEvents.map((event) => {
         return(
         <NavLink key = {event.groupId} path to={`/events/${event.id}`}>
         <div className='Event'>

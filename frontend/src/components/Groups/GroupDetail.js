@@ -28,10 +28,8 @@ const GroupDetail = () => {
 
   const eventObj = Object.values(events);
 
-  const pastEvents = eventObj.filter((event) => event.startDate > Date());
-  const comingEvents = eventObj.filter((event) => event.startDate < Date());
-
-
+  const pastEvents = eventObj.filter((event) => new Date(event.startDate) > new Date());
+  const comingEvents = eventObj.filter((event) => new Date(event.startDate) < new Date());
 
   return !group && events ? (<div><h1>Loading...</h1></div>) : (
   <div>
@@ -115,9 +113,27 @@ const GroupDetail = () => {
       </div>
       <div className='PastEventDiv'>
         {pastEvents.length == 0 ? <h2>There are no Past Events</h2> : <h2>Past Events ({pastEvents.length})</h2>}
-        {/* <h2>Past Events</h2>
-        {pastEvents.length == 0 ? <div className='NoPastEvents'><h3>There are no past events</h3></div> : <div><h3>Insert Past Event Logic Here</h3></div>} */}
-        <div className='PastEvents'></div>
+        {pastEvents.map((event) => {
+          return (
+            <div className='SingleEvent'>
+              <div className='EventImage'>
+              <img src={event.previewImage}></img>
+              </div>
+              <div className='StartDate'>
+                <h4>{event.startDate}</h4>
+              </div>
+              <div className='EventName'>
+                <h3>{event.name}</h3>
+                </div>
+                <div className='EventLocation'>
+                  <h6>{group.city},{group.state}</h6>
+                </div>
+                <div className='EventTitle'>
+                  <h3>{event.description}</h3>
+                </div>
+            </div>
+          )
+        })}
       </div>
     </div>
 )

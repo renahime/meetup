@@ -11,7 +11,7 @@ const GroupList = () => {
   const groups = Object.values(groupsObj);
   let events = useSelector(state => state.events);
   const eventObj = Object.values(events);
-  const comingEvents = eventObj.filter((event) => event.startDate < Date());
+  const comingEvents = eventObj.filter((event) => new Date(event.startDate) < new Date());
 
 
   const dispatch = useDispatch();

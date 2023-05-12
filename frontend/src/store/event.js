@@ -148,6 +148,9 @@ const eventReducer = (state = {}, action) => {
     return newState;
   case LOAD_BY_GROUP: {
     const eventsState = {};
+    if (action.events.Events == "There are no events right now") {
+      return eventsState;
+    }
     const filter = action.events.Events.filter((event) => event.groupId == action.groupId);
     filter.forEach((event) => {
     eventsState[event.id] = event;

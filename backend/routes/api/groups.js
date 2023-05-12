@@ -678,21 +678,12 @@ router.get('/:groupId/events',  async (req,res,next) => {
         status:"attending",
       },
     })
-    let eventImage = await EventImage.findOne({
-      where:{
-        eventId:event.id,
-      },
-      attributes:['url']
-    })
+
     event = event.toJSON();
     delete event.createdAt;
     delete event.updatedAt;
     event.numAttending = attendance.length;
-    if(eventImage){
-      event.previewImage = eventImage.url;
-    } else {
-      event.eventImages = "There are no pictures for this event";
-    }
+
     pushedEvents.push({
       id:event.id,
       groupId:event.groupId,

@@ -11,53 +11,53 @@ module.exports = {
     await queryInterface.bulkInsert(options, [
       {
         organizerId: 1,
-        name: 'Black Energetic Bears',
-        about: 'We are a group of people who like to host silly events around the world, anyone and everyone is welcome as long as they are silly.',
+        name: 'Printemps',
+        about: 'Printemps is a sub-unit under μs. The unit consists of three members, namely group leader Honoka Kosaka, Kotori Minami and Hanayo Koizumi. They debuted with the song Love marginal. Printemps name means "spring" in French, and is meant to symbolize their cheerfulness like a ray of sunshine in spring.',
         type: 'In person',
         private: "Private",
-        city: 'Las Vegas',
-        state: 'NV',
-        previewImage: 'www.website.com'
+        city: 'Tokyo',
+        state: 'JP',
+        previewImage: 'https://static.wikia.nocookie.net/love-live/images/a/a7/Printemps_Eien_Friends.jpg'
       },
       {
         organizerId: 2,
-        name: "Purple Witty Pigeons",
-        about: "We are a group of people who like to go to musicals and watch preformers sing and dance. Anyone is welcome to join as long as they love musicals.",
+        name: "Bibi",
+        about: "BiBi is a sub-unit under μ's. The unit consists of three members, namely leader Eli Ayase, Maki Nishikino, and Nico Yazawa. They debuted with the song Diamond Princess no Yuuutsu. BiBi's name was meant to symbolize the sharp style and fashion exhibited by members of the group. Other highlighted submissions included Grace Maiden and Shiny Silhouette.",
         type: 'In person',
         private: "Private",
-        city: 'New York City',
-        state: 'NY',
-        previewImage: 'www.website.com'
+        city: 'Tokyo',
+        state: 'JP',
+        previewImage: 'https://static.wikia.nocookie.net/love-live/images/d/d4/Diamond_Princess_No_Yuutsu_-_cover.jpg'
       },
       {
-        organizerId: 3,
-        name: 'Red Hungry Turtles',
-        about: 'We are a group of people who like to host events where we eat all kinds of food regardless of ethics. Anyone that passes the trials are welcome.',
+        organizerId: 9,
+        name: 'Lily White',
+        about: 'Lily white is a sub-unit under μs. The unit consists of three members, namely leader Umi Sonoda, Rin Hoshizora and Nozomi Tojo. They debuted with the song Shiranai Love*Oshiete Love.',
         type: 'In person',
-        private: "Public",
-        city: 'Austin',
-        state: 'TX',
-        previewImage: 'www.website.com'
+        private: "Private",
+        city: 'Tokyo',
+        state: 'JP',
+        previewImage: 'https://static.wikia.nocookie.net/love-live/images/0/08/Lily_White_Shiranai_Love_Oshiete_Love.jpg'
       },
       {
-        organizerId: 4,
-        name: 'Pink Idol Kittens',
-        about: 'We are a group filled with idols and idol lovers alike. We meet to go to virtual concerts and events. Anyone who loves idols can join.',
-        type: 'Online',
-        private: "Public",
-        city: 'Online',
-        state: 'Online',
-        previewImage: 'www.website.com'
+        organizerId: 11,
+        name: 'Guilty Kiss',
+        about: "Guilty Kiss is a sub-unit under Aqours. The unit consists of three members, namely Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara. They debuted with the song Strawberry Trapper.Guilty Kiss name was meant to symbolize the slightly grown-up and little devil-like image the unit has.",
+        type: 'In person',
+        private: "Private",
+        city: 'Osaka',
+        state: 'JP',
+        previewImage: 'https://static.wikia.nocookie.net/love-live/images/4/43/Strawberry_Trapper.jpg'
       },
       {
-        organizerId: 5,
-        name: 'Orange Laughing Parrots',
+        organizerId:10,
+        name: 'CYaRon!',
         about: "We are a group of people who enjoy laughing and making silly jokes. If you can make us laugh you are welcome to join.",
-        type: 'Online',
-        private: "Public",
-        city: 'Online',
-        state: 'Online',
-        previewImage: 'www.website.com'
+        type: 'In person',
+        private: "Private",
+        city: 'Osaka',
+        state: 'JP',
+        previewImage: 'https://lastfm.freetls.fastly.net/i/u/300x300/599c3aedfd70135881b95c9e49f0996b.jpg'
       }
     ])
   },

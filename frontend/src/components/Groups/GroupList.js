@@ -47,7 +47,7 @@ const GroupList = () => {
               <h3 className='GroupDescription'>{group.about}</h3>
               </div>
               <div className='EventsType'>
-              <h3 className='NumEvents'>{comingEvents.filter((event) => group.id == event.groupId).length} Events</h3>
+              <h3 className='NumEvents'>{comingEvents.filter((event) => group.id == event.groupId).length} Events ·{group.private}</h3>
               </div>
           </div>
           </NavLink>)

@@ -47,7 +47,7 @@ const GroupDetail = () => {
         <h1>{group.name}</h1>
         <h2>{group.city},{group.state}</h2>{
           comingEvents.length == 0 ? <h3>0 Upcoming Events</h3> :
-          <h3>{comingEvents.length} Events</h3>
+          <h3>{comingEvents.length} Events ·{group.private}</h3>
         }
         <h2 className='Private'>{group.private}</h2>
         <h2>Organized By {group.Organizer.firstName} {group.Organizer.lastName}</h2>

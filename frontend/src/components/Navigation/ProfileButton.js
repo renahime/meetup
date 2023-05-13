@@ -58,6 +58,7 @@ function ProfileButton({ user }) {
             <li>{user.username}</li>
             <li>Hello, {user.firstName} {user.lastName}</li>
             <li>{user.email}</li>
+            <li><NavLink className="GroupLink" to='/groups'>View Groups</NavLink></li>
             <li>
               <button onClick={logout}>Log Out</button>
             </li>

@@ -29,25 +29,18 @@ const GroupForm = ({group, formType}) => {
     group.private = group.isPrivate;
 
     if(formType == "Create Group"){
-      const newGroup = await dispatch(createGroup(group)).catch(async (res) => {
+      const newGroup =  dispatch(createGroup(group))
+      .then(newGroup => {history.push(`/groups/${newGroup.id}`)})
+      .catch(async (res) => {
         const data = await res.json();
-        if (data && data.errors) {
           setErrors(data.errors);
-        };
     });
-      group = newGroup;
     } else if (formType == 'Update Group'){
-      const editedGroup = await dispatch(updateGroup(group)).catch(async (res) => {
+      const editedGroup =  dispatch(updateGroup(group)).then(editedGroup => {history.push(`/groups/${editedGroup.id}`)}).catch(async (res) => {
         const data = await res.json();
-        if (data && data.errors) {
           setErrors(data.errors);
-        };
     });
       group = editedGroup
-    }
-
-    if(group){
-      history.push(`/groups/${group.id}`);
     }
   };
 

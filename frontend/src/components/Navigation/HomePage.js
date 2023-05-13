@@ -37,9 +37,9 @@ function HomeNavigation() {
       <h6 className="addGroupText">Start a new Group</h6> </NavLink>
     </nav>
     <div className="JoinButtonDiv">
-      {/* <button className="JoinButton" onClick={SignupFormModal} >
+      <button className="JoinButton" onClick={SignupFormModal} >
         Join イドル-UP!
-      </button> */}
+      </button>
     </div>
     </div>
   )

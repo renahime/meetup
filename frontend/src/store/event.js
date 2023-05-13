@@ -107,6 +107,7 @@ export const deleteEvent = (eventId) => async (dispatch) => {
 
   if(response.ok) {
     dispatch(removeEvent(eventId));
+    return eventId
   } else {
     const errors = await response.json();
     return errors;

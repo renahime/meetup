@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { deleteGroup } from '../../store/group';
 export default function DeleteModal({open, onClose, dispatch, group, history}) {
   if(!open) return null;
-  const handleDelete = (e) => {
+  const handleDelete = async (e) => {
     e.preventDefault();
-    dispatch(deleteGroup(group.id));
-    history.push('/groups')
+    const groupId = await dispatch(deleteGroup(group.id));
+    if(groupId){
+      history.push('/groups')
+    }
   }
   return (<div>
     <h1>Confirm Delete</h1>

@@ -62,7 +62,7 @@ module.exports = {
         groupId: 3,
         name: 'Aki no Anata no Sora Tooku',
         description: "Aki no Anata no Sora Tooku (秋のあなたの空遠く lit. Your Autumn Sky Is Distant) is a song from lily white's third single. lily white is a sub-unit under μs; the group consists of Umi Sonoda, Rin Hoshizora, and Nozomi Tojo. ",
-        type: 'In Person',
+        type: 'In person',
         capacity: 50,
         price: 40,
         previewImage: 'https://static.wikia.nocookie.net/love-live/images/4/44/Aki_no_Anata_no_Sora_Tooku.jpg',

@@ -109,16 +109,17 @@ export const deleteGroup = (groupId) => async (dispatch) => {
   }
 }
 
-
+let initialState = {allGroups: null, singleGroup:null}
 
 //** Group Reducer: */
-const groupReducer = (state = {}, action) => {
+const groupReducer = (state = initialState, action) => {
   switch(action.type) {
     case LOAD_GROUPS: {
-      const groupsState = {};
+      const  groupsState = {...state, allGroups:{...state.allGroups}, singleGroup:{...state.singleGroup}}
       action.groups.Groups.forEach((group) =>{
-        groupsState[group.id] = group;
+        groupsState.allGroups[group.id] = group;
       })
+      groupsState.singleGroup = {};
     return groupsState;
     };
   case RECEIVE_GROUP:

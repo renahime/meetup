@@ -7,7 +7,7 @@ import { NavLink, Route } from 'react-router-dom';
 import { fetchEvents } from '../../store/event';
 
 const GroupList = () => {
-  const groupsObj =  useSelector((state) => state.groups);
+  const groupsObj =  useSelector((state) => state.groups.allGroups);
   const groups = Object.values(groupsObj);
   let events = useSelector(state => state.events);
   const eventObj = Object.values(events);
@@ -53,7 +53,6 @@ const GroupList = () => {
           </NavLink>)
       })}
     </div>
-
     </div>
   )
 }

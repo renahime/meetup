@@ -19,16 +19,16 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div>
-          <div>
+    <div style={{width: '100%', height: '100%', display: 'flex', 'flex-direction':'column'}}>
+          <div id="nav">
             <Navigation isLoaded={isLoaded} />
-            {isLoaded &&
+            {/* {isLoaded &&
             <Switch>
             </Switch>
-          }
+          } */}
           </div>
-          <div>
-          <Switch>
+          <div id="content">
+            <Switch>
               <Route exact path="/groups" component={GroupList}></Route>
               <Route exact path="/events" component={EventList}></Route>
               <Route exact path="/groups/new" component={createGroupForm}></Route>
@@ -37,11 +37,6 @@ function App() {
               <Route exact path='/groups/:groupId/edit' component={EditGroupForm}></Route>
               <Route exact path='/groups/:groupId/events/new' component={CreateEventForm}></Route>
               <Route exact path="/" component={HomeNavigation}></Route>
-            </Switch>
-          </div>
-          <div>
-            <Switch>
-
             </Switch>
           </div>
     </div>

@@ -12,7 +12,7 @@ module.exports = {
       {
         organizerId: 1,
         name: 'Printemps',
-        about: 'Printemps is a sub-unit under μs. The unit consists of three members, namely group leader Honoka Kosaka, Kotori Minami and Hanayo Koizumi. They debuted with the song Love marginal. Printemps name means "spring" in French, and is meant to symbolize their cheerfulness like a ray of sunshine in spring.',
+        about: 'Printemps is a sub-unit under μs. The unit consists of three members, namely group leader Honoka Kosaka, Kotori Minami and Hanayo Koizumi. They debuted with the song Love marginal.',
         type: 'In person',
         private: "Private",
         city: 'Tokyo',
@@ -22,7 +22,7 @@ module.exports = {
       {
         organizerId: 2,
         name: "Bibi",
-        about: "BiBi is a sub-unit under μ's. The unit consists of three members, namely leader Eli Ayase, Maki Nishikino, and Nico Yazawa. They debuted with the song Diamond Princess no Yuuutsu. BiBi's name was meant to symbolize the sharp style and fashion exhibited by members of the group. Other highlighted submissions included Grace Maiden and Shiny Silhouette.",
+        about: "BiBi is a sub-unit under μ's. The unit consists of three members, namely leader Eli Ayase, Maki Nishikino, and Nico Yazawa. They debuted with the song Diamond Princess no Yuuutsu.",
         type: 'In person',
         private: "Private",
         city: 'Tokyo',
@@ -42,7 +42,7 @@ module.exports = {
       {
         organizerId: 11,
         name: 'Guilty Kiss',
-        about: "Guilty Kiss is a sub-unit under Aqours. The unit consists of three members, namely Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara. They debuted with the song Strawberry Trapper.Guilty Kiss name was meant to symbolize the slightly grown-up and little devil-like image the unit has.",
+        about: "Guilty Kiss is a sub-unit under Aqours. The unit consists of three members, namely Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara. ",
         type: 'In person',
         private: "Private",
         city: 'Osaka',

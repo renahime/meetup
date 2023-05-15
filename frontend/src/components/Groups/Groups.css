@@ -13,3 +13,7 @@ h3{
   color: black;
   border: 2px solid #4CAF50; /* Green */
 }
+
+.errors {
+  color: red;
+}

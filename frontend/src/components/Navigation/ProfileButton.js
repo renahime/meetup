@@ -45,13 +45,13 @@ function ProfileButton({ user }) {
 
   return (
     <>
-    {user && (<>
-      <NavLink className="GroupNav" to='/groups/new'>Start a new Group</NavLink>
-      <button onClick={openMenu}>
-      <i className="fas fa-user-circle" />
-    </button>
-    </>
-    )}
+      {user && (<>
+        <NavLink className="GroupNav" to='/groups/new'>Start a new Group</NavLink>
+        <button onClick={openMenu}>
+          <i className="fas fa-user-circle" />
+        </button>
+      </>
+      )}
       <ul className={ulClassName} ref={ulRef}>
         {user && (
           <>
@@ -59,6 +59,7 @@ function ProfileButton({ user }) {
             <li>Hello, {user.firstName} {user.lastName}</li>
             <li>{user.email}</li>
             <li><NavLink className="GroupLink" to='/groups'>View Groups</NavLink></li>
+            <li><NavLink className="EventLink" to='/events'>View Events</NavLink></li>
             <li>
               <button onClick={logout}>Log Out</button>
             </li>
@@ -66,8 +67,8 @@ function ProfileButton({ user }) {
         )}
       </ul>
       <div className="login">
-      {!user && (
-        <>
+        {!user && (
+          <>
             <OpenModalMenuItem
               itemText="Log In"
               onItemClick={closeMenu}
@@ -78,9 +79,9 @@ function ProfileButton({ user }) {
               onItemClick={closeMenu}
               modalComponent={<SignupFormModal />}
             />
-        </>
-      )}
-  </div>
+          </>
+        )}
+      </div>
     </>
   );
 }

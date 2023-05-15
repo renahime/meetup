@@ -8,11 +8,15 @@ import { fetchEvents } from '../../store/event';
 
 const GroupList = () => {
   const groupsObj =  useSelector((state) => state.groups.allGroups);
-  const groups = Object.values(groupsObj);
-  let events = useSelector(state => state.events);
-  const eventObj = Object.values(events);
-  const comingEvents = eventObj.filter((event) => new Date(event.startDate) < new Date());
-
+  let groups;
+  if(groupsObj) groups = Object.values(groupsObj);
+  let eventsObj = useSelector(state => state.events.allEvents);
+  let events;
+  if(eventsObj) events = Object.values(eventsObj);
+  let comingEvents = [];
+  if(events){
+    comingEvents = events.filter((event) => new Date(event.startDate) < new Date());
+  }
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -22,8 +26,7 @@ const GroupList = () => {
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
-
-  return(
+  return((!groups || !events || !comingEvents) ? (<div><h1>Loading...</h1></div>) :
     <div>
     <div className='Headers'>
     <Link to='/events'>Events
@@ -47,7 +50,7 @@ const GroupList = () => {
               <h3 className='GroupDescription'>{group.about}</h3>
               </div>
               <div className='EventsType'>
-              <h3 className='NumEvents'>{comingEvents.filter((event) => group.id == event.groupId).length} Events ·{group.private}</h3>
+              <h3 className='NumEvents'>{comingEvents.filter((event) => group.id == event.groupId).length} Events · {group.private}</h3>
               </div>
           </div>
           </NavLink>)

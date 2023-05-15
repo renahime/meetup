@@ -7,8 +7,10 @@ import GroupForm from "./GroupForm";
 
 const EditGroupForm = () => {
   const {groupId} = useParams();
-  const group = useSelector((state) => state.groups ? state.groups[groupId] : null);
+  const group = useSelector((state) => state.groups.singleGroup ? state.groups.singleGroup : null);
   const dispatch = useDispatch();
+
+  console.log(group);
 
   useEffect(() => {
     dispatch(fetchGroup(groupId));
@@ -17,6 +19,8 @@ const EditGroupForm = () => {
   if(!group) return(<></>)
 
   group.location = group.city + ',' + group.state;
+
+  console.log(Object.keys(group).length)
 
   return (Object.keys(group).length > 1 && (
     <>

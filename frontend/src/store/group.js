@@ -119,17 +119,22 @@ const groupReducer = (state = initialState, action) => {
       action.groups.Groups.forEach((group) =>{
         groupsState.allGroups[group.id] = group;
       })
-      groupsState.singleGroup = {};
     return groupsState;
     };
   case RECEIVE_GROUP:
-    return {...state, [action.group.id]: action.group};
-  case UPDATE_GROUP:
-    return {...state, [action.group.id]: action.group};
-  case REMOVE_GROUP:
-    const newState = {...state};
-    delete newState[action.groupId];
-    return newState;
+    let groupsState = {...state, allGroups: {...state.allGroups}, singleGroup:{...state.singleGroup}};
+    groupsState.singleGroup = action.group;
+    return groupsState;
+  case UPDATE_GROUP:{
+    let groupsState = {...state, allGroups: {...state.allGroups}, singleGroup:{...state.singleGroup}};
+    groupsState.allGroups[action.group.id] = action.group;
+    return groupsState
+  }
+  case REMOVE_GROUP:{
+    const groupsState = {...state, allGroups: {...state.allGroups}, singleGroup:{...state.singleGroup}};
+    delete groupsState.allGroups[action.groupId];
+    return groupsState;
+  }
   default:
     return state;
   }

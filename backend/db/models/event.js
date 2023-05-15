@@ -40,73 +40,73 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    venueId:{
-      type:DataTypes.INTEGER,
+    venueId: {
+      type: DataTypes.INTEGER,
       references: {
-        model:'Venues'
+        model: 'Venues'
       },
       hooks: true,
-      allowNull:true,
+      allowNull: true,
     },
-    groupId:{
-      type:DataTypes.INTEGER,
+    groupId: {
+      type: DataTypes.INTEGER,
       references: {
         model: 'Groups'
       },
       hooks: true
     },
     name: {
-      type:DataTypes.STRING,
+      type: DataTypes.STRING,
       validate: {
-        isFive(value){
-          if(value.length < 5)
+        isFive(value) {
+          if (value.length < 5)
             throw new Error('Must be at least 5 chars');
         }
       }
     },
-    description:{
-      type:DataTypes.STRING,
-      allowNull:false,
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    type:{
-      type:DataTypes.ENUM('Online', 'In person'),
+    type: {
+      type: DataTypes.ENUM('Online', 'In person'),
       validate: {
         isIn: [['Online', 'In person']]
       }
     },
-    capacity:{
-      type:DataTypes.INTEGER,
-      validate:{
-        min:0
+    capacity: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: 0
       }
     },
-    price:{
-      type:DataTypes.DECIMAL(4,2),
-      validate:{
-        min:0
+    price: {
+      type: DataTypes.DECIMAL(4, 2),
+      validate: {
+        min: 0
       }
     },
     previewImage: {
-      type:DataTypes.STRING,
-      allowNull:false
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    startDate:{
-      type:DataTypes.DATE,
-      validate:{
+    startDate: {
+      type: DataTypes.DATE,
+      validate: {
         isDate: true,
-        happened(value){
-          if (value <= new Date()){
+        happened(value) {
+          if (value <= new Date('2021-12-12')) {
             throw new Error('Events cannot already happen')
           }
         }
       }
     },
-    endDate:{
-      type:DataTypes.DATE,
-      validate:{
-        isDate:true,
-        isAfter(value){
-          if(value < this.startDate){
+    endDate: {
+      type: DataTypes.DATE,
+      validate: {
+        isDate: true,
+        isAfter(value) {
+          if (value < this.startDate) {
             throw new Error('End date cannot be before start')
           }
         }

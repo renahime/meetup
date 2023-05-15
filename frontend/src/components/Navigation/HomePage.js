@@ -36,7 +36,7 @@ function HomeNavigation() {
       <img className="addGroupImageImg" src={addGroup}></img>
       <h6 className="addGroupText">Start a new Group</h6> </NavLink>
     </nav>
-    <div className="JoinButtonDiv" style={{'text-align':'center'}}>
+    <div className="JoinButtonDiv" style={{textAlign:'center'}}>
       <button className="JoinButton">
         Join イドル-UP!
       </button>

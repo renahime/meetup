@@ -127,35 +127,47 @@ export const fetchEventsGroupId = (groupId) => async (dispatch) => {
     return errors;
   }
 }
+// //** Group Reducer: */
+// const groupReducer = (state = initialState, action) => {
+//   default:
+//     return state;
+//   }
+// }
 
 
+let initialState = {allEvents: null, singleEvent:null}
 //** Event Reducer: */
-const eventReducer = (state = {}, action) => {
+const eventReducer = (state = initialState, action) => {
   switch(action.type) {
     case LOAD_EVENTS: {
-      const eventsState = {};
+      let eventsState = {...state, allEvents: {...state.allEvents}, singleEvent:{...state.singleEvent}};
       action.events.Events.forEach((event) =>{
-        eventsState[event.id] = event;
+        eventsState.allEvents[event.id] = event;
       })
     return eventsState;
     };
-  case RECEIVE_EVENT:
-    return {...state, [action.event.id]: action.event};
-  case UPDATE_EVENT:
-    return {...state, [action.event.id]: action.event};
-  case REMOVE_EVENT:
-    const newState = {...state};
-    delete newState[action.eventId];
-    return newState;
-  case LOAD_BY_GROUP: {
-    const eventsState = {};
-    if (action.events.Events == "There are no events right now") {
+  case RECEIVE_EVENT:{
+    let eventsState = {...state, allEvents: {...state.allEvents}, singleEvent:{...state.singleEvent}}
+    eventsState.singleEvent = action.event;
+    return eventsState
+  }
+    case UPDATE_EVENT:{
+      let eventsState = {...state, allEvents:{...state.allEvents}, singleEvent:{...state.singleEvent}};
+      eventsState.allEvents[action.event.id] = action.event;
       return eventsState;
     }
+  case REMOVE_EVENT:{
+    const eventsState = {...state, allEvents:{...state.allEvents}, singleEvent:{...state.singleEvent}};
+    delete eventsState.allEvents[action.eventId];
+    return eventsState
+  }
+  case LOAD_BY_GROUP: {
+    if (action.events.Events == "There are no events right now") {
+      return {};
+    }
+    const eventsState = {...state, allEvents:{...state.allEvents}, singleEvent:{...state.singleEvent}};
     const filter = action.events.Events.filter((event) => event.groupId == action.groupId);
-    filter.forEach((event) => {
-    eventsState[event.id] = event;
-    })
+    eventsState.allEvents = filter;
     return eventsState;
   }
   default:

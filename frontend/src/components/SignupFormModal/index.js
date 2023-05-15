@@ -16,31 +16,26 @@ function SignupFormModal() {
   const { closeModal } = useModal();
 
   const handleSubmit = (e) => {
+    console.log('c')
     e.preventDefault();
-    if (password === confirmPassword) {
-      setErrors({});
-      return dispatch(
-        sessionActions.signup({
-          email,
-          username,
-          firstName,
-          lastName,
-          password,
-        })
-      )
-        .then(closeModal)
-        .catch(async (res) => {
-          const data = await res.json();
-          if (data && data.errors) {
-            setErrors(data.errors);
-          }
-        });
-    } else if(!email.includes('@')){
-      return setErrors({confirmEmail: "The provided email is invalid"});
-     }
-    return setErrors({
-      confirmPassword: "Confirm Password field must be the same as the Password field"
-    });
+    setErrors({});
+    return dispatch(
+      sessionActions.signup({
+        email,
+        username,
+        firstName,
+        lastName,
+        password,
+      })
+    )
+      .then(closeModal)
+      .catch(async (res) => {
+        const data = await res.json();
+        console.log(data);
+        if (data && data.errors) {
+          setErrors(data.errors);
+        }
+      });
   };
 
   return (
@@ -111,7 +106,7 @@ function SignupFormModal() {
         )}
         <button type="submit" disabled={(username.length < 4 ||
           password.length < 6 || confirmPassword.length === 0 || lastName.length === 0
-          || firstName.length === 0 || email.length === 0)}>Sign Up</button>
+          || firstName.length === 0 || email.length === 0) || password !== confirmPassword}>Sign Up</button>
       </form>
     </>
   );

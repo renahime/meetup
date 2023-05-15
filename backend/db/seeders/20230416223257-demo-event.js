@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     options.tableName = 'Events';
     await queryInterface.bulkInsert(options, [
       {
@@ -37,7 +37,7 @@ module.exports = {
         venueId: 2,
         groupId: 2,
         name: 'Fuyu ga Kureta Yokan',
-        description: 'Fuyu ga Kureta Yokan (冬がくれた予感 lit. The Premonition Winter Gave Me) is a song from BiBis third single. BiBi is a sub-unit under μs; the group consists of Maki Nishikino, Eli Ayase, and Nico Yazawa. It was first previewed by being released for play on Love Live! School idol festival on December 5, 2014.',
+        description: 'Fuyu ga Kureta Yokan (冬がくれた予感 lit. The Premonition Winter Gave Me) is a song from BiBis third single. BiBi is a sub-unit under μs; the group consists of Maki Nishikino, Eli Ayase, and Nico Yazawa.',
         type: 'In person',
         capacity: 50,
         price: 100,
@@ -73,7 +73,7 @@ module.exports = {
         venueId: 3,
         groupId: 3,
         name: 'Otohime Heart de Love Kyuuden',
-        description: "Otohime Heart de Love Kyuuden (乙姫心で恋宮殿おとひめはーとでらぶきゅうでん lit. A Palace of Love in the Maiden Princess's Heart) is a bonus CD sung by lily white. lily white is a sub-unit under μs; the group consists of Umi Sonoda, Rin Hoshizora, and Nozomi Tojo.",
+        description: "Otohime Heart de Love Kyuuden (乙姫心で恋宮殿おとひめはーとでらぶきゅうでん lit. A Palace of Love in the Maiden Princess's Heart) is a bonus CD sung by lily white..",
         type: 'In person',
         capacity: 50,
         price: 40,
@@ -85,18 +85,18 @@ module.exports = {
         venueId: 1,
         groupId: 4,
         name: 'Guilty!? Farewell party',
-        description: "Guilty!? Farewell party is a bonus CD sung by Guilty Kiss, a sub-unit under Aqours. The group consists of Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara. The CD is a bonus for purchasing the entire Love Live! Sunshine!! Season 2",
+        description: "Guilty!? Farewell party is a bonus CD sung by Guilty Kiss, a sub-unit under Aqours. The group consists of Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara.",
         type: 'In person',
         capacity: 100,
         price: 100,
         previewImage: 'https://static.wikia.nocookie.net/love-live/images/0/00/Guilty_farewell_party.png',
         startDate: new Date('2023-05-02'),
         endDate: new Date('2023-05-02'),
-      },      {
+      }, {
         venueId: 1,
         groupId: 4,
         name: 'Shooting Star Warrior',
-        description: "Shooting Star Warrior is an album sung by Guilty Kiss, a sub-unit under Aqours. The group consists of Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara. It was released on July 28, 2021.",
+        description: "Shooting Star Warrior is an album sung by Guilty Kiss, a sub-unit under Aqours. The group consists of Riko Sakurauchi, Yoshiko Tsushima, and Mari Ohara.",
         type: 'In person',
         capacity: 100,
         price: 100,
@@ -131,11 +131,11 @@ module.exports = {
     ])
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     const Op = Sequelize.Op;
     options.tableName = 'Events';
     await queryInterface.bulkDelete(options, {
-      groupId: {[Op.in]: [1,2,3,4,5]}
+      groupId: { [Op.in]: [1, 2, 3, 4, 5] }
     }, {})
   }
 };

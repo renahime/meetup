@@ -10,11 +10,24 @@ const EventList = () => {
   const dispatch = useDispatch();
   let pastEvents = [];
   let upcomingEvents = [];
-  if (events) {
+  if (events && Object.keys(events).length) {
     pastEvents = events.filter((event) => new Date(event.startDate) < new Date());
     upcomingEvents = events.filter((event) => new Date(event.startDate) > new Date())
     upcomingEvents = upcomingEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     pastEvents = pastEvents.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+    upcomingEvents.forEach((event) => {
+      event.localStart = new Date(event.startDate).toLocaleString();
+      event.localEnd = new Date(event.endDate).toLocaleString();
+      event.localTimeStart = event.localStart.split(', ');
+      event.localTimeEnd = event.localEnd.split(', ');
+    })
+
+    pastEvents.forEach((event) => {
+      event.localStart = new Date(event.startDate).toLocaleString();
+      event.localEnd = new Date(event.endDate).toLocaleString();
+      event.localTimeStart = event.localStart.split(', ');
+      event.localTimeEnd = event.localEnd.split(', ');
+    })
   }
 
 
@@ -42,7 +55,7 @@ const EventList = () => {
                   <img src={event.previewImage}></img>
                 </div>
                 <div className='TextContainer'>
-                  <h1 className='EventDate'>{event.startDate}</h1>
+                  <h1 className='EventDate'>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h1>
                   <h2 className='EventName'>{event.name}</h2>
                   <h2 className='EventLocation'>{event.Group.city},{event.Group.state}</h2>
                 </div>
@@ -61,7 +74,7 @@ const EventList = () => {
                   <img src={event.previewImage}></img>
                 </div>
                 <div className='TextContainer'>
-                  <h1 className='EventDate'>{event.startDate}</h1>
+                  <h1 className='EventDate'>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h1>
                   <h2 className='EventName'>{event.name}</h2>
                   <h2 className='EventLocation'>{event.Group.city},{event.Group.state}</h2>
                 </div>

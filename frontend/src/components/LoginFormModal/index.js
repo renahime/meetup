@@ -32,15 +32,15 @@ function LoginFormModal() {
     setErrors({})
     let credential = demoUser;
     let password = demoPass
-    return dispatch(sessionActions.login({credential, password}))
-    .then(closeModal)
-    .catch(async (res) => {
-      const data = await res.json();
-      console.log(data);
-      if(data && data.errors){
-        setErrors(data.errors);
-      }
-    })
+    return dispatch(sessionActions.login({ credential, password }))
+      .then(closeModal)
+      .catch(async (res) => {
+        const data = await res.json();
+        console.log(data);
+        if (data && data.errors) {
+          setErrors(data.errors);
+        }
+      })
   }
 
   return (
@@ -71,11 +71,11 @@ function LoginFormModal() {
         <button type="submit" disabled={(credential.length < 4 || password.length < 6)}>Log In</button>
       </form>
       <form onSubmit={handleDemo}>
-      <button type="submit"
+        <button type="submit"
         >
-        Sign is as Demo User
+          Sign is as Demo User
         </button>
-        </form>
+      </form>
     </>
   );
 }

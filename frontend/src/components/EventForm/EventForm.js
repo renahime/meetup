@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createEvent } from '../../store/event';
 import { fetchGroup } from '../../store/group';
+import './EventForm.css'
 
 
 const EventForm = ({ event, formType }) => {
@@ -63,11 +64,11 @@ const EventForm = ({ event, formType }) => {
 
   return (!group ? (<div><h1>Loading...</h1></div>) :
     <div className='Body'>
-      <div className='Title'>
+      <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} className='Title'>
         <h2>Create an Event for {`${group.name}`}</h2>
       </div>
       <form onSubmit={handleSubmit}>
-        <div className='Name'>
+        <div className='Name' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>What is the name of your event?</h4>
           <input className='InputText' placeholder="Event Name" type='text' value={name} onChange={(e) => setName(e.target.value)}>
           </input>
@@ -75,7 +76,7 @@ const EventForm = ({ event, formType }) => {
         <div>
           <p className='errors'>{errors.name}</p>
         </div>
-        <div className='Type'>
+        <div className='Type' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>Is this an in person or online group?</h4>
           <select value={type} className='Type' onChange={(e) => setType(e.target.value)}>
             <option value='Select One'> Select One</option>
@@ -86,21 +87,21 @@ const EventForm = ({ event, formType }) => {
         <div>
           <p className='errors'>{errors.type}</p>
         </div>
-        <div className='Capacity'>
+        <div className='Capacity' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>How many people can attend this event?</h4>
           <input value={capacity} type="number" placeholder="1" min="1" onChange={(e) => setCapacity(e.target.value)}></input>
         </div>
         <div>
           <p className='errors'>{errors.capacity}</p>
         </div>
-        <div className='Price'>
+        <div className='Price' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>What is the price of your event?</h4>
           <input value={price} type="number" placeholder="0" min="0" onChange={(e) => setPrice(e.target.value)}></input>
         </div>
         <div>
           <p className='errors'>{errors.price}</p>
         </div>
-        <div className='Date'>
+        <div className='Date' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>When does your event start?</h4>
           <input value={startDate} type="datetime-local" min={Date()} onChange={(e) => setStartDate(e.target.value)}></input>
           <div>
@@ -112,14 +113,14 @@ const EventForm = ({ event, formType }) => {
             <p className='errors'>{errors.endDate}</p>
           </div>
         </div>
-        <div className='Image'>
+        <div className='Image' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>Please Add an Image to your Event Below</h4>
           <input className='InputText' placeholder="Image URL" type='text' value={previewImage} onChange={(e) => setPreviewImage(e.target.value)}></input>
         </div>
         <div>
           <p className='errors'>{errors.previewImage}</p>
         </div>
-        <div className='Description'>
+        <div className='Description' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>Please Describe Your Event</h4>
           <textarea placeholder="Please include at least 30 characters" className='InputDescription' value={description} onChange={(e) => setDescription(e.target.value)}>
           </textarea>
@@ -127,7 +128,9 @@ const EventForm = ({ event, formType }) => {
             <p className='errors'>{errors.description}</p>
           </div>
         </div>
-        <button type="submit" >Create Event</button>
+        <div className='buttonContainer'>
+          <button className='submitButton' type="submit" >Create Event</button>
+        </div>
       </form>
     </div>
   )

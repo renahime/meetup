@@ -98,7 +98,7 @@ const EventDetail = () => {
                           <button className='actualButton' onClick={handleAlert} >Update</button>
                         </div>
                         <div className='Delete'>
-                          <button className='actualButton'>
+                          <div className='button-background'>
                             <OpenModalMenuItem
                               itemText="DELETE"
                               onItemClick={closeMenu}
@@ -106,7 +106,7 @@ const EventDetail = () => {
                                 event={event} history={history} dispatch={dispatch} open={true} onClose={() => setShowMenu(false)} />}
                               style={{ backgroundColor: '#709874', height: '30px', className: 'owner-button-style' }}
                             />
-                          </button>
+                          </div>
                         </div>
                       </div>
                     </div>

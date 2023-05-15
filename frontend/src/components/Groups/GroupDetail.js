@@ -111,19 +111,15 @@ const GroupDetail = () => {
                     <Link to={`/groups/${group.id}/edit`}>
                       <button className='owner-button-style' style={{ height: '30px' }}>Update</button>
                     </Link>
-                    {/* <OpenModalMenuItem
-              itemText="SIGN UP"
-              onItemClick={closeMenu}
-              modalComponent={<SignupFormModal />}
-            /> */}
-
-                    <OpenModalMenuItem
-                      itemText="DELETE"
-                      onItemClick={closeMenu}
-                      modalComponent={<DeleteModal
-                        group={group} history={history} dispatch={dispatch} open={true} onClose={() => setShowMenu(false)} />}
-                      style={{ backgroundColor: '#709874', height: '30px', className: 'owner-button-style' }}
-                    />
+                    <div className='button-background'>
+                      <OpenModalMenuItem
+                        itemText="DELETE"
+                        onItemClick={closeMenu}
+                        modalComponent={<DeleteModal
+                          group={group} history={history} dispatch={dispatch} open={true} onClose={() => setShowMenu(false)} />}
+                        style={{ backgroundColor: '#709874', height: '30px', className: 'owner-button-style' }}
+                      />
+                    </div>
                   </div>
                 </>
               ) : sessionUser ? (

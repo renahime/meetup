@@ -77,8 +77,13 @@
 
 .actualButton{
   border:none;
-  background-color: #709874;
+  background-color: #a0d4a6;
   cursor: pointer;
+  padding-top: 5px;
+}
+
+.Delete{
+  background-color: #a0d4a6;
 }
 
 

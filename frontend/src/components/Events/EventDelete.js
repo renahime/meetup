@@ -8,10 +8,10 @@ export default function DeleteModal({ open, onClose, dispatch, event, history })
   const handleDelete = async (e) => {
     e.preventDefault();
     const eventId = await dispatch(deleteEvent(event.id)).then(closeModal)
-      .catch(history.push('/groups')
+      .catch(history.push(`/groups/${event.groupId}`)
       );
     if (eventId) {
-      return history.push('/groups')
+      return history.push(`/groups/${event.groupId}`)
     }
   }
   return (<div className='modal'>

@@ -53,11 +53,8 @@ const EventForm = ({ event, formType }) => {
     event = newEvent;
 
     if (event.errors) {
-      console.log("error creating event");
-      console.log(event.errors);
       setErrors(event.errors)
     } else if (event) {
-      console.log("pushing event");
       history.push(`/events/${event.id}`)
     }
   }

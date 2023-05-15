@@ -30,7 +30,6 @@
 .highlight{
   text-decoration: underline;
   color:#b67295;
-
 }
 
 .Title{
@@ -53,4 +52,10 @@
 a {
   text-decoration: none;
   color:black
+}
+
+.same-size-button {
+  /* Add desired styles to make the buttons the same size */
+  width: 150px;
+  height: 40px;
 }

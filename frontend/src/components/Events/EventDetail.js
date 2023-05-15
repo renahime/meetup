@@ -1,10 +1,11 @@
 import '@fortawesome/fontawesome-free/css/all.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEvent } from '../../store/event';
 import DeleteModal from './EventDelete';
+import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
 import './EventDetail.css'
 
 const EventDetail = () => {
@@ -14,10 +15,25 @@ const EventDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const ulRef = useRef();
 
   const handleAlert = () => {
     alert('Feature coming soon ♥~!')
-  }
+  };
+
+  useEffect(() => {
+    if (!showMenu) return;
+    const closeMenu = (e) => {
+      setShowMenu(false);
+    };
+
+    document.addEventListener('click', closeMenu);
+
+    return () => document.removeEventListener("click", closeMenu);
+  }, [showMenu]);
+
+  const closeMenu = () => setShowMenu(false);
 
 
   useEffect(() => {
@@ -76,15 +92,21 @@ const EventDetail = () => {
               <div className='Buttons'>
                 {(sessionUser && (event.Organizer.id === sessionUser.id)) ? (
                   <>
-                    <div className='EventDetilsText'>
+                    <div className='EventDetilsText' style={{ listStyle: 'none' }}>
                       <div className='ButtonList'>
                         <div className='Delete'>
                           <button className='actualButton' onClick={handleAlert} >Update</button>
                         </div>
                         <div className='Delete'>
-                          <button className='actualButton' onClick={() => setIsOpen(true)} >Delete</button>
-                          <DeleteModal event={event} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>
-                          </DeleteModal>
+                          <button className='actualButton'>
+                            <OpenModalMenuItem
+                              itemText="DELETE"
+                              onItemClick={closeMenu}
+                              modalComponent={<DeleteModal
+                                event={event} history={history} dispatch={dispatch} open={true} onClose={() => setShowMenu(false)} />}
+                              style={{ backgroundColor: '#709874', height: '30px', className: 'owner-button-style' }}
+                            />
+                          </button>
                         </div>
                       </div>
                     </div>

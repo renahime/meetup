@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom/';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,7 +6,7 @@ import { fetchGroup } from '../../store/group';
 import DeleteModal from './GroupDeleteModal';
 import { fetchEventsGroupId } from '../../store/event';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import OpenModalMenuItem from '../OpenModalButton';
+import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
 import './GroupDetail.css';
 
 const GroupDetail = () => {
@@ -16,9 +16,8 @@ const GroupDetail = () => {
   const sessionUser = useSelector(state => state.session.user);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [isOpen, setIsOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-
+  const ulRef = useRef();
 
   useEffect(() => {
     dispatch(fetchGroup(groupId));
@@ -29,6 +28,25 @@ const GroupDetail = () => {
       dispatch(fetchEventsGroupId(group.id))
     }
   }, [dispatch, group]);
+
+  const openMenu = () => {
+    if (showMenu) return;
+    setShowMenu(true);
+  };
+
+  useEffect(() => {
+    if (!showMenu) return;
+
+    const closeMenu = (e) => {
+      setShowMenu(false);
+    };
+
+    document.addEventListener('click', closeMenu);
+
+    return () => document.removeEventListener("click", closeMenu);
+  }, [showMenu]);
+
+  const closeMenu = () => setShowMenu(false);
 
   let events = [];
   let upcomingEvents = [];
@@ -60,8 +78,6 @@ const GroupDetail = () => {
     alert('Feature coming soon ♥~!')
   }
 
-  const closeMenu = () => setShowMenu(false);
-
   return (!group || Object.keys(group).length === 0) ? (<div><h1>Loading...</h1></div>) : (
     <div>
       <div className='Return'>
@@ -88,23 +104,26 @@ const GroupDetail = () => {
             <div className='Buttons'>
               {(sessionUser && (group.organizerId === sessionUser.id)) ? (
                 <>
-                  <div className='owner-buttons' style={{ backgroundColor: '#709874' }}>
-                    {/* <OpenModalMenuItem
-                      itemText="DELETE"
-                      onItemClick={closeMenu}
-                      modalComponent={<DeleteModal />}
-                    /> */}
+                  <div className='owner-buttons' style={{ backgroundColor: '#709874', listStyle: 'none' }}>
                     <Link to={`/groups/${group.id}/events/new`}>
-                      <button className='owner-button-style'>Create Event</button>
+                      <button className='owner-button-style' style={{ height: '30px' }}>Create Event</button>
                     </Link>
                     <Link to={`/groups/${group.id}/edit`}>
-                      <button className='owner-button-style'>Update</button>
+                      <button className='owner-button-style' style={{ height: '30px' }}>Update</button>
                     </Link>
-                    <div className='Delete'>
-                      <button className='owner-button-style' onClick={() => setIsOpen(true)} >Delete</button>
-                      <DeleteModal group={group} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>
-                      </DeleteModal>
-                    </div>
+                    {/* <OpenModalMenuItem
+              itemText="SIGN UP"
+              onItemClick={closeMenu}
+              modalComponent={<SignupFormModal />}
+            /> */}
+
+                    <OpenModalMenuItem
+                      itemText="DELETE"
+                      onItemClick={closeMenu}
+                      modalComponent={<DeleteModal
+                        group={group} history={history} dispatch={dispatch} open={true} onClose={() => setShowMenu(false)} />}
+                      style={{ backgroundColor: '#709874', height: '30px', className: 'owner-button-style' }}
+                    />
                   </div>
                 </>
               ) : sessionUser ? (

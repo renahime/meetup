@@ -19,26 +19,26 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div style={{width: '100%', height: '100%', display: 'flex', flexDirection:'column'}}>
-          <div id="nav">
-            <Navigation isLoaded={isLoaded} />
-            {/* {isLoaded &&
+    <div style={{ backgroundColor: '#f6cde2', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', }}>
+      <div id="nav" style={{ borderBottom: 'solid black' }}>
+        <Navigation isLoaded={isLoaded} />
+        {/* {isLoaded &&
             <Switch>
             </Switch>
           } */}
-          </div>
-          <div id="content">
-            <Switch>
-              <Route exact path="/groups" component={GroupList}></Route>
-              <Route exact path="/events" component={EventList}></Route>
-              <Route exact path="/groups/new" component={createGroupForm}></Route>
-              <Route exact path="/groups/:groupId" component={GroupDetail}></Route>
-              <Route exact path='/events/:eventId' component={EventDetail}></Route>
-              <Route exact path='/groups/:groupId/edit' component={EditGroupForm}></Route>
-              <Route exact path='/groups/:groupId/events/new' component={CreateEventForm}></Route>
-              <Route exact path="/" component={HomeNavigation}></Route>
-            </Switch>
-          </div>
+      </div>
+      <div id="content">
+        <Switch>
+          <Route exact path="/groups" component={GroupList}></Route>
+          <Route exact path="/events" component={EventList}></Route>
+          <Route exact path="/groups/new" component={createGroupForm}></Route>
+          <Route exact path="/groups/:groupId" component={GroupDetail}></Route>
+          <Route exact path='/events/:eventId' component={EventDetail}></Route>
+          <Route exact path='/groups/:groupId/edit' component={EditGroupForm}></Route>
+          <Route exact path='/groups/:groupId/events/new' component={CreateEventForm}></Route>
+          <Route exact path="/" component={HomeNavigation}></Route>
+        </Switch>
+      </div>
     </div>
   );
 }

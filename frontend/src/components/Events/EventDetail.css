@@ -1,0 +1,90 @@
+.EventHeader{
+  height: 80%;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.EventReturn{
+  display: flex;
+  flex-direction: row;
+  height: 80%;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.EventContainer{
+  height: 80%;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  display:flex;
+  flex-direction: row;
+}
+
+.EventImage{
+  height:60%;
+  width:60%
+}
+
+.ActualEventImage{
+  height:60%;
+  width:60%;
+}
+
+.RightSide{
+  display: flex;
+  flex-direction: column;
+}
+
+.EventGroup{
+  display:flex;
+  gap:20px;
+  flex-direction: row;
+}
+
+.EventGroupText{
+  padding-top:30px;
+  display:text;
+  flex-direction: column;
+}
+
+.icons-and-Events{
+  display:flex;
+  flex-direction: row;
+}
+
+.icons{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding-right: 5px;
+  gap:5px;
+}
+
+
+.EventDetails{
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.actualButton{
+  border:none;
+  background-color: #709874;
+  cursor: pointer;
+}
+
+
+.ButtonList{
+  display:flex;
+  flex-direction: row;
+  float:right;
+  gap:15px;
+}

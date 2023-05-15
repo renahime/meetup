@@ -1,3 +1,23 @@
 .errors {
   color: red;
 }
+
+.Body{
+  height: 80%;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.submitButton{
+  border:none;
+  background-color: #b67295;
+  text-align: center;
+  height:50px;
+  width:150px;
+  cursor: pointer;
+}
+
+.buttonContainer{
+  padding-top: 20px;
+}

@@ -47,8 +47,8 @@ function ProfileButton({ user }) {
     <>
       {user && (<>
         <NavLink className="GroupNav" to='/groups/new'>Start a new Group</NavLink>
-        <button onClick={openMenu}>
-          <i className="fas fa-user-circle" />
+        <button className="profileButton" onClick={openMenu}>
+          <i className="fas fa-user-circle fa-3x" />
         </button>
       </>
       )}
@@ -70,12 +70,12 @@ function ProfileButton({ user }) {
         {!user && (
           <>
             <OpenModalMenuItem
-              itemText="Log In"
+              itemText="LOG IN"
               onItemClick={closeMenu}
               modalComponent={<LoginFormModal />}
             />
             <OpenModalMenuItem
-              itemText="Sign Up"
+              itemText="SIGN UP"
               onItemClick={closeMenu}
               modalComponent={<SignupFormModal />}
             />

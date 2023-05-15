@@ -6,7 +6,8 @@ import { fetchGroup } from '../../store/group';
 import DeleteModal from './GroupDeleteModal';
 import { fetchEventsGroupId } from '../../store/event';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import './Groups.css';
+import OpenModalMenuItem from '../OpenModalButton';
+import './GroupDetail.css';
 
 const GroupDetail = () => {
   const { groupId } = useParams();
@@ -16,6 +17,8 @@ const GroupDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+
 
   useEffect(() => {
     dispatch(fetchGroup(groupId));
@@ -57,110 +60,133 @@ const GroupDetail = () => {
     alert('Feature coming soon ♥~!')
   }
 
+  const closeMenu = () => setShowMenu(false);
+
   return (!group || Object.keys(group).length === 0) ? (<div><h1>Loading...</h1></div>) : (
     <div>
       <div className='Return'>
-        <Link to={`/groups/`}>
-          <i className="fa-solid fa-chevron-left"></i>
-          <h4>Groups</h4>
+
+        <Link style={{ display: 'flex', }} to={`/groups/`}>
+          <i className="fa-solid fa-chevron-left" /> <h4 className="highlight">Groups</h4>
         </Link>
       </div>
       <div className='GroupContainer'>
-        <div className='GroupImage'>
-          <img src={group.previewImage}></img>
-        </div>
-        <div className='GroupText'>
-          <h1>{group.name}</h1>
-          <h2>{group.city},{group.state}</h2>{
-            upcomingEvents.length == 0 ? <h3>0 Upcoming Events</h3> :
-              <h3>{upcomingEvents.length} Events · {group.private}</h3>
-          }
-          <h2 className='Private'>{group.private}</h2>
-          <h2>Organized By {group.Organizer.firstName} {group.Organizer.lastName}</h2>
-        </div>
-        <div className='Buttons'>
-          {(sessionUser && (group.organizerId === sessionUser.id)) ? (
-            <>
-              <div className='owner-buttons'>
-                <Link to={`/groups/${group.id}/events/new`}>
-                  <button>Create Event</button>
-                </Link>
-                <Link to={`/groups/${group.id}/edit`}>
-                  <button>Update</button>
-                </Link>
-                <div className='Delete'>
-                  <button onClick={() => setIsOpen(true)} >Delete</button>
-                  <DeleteModal group={group} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>
-                  </DeleteModal>
-                </div>
-              </div>
-            </>
-          ) : (sessionUser) ? (
-            <>
-              <div className='user-buttons'>
-                <button onClick={handleAlert}>Join this Group</button>
-              </div>
-            </>
-          ) : <div>
-            <button className='errors'>Join this Group</button>
+        <div className='Intro'>
+          <div className='GroupImage'>
+            <img className='DetailImage' src={group.previewImage}></img>
           </div>
-          }
+          <div className='rightSide'>
+            <div className='GroupText'>
+              <h1>{group.name}</h1>
+              <h2>{group.city},{group.state}</h2>{
+                upcomingEvents.length == 0 ? <h3>0 Upcoming Events</h3> :
+                  <h3>{upcomingEvents.length} Events · {group.private}</h3>
+              }
+              <h2 className='Private'>{group.private}</h2>
+              <h2>Organized By {group.Organizer.firstName} {group.Organizer.lastName}</h2>
+            </div>
+            <div className='Buttons'>
+              {(sessionUser && (group.organizerId === sessionUser.id)) ? (
+                <>
+                  <div className='owner-buttons' style={{ backgroundColor: '#709874' }}>
+                    {/* <OpenModalMenuItem
+                      itemText="DELETE"
+                      onItemClick={closeMenu}
+                      modalComponent={<DeleteModal />}
+                    /> */}
+                    <Link to={`/groups/${group.id}/events/new`}>
+                      <button className='owner-button-style'>Create Event</button>
+                    </Link>
+                    <Link to={`/groups/${group.id}/edit`}>
+                      <button className='owner-button-style'>Update</button>
+                    </Link>
+                    <div className='Delete'>
+                      <button className='owner-button-style' onClick={() => setIsOpen(true)} >Delete</button>
+                      <DeleteModal group={group} history={history} dispatch={dispatch} open={isOpen} onClose={() => setIsOpen(false)}>
+                      </DeleteModal>
+                    </div>
+                  </div>
+                </>
+              ) : sessionUser ? (
+                <>
+                  <div className='user-buttons'>
+                    <button onClick={handleAlert}>Join this Group</button>
+                  </div>
+                </>
+              ) : <></>
+              }
+            </div>
+          </div>
         </div>
       </div>
-      <div className='Organizer'>
-        <h2>Organizer</h2>
-        <h3>{group.Organizer.firstName} {group.Organizer.lastName}</h3>
+      <div className='aboutHead'>
+        <div className='Organizer'>
+          <h2>Organizer</h2>
+          <h3 className='highlightName'>{group.Organizer.firstName} {group.Organizer.lastName}</h3>
+        </div>
+        <div className='About'>
+          <h2>What we're about</h2>
+          <h2>{group.about}</h2>
+        </div>
       </div>
-      <div className='About'>
-        <h2>What we're about</h2>
-        <h2>{group.about}</h2>
-      </div>
+      {upcomingEvents.length == 0 ? <div className='upcomingEventsTitle'><h2>No Upcoming Events</h2></div> : <div className='upcomingEventsTitle'> <h2>Upcoming Events ({upcomingEvents.length})</h2></div>}
       <div className='UpcomingEventDiv'>
-        {upcomingEvents.length == 0 ? <h2>No Upcoming Events</h2> : <h2>Upcoming Events ({upcomingEvents.length})</h2>}
         {upcomingEvents.map((event) => {
           return (
             <NavLink to={`/events/${event.id}`} key={event.id}>
-              <div className='SingleEvent'>
-                <div className='EventImage'>
-                  <img src={event.previewImage}></img>
-                </div>
-                <div className='StartDate'>
-                  <h4>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h4>
-                </div>
-                <div className='EventName'>
-                  <h3>{event.name}</h3>
-                </div>
-                <div className='EventLocation'>
-                  <h6>{group.city},{group.state}</h6>
-                </div>
-                <div className='EventTitle'>
-                  <h3>{event.description}</h3>
+              <div className='SingleEventContainer'>
+                <div className='SingleEvent'>
+                  <div className='ImageFormat'>
+                    <div className='EventImage'>
+                      <img src={event.previewImage}></img>
+                    </div>
+                    <div className='EventText'>
+                      <div className='StartDate'>
+                        <h4>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h4>
+                      </div>
+                      <div className='EventName'>
+                        <h3>{event.name}</h3>
+                      </div>
+                      <div className='EventLocation'>
+                        <h6>{group.city},{group.state}</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='EventTitle'>
+                    <h3>{event.description}</h3>
+                  </div>
                 </div>
               </div>
             </NavLink>
           )
         })}
       </div>
-      <div className='PastEventDiv'>
-        {pastEvents.length == 0 ? <h2>There are no Past Events</h2> : <h2>Past Events ({pastEvents.length})</h2>}
+      {pastEvents.length == 0 ? <div className='upcomingEventsTitle'> <h2>There are no Past Events</h2> </div> : <div className='upcomingEventsTitle'> <h2>Past Events ({pastEvents.length})</h2></div>}
+      <div className='UpcomingEventDiv'>
         {pastEvents.map((event) => {
           return (
-            <NavLink to={`/events/${event.id}`}>
-              <div className='SingleEvent'>
-                <div className='EventImage'>
-                  <img src={event.previewImage}></img>
-                </div>
-                <div className='StartDate'>
-                  <h4>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h4>
-                </div>
-                <div className='EventName'>
-                  <h3>{event.name}</h3>
-                </div>
-                <div className='EventLocation'>
-                  <h6>{group.city},{group.state}</h6>
-                </div>
-                <div className='EventTitle'>
-                  <h3>{event.description}</h3>
+            <NavLink to={`/events/${event.id}`} key={event.id}>
+              <div className='SingleEventContainer'>
+                <div className='SingleEvent'>
+                  <div className='ImageFormat'>
+                    <div className='EventImage'>
+                      <img src={event.previewImage}></img>
+                    </div>
+                    <div className='EventText'>
+                      <div className='StartDate'>
+                        <h4>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h4>
+                      </div>
+                      <div className='EventName'>
+                        <h3>{event.name}</h3>
+                      </div>
+                      <div className='EventLocation'>
+                        <h6>{group.city},{group.state}</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='EventTitle'>
+                    <h3>{event.description}</h3>
+                  </div>
                 </div>
               </div>
             </NavLink>

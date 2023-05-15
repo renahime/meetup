@@ -27,29 +27,27 @@ const GroupList = () => {
     dispatch(fetchEvents());
   }, [dispatch]);
   return ((!groups || !events || !comingEvents) ? (<div><h1>Loading...</h1></div>) :
-    <div>
+    <div className='MainDiv'>
       <div className='Headers'>
-        <Link to='/events'>Events
+        <Link to='/events'><h1>Events</h1>
         </Link>
-        <Link to='/groups'>Groups</Link>
+        <Link className='highlight' to='/groups'><h1>Groups</h1></Link>
       </div>
       <div className='Title'>
         <h3>Groups In Meetup</h3>
       </div>
-      <div className='GroupList'>
+      <div className='GroupList' >
         {groups.map((group) => {
           return (
             <NavLink key={group.id} to={`/groups/${group.id}`}>
               <div className='Group'>
                 <div className='ImageContainer'>
-                  <img src={group.previewImage}></img>
+                  <img className="Image" src={group.previewImage}></img>
                 </div>
                 <div className='TextContainer'>
                   <h1 className='GroupName'>{group.name}</h1>
                   <h2 className='GroupLocation'>{group.city},{group.state}</h2>
                   <h3 className='GroupDescription'>{group.about}</h3>
-                </div>
-                <div className='EventsType'>
                   <h3 className='NumEvents'>{comingEvents.filter((event) => group.id == event.groupId).length} Events · {group.private}</h3>
                 </div>
               </div>

@@ -15,12 +15,12 @@ function Navigation({ isLoaded }) {
         <Link to='/'>
           <img src={logo} className='logo'></img>
         </Link>
-        <ul>
+        <ul className='NavFlex'>
           {/* <li>
         <NavLink exact to="/">Home</NavLink>
       </li> */}
           {isLoaded && (<>
-            <li>
+            <li className='NavFlex'>
               <ProfileButton user={sessionUser} />
             </li>
           </>

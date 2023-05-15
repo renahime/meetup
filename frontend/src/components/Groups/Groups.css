@@ -1,19 +1,56 @@
-h3{
-  font-family: arial;
-  font-weight: normal;
+
+.MainDiv{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 50%;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.title{
-  border-bottom: 2px;
-  border-color: black;
+.Headers{
+  padding-bottom: 20px;
+  padding-top:30px;
+  display: flex;
+  flex-direction: row;
+  gap:40px
 }
 
-#Buttons{
-  background-color: white;
-  color: black;
-  border: 2px solid #4CAF50; /* Green */
+.Buttons{
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
 }
 
 .errors {
   color: red;
+}
+
+.highlight{
+  text-decoration: underline;
+  color:#b67295;
+
+}
+
+.Title{
+  border-bottom: solid black;
+}
+
+.Group{
+  border-bottom: solid black;
+  display:flex;
+  flex-direction: row;
+  gap:30px;
+  padding-top:20px
+}
+
+.Image{
+  height:200px;
+  width:200px;
+}
+
+a {
+  text-decoration: none;
+  color:black
 }

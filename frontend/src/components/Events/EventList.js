@@ -37,11 +37,11 @@ const EventList = () => {
 
 
   return ((!events || !upcomingEvents || !pastEvents) ? (<div><h1>Loading...</h1></div>) :
-    <div>
+    <div className='MainDiv'>
       <div className='Headers'>
-        <Link to='/events'>Events
+        <Link to='/events' className='highlight'><h1>Events</h1>
         </Link>
-        <Link to='/groups'>Groups</Link>
+        <Link to='/groups'><h1>Groups</h1></Link>
       </div>
       <div className='Title'>
         <h3>Events In Meetup</h3>
@@ -51,35 +51,41 @@ const EventList = () => {
           return (
             <NavLink key={event.groupId} to={`/events/${event.id}`}>
               <div className='Event'>
-                <div className='ImageContainer'>
-                  <img src={event.previewImage}></img>
+                <div className='MainEventDiv'>
+                  <div className='MainTextContainer'>
+                    <div className='ImageContainer'>
+                      <img className="Image" src={event.previewImage}></img>
+                    </div>
+                    <div className='TextContainer'>
+                      <h1 className='EventDate'>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h1>
+                      <h2 className='EventName'>{event.name}</h2>
+                      <h2 className='EventLocation'>{event.Group.city},{event.Group.state}</h2>
+                    </div>
+                  </div>
                 </div>
-                <div className='TextContainer'>
-                  <h1 className='EventDate'>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h1>
-                  <h2 className='EventName'>{event.name}</h2>
-                  <h2 className='EventLocation'>{event.Group.city},{event.Group.state}</h2>
-                </div>
-                <div className='EventDescription'>
-                  <h3 className='GroupDescription'>{event.description}</h3>
+                <div className='EventDescription'> <h3 className='GroupDescription'>{event.description}</h3>
                 </div>
               </div>
             </NavLink>)
         })}
-        <h2>Past Events ({pastEvents.length})</h2>
+        <h1 style={{ paddingTop: '60px', borderBottom: "solid black", paddingBottom: '20px', color: '#b67295' }}>Past Events ({pastEvents.length})</h1>
         {pastEvents.map((event) => {
           return (
             <NavLink key={event.groupId} to={`/events/${event.id}`}>
               <div className='Event'>
-                <div className='ImageContainer'>
-                  <img src={event.previewImage}></img>
+                <div className='MainEventDiv'>
+                  <div className='MainTextContainer'>
+                    <div className='ImageContainer'>
+                      <img className="Image" src={event.previewImage}></img>
+                    </div>
+                    <div className='TextContainer'>
+                      <h1 className='EventDate'>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h1>
+                      <h2 className='EventName'>{event.name}</h2>
+                      <h2 className='EventLocation'>{event.Group.city},{event.Group.state}</h2>
+                    </div>
+                  </div>
                 </div>
-                <div className='TextContainer'>
-                  <h1 className='EventDate'>{event.localTimeStart[0]} · {event.localTimeStart[1]}</h1>
-                  <h2 className='EventName'>{event.name}</h2>
-                  <h2 className='EventLocation'>{event.Group.city},{event.Group.state}</h2>
-                </div>
-                <div className='EventDescription'>
-                  <h3 className='GroupDescription'>{event.description}</h3>
+                <div className='EventDescription'> <h3 className='GroupDescription'>{event.description}</h3>
                 </div>
               </div>
             </NavLink>)

@@ -46,12 +46,16 @@ const GroupForm = ({ group, formType }) => {
 
   return (
     <div className='Body'>
-      <div className='Title'>
+      {formType == "Create Group" ? (<div style={{ borderBottom: 'solid black' }} className='Title'>
         <h4>Become an Organizer</h4>
-        <h3>We'll Walk you through a few steps to build your local Community</h3>
+        <h3 >We'll Walk you through a few steps to build your local Community</h3>
       </div>
+      ) : <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} className='updateTitle'>
+        <h4 style={{ color: '#b67295' }}>UPDATE YOUR GROUP'S INFORMATION</h4>
+        <h3>We'll Walk you through a few steps to build your local Community</h3>
+      </div>}
       <form onSubmit={handleSubmit}>
-        <div className='Location'>
+        <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} className='Location'>
           <h2>First, set your group's location</h2>
           <h3>Meetup groups meet locally, in person and online. We'll connect you with people
             in your area, and more can join you online</h3>
@@ -63,7 +67,7 @@ const GroupForm = ({ group, formType }) => {
             <p className='errors'>{errors.state}</p>
           </div>
         </div>
-        <div className='Name'>
+        <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} className='Name'>
           <h2>What will your group's name be?</h2>
           <h3>Choose a name that will give people a clear idea of what the group is about.
             Feel free to get creative! You can edit this later if you change your mind.
@@ -74,7 +78,7 @@ const GroupForm = ({ group, formType }) => {
         <div>
           <p className='errors'>{errors.name}</p>
         </div>
-        <div className='About'>
+        <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} className='About'>
           <h2>Now describe what your group will be about</h2>
           <h5>People will see this when we promote your group, but you'll be able to add to it later, too.</h5>
           <h5>1, What's the purpose of the group?</h5>
@@ -86,7 +90,7 @@ const GroupForm = ({ group, formType }) => {
         <div>
           <p className='errors'>{errors.about}</p>
         </div>
-        <div className='Ect'>
+        <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} className='Ect'>
           <h2>Final steps...</h2>
           <h4>Is this an in person or online group?</h4>
           <select value={type} className='Type' onChange={(e) => setType(e.target.value)}>
@@ -113,7 +117,9 @@ const GroupForm = ({ group, formType }) => {
           <p className='errors'>{errors.previewImage}</p>
         </div>
         ) : <></>}
-        {(formType == 'Create Group') ? (<button type="submit" >Create Group</button>) : (<button type="submit" >Update Group</button>)}
+        {(formType == 'Create Group') ? (<div className='buttonContainer'>
+          <button className='submitButton' type="submit" >Create Group</button> </div>) : (<div className='buttonContainer'>
+            <button className='submitButton' type="submit" >Update Group</button></div>)}
       </form>
     </div>
   )

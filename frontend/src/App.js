@@ -11,6 +11,7 @@ import EventDetail from "./components/Events/EventDetail";
 import createGroupForm from "./components/GroupForm/CreateGroupForm";
 import EditGroupForm from "./components/GroupForm/EditGroupForm";
 import CreateEventForm from "./components/EventForm/CreateEventForm"
+import "./App.css";
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);

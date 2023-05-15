@@ -1,0 +1,20 @@
+@import url(./fonts/lemonMilk/stylesheet.css);
+
+@font-face {
+  font-family: 'lemon_milkmedium';
+  src: url('./fonts/lemonMilk/lemonmilk-medium-webfont.woff2') format('woff2');
+  src: url('./fonts/lemonMilk/lemonmilk-medium-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body{
+  font-family: "lemon_milkmedium";
+  text-transform: uppercase;
+  background-color: #f6cde2;
+}
+
+button{
+  font-family: 'lemon_milkmedium';
+  text-transform: uppercase;
+}

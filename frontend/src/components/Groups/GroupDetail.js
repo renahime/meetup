@@ -149,7 +149,7 @@ const GroupDetail = () => {
         </div>
       </div>
       {upcomingEvents.length == 0 ? <div className='upcomingEventsTitle'><h2>No Upcoming Events</h2></div> : <div className='upcomingEventsTitle'> <h2>Upcoming Events ({upcomingEvents.length})</h2></div>}
-      <div className='UpcomingEventDiv'>
+      <div className='UpcomingEventDiv' >
         {upcomingEvents.map((event) => {
           return (
             <NavLink to={`/events/${event.id}`} key={event.id}>

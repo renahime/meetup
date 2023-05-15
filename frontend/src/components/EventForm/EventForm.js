@@ -110,12 +110,14 @@ const EventForm = ({ event, formType }) => {
             <p className='errors'>{errors.endDate}</p>
           </div>
         </div>
-        <div className='Image' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
-          <h4>Please Add an Image to your Event Below</h4>
-          <input className='InputText' placeholder="Image URL" type='text' value={previewImage} onChange={(e) => setPreviewImage(e.target.value)}></input>
-        </div>
-        <div>
-          <p className='errors'>{errors.previewImage}</p>
+        <div style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }}>
+          <div className='Image'  >
+            <h4>Please Add an Image to your Event Below</h4>
+            <input className='InputText' placeholder="Image URL" type='text' value={previewImage} onChange={(e) => setPreviewImage(e.target.value)}></input>
+          </div>
+          <div>
+            <p className='errors'>{errors.previewImage}</p>
+          </div>
         </div>
         <div className='Description' style={{ borderBottom: 'solid black', paddingTop: '10px', paddingBottom: '10px' }} >
           <h4>Please Describe Your Event</h4>

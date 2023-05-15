@@ -36,7 +36,7 @@ const EventList = () => {
       <div className='GroupList'>
         {upcomingEvents.map((event) => {
           return (
-            <NavLink key={event.groupId} path to={`/events/${event.id}`}>
+            <NavLink key={event.groupId} to={`/events/${event.id}`}>
               <div className='Event'>
                 <div className='ImageContainer'>
                   <img src={event.previewImage}></img>
@@ -55,7 +55,7 @@ const EventList = () => {
         <h2>Past Events ({pastEvents.length})</h2>
         {pastEvents.map((event) => {
           return (
-            <NavLink key={event.groupId} path to={`/events/${event.id}`}>
+            <NavLink key={event.groupId} to={`/events/${event.id}`}>
               <div className='Event'>
                 <div className='ImageContainer'>
                   <img src={event.previewImage}></img>

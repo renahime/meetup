@@ -14,11 +14,6 @@ const GroupForm = ({ group, formType }) => {
   const [isPrivate, setPrivate] = useState(group?.private);
   const [previewImage, setPreviewImage] = useState(group?.previewImage)
   const [errors, setErrors] = useState({});
-  const sessionUser = useSelector(state => state.session.user)
-
-  if (sessionUser.id !== group.organizerId) {
-    history.push('/')
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

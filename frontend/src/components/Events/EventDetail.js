@@ -14,13 +14,6 @@ const EventDetail = () => {
   const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
 
-  if (event) {
-    event.localStart = new Date(event.startDate).toLocaleString();
-    event.localEnd = new Date(event.endDate).toLocaleString();
-    event.localTimeStart = event.localStart.split(', ');
-    event.localTimeEnd = event.localEnd.split(', ');
-  }
-
   const handleAlert = () => {
     alert('Feature coming soon ♥~!')
   }
@@ -29,6 +22,15 @@ const EventDetail = () => {
   useEffect(() => {
     dispatch(fetchEvent(eventId));
   }, [dispatch, eventId]);
+
+  if (event && Object.keys(event).length) {
+    event.localStart = new Date(event.startDate).toLocaleString();
+    event.localEnd = new Date(event.endDate).toLocaleString();
+    event.localTimeStart = event.localStart.split(', ');
+    event.localTimeEnd = event.localEnd.split(', ');
+  }
+
+  console.log(event);
 
   return (!event || Object.keys(event).length === 0) ? (<div><h1>Loading...</h1></div>) : (
     <div>

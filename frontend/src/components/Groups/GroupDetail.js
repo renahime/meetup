@@ -18,9 +18,7 @@ const GroupDetail = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    console.log('fetching');
     dispatch(fetchGroup(groupId));
-    console.log(group);
   }, [dispatch, groupId]);
 
   useEffect(() => {
@@ -30,11 +28,11 @@ const GroupDetail = () => {
   }, [dispatch, group]);
 
   let events = [];
-  if (eventsObj) events = Object.values(eventsObj);
-
-  let pastEvents = [];
   let upcomingEvents = [];
-  if (events) {
+  let pastEvents = [];
+  if (eventsObj) {
+    events = Object.values(eventsObj);
+
     pastEvents = events.filter((event) => new Date(event.startDate) < new Date());
     upcomingEvents = events.filter((event) => new Date(event.startDate) > new Date());
     upcomingEvents = upcomingEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
@@ -63,7 +61,7 @@ const GroupDetail = () => {
     <div>
       <div className='Return'>
         <Link to={`/groups/`}>
-          <i class="fa-solid fa-chevron-left"></i>
+          <i className="fa-solid fa-chevron-left"></i>
           <h4>Groups</h4>
         </Link>
       </div>
@@ -84,7 +82,7 @@ const GroupDetail = () => {
           {(sessionUser && (group.organizerId === sessionUser.id)) ? (
             <>
               <div className='owner-buttons'>
-                <Link to={`/groups/${group.id}/events/new`} groupId={group.id}>
+                <Link to={`/groups/${group.id}/events/new`}>
                   <button>Create Event</button>
                 </Link>
                 <Link to={`/groups/${group.id}/edit`}>
@@ -121,7 +119,7 @@ const GroupDetail = () => {
         {upcomingEvents.length == 0 ? <h2>No Upcoming Events</h2> : <h2>Upcoming Events ({upcomingEvents.length})</h2>}
         {upcomingEvents.map((event) => {
           return (
-            <NavLink path to={`/events/${event.id}`}>
+            <NavLink to={`/events/${event.id}`} key={event.id}>
               <div className='SingleEvent'>
                 <div className='EventImage'>
                   <img src={event.previewImage}></img>
@@ -147,7 +145,7 @@ const GroupDetail = () => {
         {pastEvents.length == 0 ? <h2>There are no Past Events</h2> : <h2>Past Events ({pastEvents.length})</h2>}
         {pastEvents.map((event) => {
           return (
-            <NavLink path to={`/events/${event.id}`}>
+            <NavLink to={`/events/${event.id}`}>
               <div className='SingleEvent'>
                 <div className='EventImage'>
                   <img src={event.previewImage}></img>
